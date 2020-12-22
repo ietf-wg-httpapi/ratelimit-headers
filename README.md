@@ -2,8 +2,11 @@
 
 This is the working area for the HTTPAPI Internet-Draft, "Rate Limit header fields for HTTP".
 
-* [Editor's Copy](https://github.com/ietf-wg-httpapi/ratelimit-headers)
+
+* [Editor's Copy](https://ietf-wg-httpapi.github.io/ratelimit-headers/#go.ratelimit-headers.html)
 * [Individual Draft](https://tools.ietf.org/html/draft-ietf-httpapi-ratelimit-headers)
+* [Compare Editor's Copy to Individual Draft](https://ietf-wg-httpapi.github.io/draft-ietf-httpapi-ratelimit-headers/#go.draft-ietf-httpapi-ratelimit-headers.diff)
+
 
 ## Building the Draft
 
