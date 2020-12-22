@@ -494,6 +494,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -533,6 +534,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -568,6 +570,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -590,6 +593,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -620,6 +624,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -653,6 +658,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -688,6 +694,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -719,6 +726,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -751,6 +759,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -788,6 +797,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -806,6 +816,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
@@ -844,6 +855,7 @@ Request:
 
 ~~~
 GET /items/123
+Host: api.example
 
 ~~~
 
