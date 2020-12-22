@@ -235,7 +235,7 @@ Example: A server could
 
 so that we have the following counters
 
-~~~
+~~~ example
 GET /books/123                  ; request-quota=4, remaining: 3, status=200
 GET /books?author=Camilleri     ; request-quota=4, remaining: 1, status=200
 GET /books?author=Eco           ; request-quota=4, remaining: 0, status=429
@@ -256,14 +256,14 @@ quota-comment tokens MUST NOT occur multiple times within the same quota-policy.
 
 An example policy of 100 quota-units per minute.
 
-~~~
+~~~ example
    100;w=60
 ~~~
 
 Two examples of providing further details via custom parameters
 in `quota-comments`.
 
-~~~
+~~~ example
    100;w=60;comment="fixed window"
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
@@ -291,14 +291,14 @@ The `expiring-limit` value MUST be set to the `request-quota` that is closer to 
 
 The `quota-policy` is defined in {{quota-policy}}, and its values are informative.
 
-~~~
+~~~ example
    RateLimit-Limit: 100
 ~~~
 
 A `time-window` associated to `expiring-limit` can be communicated
 via an optional `quota-policy` value, like shown in the following example
 
-~~~
+~~~ example
    RateLimit-Limit: 100, 100;w=10
 ~~~
 
@@ -310,7 +310,7 @@ If the `expiring-limit` is not associated to a `time-window`, the `time-window` 
 Policies using multiple quota limits MAY be returned using multiple
 `quota-policy` items, like shown in the following two examples:
 
-~~~
+~~~ example
    RateLimit-Limit: 10, 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
    RateLimit-Limit: 10, 10;w=1;burst=1000, 1000;w=3600
 ~~~
@@ -340,7 +340,7 @@ may arrive suddenly.
 
 One example of `RateLimit-Remaining` use is below.
 
-~~~
+~~~ example
    RateLimit-Remaining: 50
 ~~~
 
@@ -367,7 +367,7 @@ and can be sent in a trailer section.
 
 An example of `RateLimit-Reset` use is below.
 
-~~~
+~~~ example
    RateLimit-Reset: 50
 ~~~
 
@@ -386,7 +386,7 @@ respects the quota policy and MAY not apply to subsequent requests.
 
 Example: a successful response with the following fields
 
-~~~
+~~~ example
    RateLimit-Limit: 10
    RateLimit-Remaining: 1
    RateLimit-Reset: 7
@@ -492,7 +492,7 @@ The `time-window` is communicated out-of-band or inferred by the header values.
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -500,7 +500,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Limit: 100
@@ -532,7 +532,7 @@ inform the client that:
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -540,7 +540,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 acme-RateLimit-DayLimit: 5000
@@ -568,7 +568,7 @@ After 2 seconds the client consumed 40 quota-units
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -576,7 +576,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Limit: 100
@@ -591,7 +591,7 @@ the server advertises only `RateLimit-Remaining: 20`.
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -599,7 +599,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Limit: 100
@@ -622,7 +622,7 @@ The `429 Too Many Requests` HTTP status code is just used as an example.
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -630,7 +630,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 Date: Mon, 05 Aug 2019 09:27:00 GMT
@@ -656,7 +656,7 @@ The `time-window` is communicated by the `w` parameter, so we know the throughpu
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -664,7 +664,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Limit: 100, 100;w=60
@@ -692,7 +692,7 @@ contained in subsequent responses.
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -700,7 +700,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Limit: 10, 100;w=60
@@ -724,7 +724,7 @@ down the client for the rest of its original window after the 20 seconds elapse.
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -732,7 +732,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 RateLimit-Limit: 0, 15;w=20
@@ -757,7 +757,7 @@ the current window.
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -765,7 +765,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 Retry-After: 20
@@ -795,7 +795,7 @@ always returning the couple `RateLimit-Limit` and `RateLimit-Reset`.
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -803,7 +803,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Limit: 10
@@ -814,7 +814,7 @@ Ratelimit-Reset: 1
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -822,7 +822,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Limit: 10
@@ -853,7 +853,7 @@ inform the client that:
 
 Request:
 
-~~~
+~~~ http-message
 GET /items/123
 Host: api.example
 
@@ -861,7 +861,7 @@ Host: api.example
 
 Response:
 
-~~~
+~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
 RateLimit-Limit: 5000, 1000;w=3600, 5000;w=86400
@@ -928,7 +928,7 @@ This is true for `Retry-After` too.
 For example, if the quota resets every day at `18:00:00`
 and your server returns the `RateLimit-Reset` accordingly
 
-~~~
+~~~ example
    Date: Tue, 15 Nov 1994 08:00:00 GMT
    RateLimit-Reset: 36000
 ~~~
@@ -1044,7 +1044,7 @@ A sliding window policy for example may result in having a ratelimit-remaining
 value related to the ratio between the current and the maximum throughput.
 Eg.
 
-~~~
+~~~ example
 RateLimit-Limit: 12, 12;w=1
 RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
 RateLimit-Reset: 1
@@ -1052,7 +1052,7 @@ RateLimit-Reset: 1
 
 If this is the case, the optimal solution is to achieve
 
-~~~
+~~~ example
 RateLimit-Limit: 12, 12;w=1
 RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
 RateLimit-Reset: 1
@@ -1144,7 +1144,7 @@ At this point you should stop increasing your request rate.
 
    You can always return the simplest form of the 3 headers
 
-~~~
+~~~ example
 RateLimit-Limit: 100
 RateLimit-Remaining: 50
 RateLimit-Reset: 60
@@ -1153,7 +1153,7 @@ RateLimit-Reset: 60
    The key runtime value is the first element of the list: `expiring-limit`, the others `quota-policy` are informative.
    So for the following header:
 
-~~~
+~~~ example
 RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;burst=0;comment="fixed window"
 ~~~
 
