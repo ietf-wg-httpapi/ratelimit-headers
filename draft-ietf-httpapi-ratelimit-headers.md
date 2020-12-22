@@ -163,7 +163,7 @@ The goals do not include:
   Throttling scope:
   : This specification does not cover the throttling scope,
     that may be the given resource-target, its parent path or the whole
-    Origin {{!RFC6454}} section 7.
+    Origin {{!RFC6454}}, Section 7.
 
   Response status code:
   : The rate-limit headers may be returned in both
@@ -186,12 +186,12 @@ The goals do not include:
 {::boilerplate bcp14}
 
 This document uses the Augmented BNF defined in {{!RFC5234}} and updated
-by {{!RFC7405}} along with the "#rule" extension defined in Section 7 of
-{{!MESSAGING=RFC7230}}.
+by {{!RFC7405}} along with the "#rule" extension
+defined {{!MESSAGING=RFC7230}}, Section 7.
 
-The term Origin is to be interpreted as described in {{!RFC6454}} section 7.
+The term Origin is to be interpreted as described in {{!RFC6454}}, Section 7.
 
-The "delta-seconds" rule is defined in {{CACHING}} section 1.2.1.
+The "delta-seconds" rule is defined in {{CACHING}}, Section 1.2.1.
 
 # Expressing rate-limit policies
 
@@ -359,7 +359,7 @@ The header value is
 The delta-seconds format is used because:
 
 - it does not rely on clock synchronization and is resilient to clock adjustment
-  and clock skew between client and server (see {{SEMANTICS}} Section 4.1.1.1);
+  and clock skew between client and server (see {{SEMANTICS}}, Section 4.1.1.1);
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
 This header MUST NOT occur multiple times
@@ -1088,9 +1088,9 @@ At this point you should stop increasing your request rate.
    Using delta-seconds aligns with `Retry-After`, which is returned in similar contexts,
    eg on 429 responses.
 
-   delta-seconds as defined in {{!CACHING=RFC7234}} section 1.2.1 clarifies some parsing rules too.
+   delta-seconds as defined in {{!CACHING=RFC7234}}, Section 1.2.1 clarifies some parsing rules too.
 
-   Timestamps require a clock synchronization protocol (see {{SEMANTICS}} section 4.1.1.1).
+   Timestamps require a clock synchronization protocol (see {{SEMANTICS}}, Section 4.1.1.1).
    This may be problematic (eg. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
    IoT devices, ..).
    Moreover timestamps may not be monotonically increasing due to clock adjustment.
