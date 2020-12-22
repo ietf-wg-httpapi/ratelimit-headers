@@ -493,7 +493,7 @@ The `time-window` is communicated out-of-band or inferred by the header values.
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -533,7 +533,7 @@ inform the client that:
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -569,7 +569,7 @@ After 2 seconds the client consumed 40 quota-units
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -592,7 +592,7 @@ the server advertises only `RateLimit-Remaining: 20`.
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -623,7 +623,7 @@ The `429 Too Many Requests` HTTP status code is just used as an example.
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -657,7 +657,7 @@ The `time-window` is communicated by the `w` parameter, so we know the throughpu
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -693,7 +693,7 @@ contained in subsequent responses.
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -725,7 +725,7 @@ down the client for the rest of its original window after the 20 seconds elapse.
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -758,7 +758,7 @@ the current window.
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -796,7 +796,7 @@ always returning the couple `RateLimit-Limit` and `RateLimit-Reset`.
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -815,7 +815,7 @@ Ratelimit-Reset: 1
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
@@ -854,7 +854,7 @@ inform the client that:
 Request:
 
 ~~~ http-message
-GET /items/123
+GET /items/123 HTTP/1.1
 Host: api.example
 
 ~~~
