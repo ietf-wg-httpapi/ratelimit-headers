@@ -124,7 +124,7 @@ of standard headers, because:
   same header field names;
 - header field names proliferates.
 
-Client applications interfacing with different servers may thus
+User Agents interfacing with different servers may thus
 need to process different headers,
 or the very same application interface that sits behind different
 reverse proxies may reply with different throttling headers.
