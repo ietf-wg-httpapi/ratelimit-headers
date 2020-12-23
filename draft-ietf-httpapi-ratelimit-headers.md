@@ -62,8 +62,8 @@ requires an explicit way of communicating service status and
 usage quotas.
 
 This was partially addressed with the `Retry-After` header field
-defined in {{!SEMANTICS=RFC7231}} to be returned in `429 Too Many Requests` or
-`503 Service Unavailable` responses.
+defined in {{!SEMANTICS=I-D.ietf-httpbis-semantics}} to be returned in
+`429 Too Many Requests` or `503 Service Unavailable` responses.
 
 Still, there is not a standard way to communicate service quotas
 so that the client can throttle its requests
@@ -137,7 +137,7 @@ This proposal defines syntax and semantics for the following fields:
 - `RateLimit-Remaining`: containing the remaining requests quota in the current window;
 - `RateLimit-Reset`: containing the time remaining in the current window, specified in seconds.
 
-The behavior of `RateLimit-Reset` is compatible with the `delta-seconds` notation of `Retry-After`.
+The behavior of `RateLimit-Reset` is compatible with the `delay-seconds` notation of `Retry-After`.
 
 The fields definition allows to describe complex policies, including the ones
 using multiple and variable time windows and dynamic quotas, or implementing concurrency limits.
@@ -187,11 +187,11 @@ The goals do not include:
 
 This document uses the Augmented BNF defined in {{!RFC5234}} and updated
 by {{!RFC7405}} along with the "#rule" extension
-defined {{!MESSAGING=RFC7230}}, Section 7.
+defined {{SEMANTICS}}, Section 5.6.1.
 
 The term Origin is to be interpreted as described in {{!RFC6454}}, Section 7.
 
-The "delta-seconds" rule is defined in {{CACHING}}, Section 1.2.1.
+The "delay-seconds" rule is defined in {{SEMANTICS}}, Section 10.2.4.
 
 # Expressing rate-limit policies
 
@@ -201,7 +201,7 @@ Rate limit policies limit the number of acceptable requests in a given time wind
 
 A time window is expressed in seconds, using the following syntax:
 
-    time-window = delta-seconds
+    time-window = delay-seconds
 
 Subsecond precision is not supported.
 
@@ -353,13 +353,13 @@ The `RateLimit-Reset` response field indicates either
 The header value is
 
 ~~~
-   RateLimit-Reset = delta-seconds
+   RateLimit-Reset = delay-seconds
 ~~~
 
-The delta-seconds format is used because:
+The delay-seconds format is used because:
 
 - it does not rely on clock synchronization and is resilient to clock adjustment
-  and clock skew between client and server (see {{SEMANTICS}}, Section 4.1.1.1);
+  and clock skew between client and server (see {{SEMANTICS}}, Section 5.6.7);
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
 This header MUST NOT occur multiple times
@@ -417,7 +417,8 @@ in a trailer section.
 
 # Intermediaries {#intermediaries}
 
-This section documents the considerations advised in Section 15.3.3 of {{SEMANTICS}}.
+This section documents the considerations advised in
+{{SEMANTICS}}, Section 16.3.3.
 
 An intermediary that is not part of the originating service infrastructure
 and is not aware of the quota-policy semantic used by the Origin Server
@@ -1082,15 +1083,14 @@ At this point you should stop increasing your request rate.
 
    I'm open to suggestions: comment on [this issue](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/70)
 
-5. Why using delta-seconds instead of a UNIX Timestamp?
+5. Why using delay-seconds instead of a UNIX Timestamp?
    Why not using subsecond precision?
 
-   Using delta-seconds aligns with `Retry-After`, which is returned in similar contexts,
+   Using delay-seconds aligns with `Retry-After`, which is returned in similar contexts,
    eg on 429 responses.
 
-   delta-seconds as defined in {{!CACHING=RFC7234}}, Section 1.2.1 clarifies some parsing rules too.
-
-   Timestamps require a clock synchronization protocol (see {{SEMANTICS}}, Section 4.1.1.1).
+   Timestamps require a clock synchronization protocol 
+   (see {{SEMANTICS}}, Section 5.6.7).
    This may be problematic (eg. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
    IoT devices, ..).
    Moreover timestamps may not be monotonically increasing due to clock adjustment.
@@ -1194,3 +1194,14 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     e.g. when they enforce stricter quota-policies,
     or when they are an active component of the service.
     In those case we will consider them as part of the originating infrastructure.
+
+# Changes
+{:numbered="false"}
+
+_RFC Editor: Please remove this section before publication._
+
+## Since draft-ietf-httpapi-ratelimit-headers-00
+{:numbered="false"}
+
+* Use I-D.httpbis-semantics, which includes referencing `delay-seconds`
+  instead of `delta-seconds`. #5
