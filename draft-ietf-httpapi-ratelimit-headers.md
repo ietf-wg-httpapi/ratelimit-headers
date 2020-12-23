@@ -187,7 +187,7 @@ The goals do not include:
 
 This document uses the Augmented BNF defined in {{!RFC5234}} and updated
 by {{!RFC7405}} along with the "#rule" extension
-defined in  Section 5.6.1 of {{SEMANTICS}}.
+defined in Section 5.6.1 of {{SEMANTICS}}.
 
 The term Origin is to be interpreted as described in Section 7 of {{!RFC6454}}.
 
