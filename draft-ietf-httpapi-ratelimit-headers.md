@@ -163,7 +163,7 @@ The goals do not include:
   Throttling scope:
   : This specification does not cover the throttling scope,
     that may be the given resource-target, its parent path or the whole
-    Origin {{!RFC6454}}, Section 7.
+    Origin (see Section 7 of {{!RFC6454}}).
 
   Response status code:
   : The rate-limit headers may be returned in both
@@ -187,11 +187,11 @@ The goals do not include:
 
 This document uses the Augmented BNF defined in {{!RFC5234}} and updated
 by {{!RFC7405}} along with the "#rule" extension
-defined {{SEMANTICS}}, Section 5.6.1.
+defined in  Section 5.6.1 of {{SEMANTICS}}.
 
-The term Origin is to be interpreted as described in {{!RFC6454}}, Section 7.
+The term Origin is to be interpreted as described in Section 7 of {{!RFC6454}}.
 
-The "delay-seconds" rule is defined in {{SEMANTICS}}, Section 10.2.4.
+The "delay-seconds" rule is defined in Section 10.2.4 of {{SEMANTICS}}.
 
 # Expressing rate-limit policies
 
@@ -359,7 +359,7 @@ The header value is
 The delay-seconds format is used because:
 
 - it does not rely on clock synchronization and is resilient to clock adjustment
-  and clock skew between client and server (see {{SEMANTICS}}, Section 5.6.7);
+  and clock skew between client and server (see Section 5.6.7 of {{SEMANTICS}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
 This header MUST NOT occur multiple times
@@ -418,7 +418,7 @@ in a trailer section.
 # Intermediaries {#intermediaries}
 
 This section documents the considerations advised in
-{{SEMANTICS}}, Section 16.3.3.
+Section 16.3.3 of {{SEMANTICS}}.
 
 An intermediary that is not part of the originating service infrastructure
 and is not aware of the quota-policy semantic used by the Origin Server
@@ -1090,7 +1090,7 @@ At this point you should stop increasing your request rate.
    eg on 429 responses.
 
    Timestamps require a clock synchronization protocol 
-   (see {{SEMANTICS}}, Section 5.6.7).
+   (see Section 5.6.7 of {{SEMANTICS}}).
    This may be problematic (eg. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
    IoT devices, ..).
    Moreover timestamps may not be monotonically increasing due to clock adjustment.
