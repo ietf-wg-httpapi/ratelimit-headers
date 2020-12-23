@@ -1,0 +1,20 @@
+# This docker-compose allows testing the I-D
+# without installing all the tools locally.
+#
+# Just run:
+#   docker-compose up test
+#
+# NB: the `user` parameter is useful to avoid
+#     that docker runs as root and create files
+#     with root privileges in your local folder.
+#     This may not work outside Linux.
+version: "3.0"
+services:
+  test:
+    image: martinthomson/i-d-template
+    volumes:
+    - .:/code
+    working_dir: /code
+    user: >-
+      $UID:$GID
+    entrypoint: ["make"]
