@@ -320,29 +320,33 @@ and can be sent in a trailer section.
 
 ## RateLimit-Remaining {#ratelimit-remaining-header}
 
-The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{request-quota}}
-associated to the client.
+The `RateLimit-Remaining` response field indicates the remaining `quota-units`
+defined in {{request-quota}} associated to the client.
 
-The header value is
+`RateLimit-Remaining` is a Item Structured Field
+{{!I-D.ietf-httpbis-header-structure}}. Its value MUST be an Integer (Section
+3.3.1 of {{I-D.ietf-httpbis-header-structure}}). Its ABNF is:
 
 ~~~
-   RateLimit-Remaining = quota-units
+   RateLimit-Remaining = sf-integer
 ~~~
 
-This header MUST NOT occur multiple times
-and can be sent in a trailer section.
+The value of `RateLimit-Remaining` MUST be non-negative.
+
+`RateLimit-Remaining` MUST NOT occur multiple times. It MAY be sent in a trailer
+section.
+
+For example:
+
+~~~ example
+   RateLimit-Remaining: 50
+~~~
 
 Clients MUST NOT assume that a positive `RateLimit-Remaining` value is
 a guarantee of being served.
 
 A low `RateLimit-Remaining` value is like a yellow traffic-light: the red light
 may arrive suddenly.
-
-One example of `RateLimit-Remaining` use is below.
-
-~~~ example
-   RateLimit-Remaining: 50
-~~~
 
 ## RateLimit-Reset {#ratelimit-reset-header}
 
