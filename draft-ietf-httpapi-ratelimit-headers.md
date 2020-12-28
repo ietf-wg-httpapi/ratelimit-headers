@@ -326,15 +326,12 @@ and can be sent in a trailer section.
 The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{request-quota}}
 associated to the client.
 
-`RateLimit-Remaining` is a Item Structured Field
-{{!I-D.ietf-httpbis-header-structure}}. Its value MUST be an Integer (Section
-3.3.1 of {{I-D.ietf-httpbis-header-structure}}). Its ABNF is:
+`RateLimit-Remaining` is an Item {{SF}}.
+Its value MUST be a non-negative Integer.
 
-~~~
+~~~ abnf
    RateLimit-Remaining = sf-integer
 ~~~
-
-The value of `RateLimit-Remaining` MUST be non-negative.
 
 This header MUST NOT occur multiple times
 and can be sent in a trailer section.
