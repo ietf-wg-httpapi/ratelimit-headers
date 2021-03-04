@@ -25,16 +25,13 @@ author:
     org: Red Hat
     email: amr@redhat.com
 
-normative:
+informative:
   UNIX:
     title: The Single UNIX Specification, Version 2 - 6 Vol Set for UNIX 98
     author:
       name: The Open Group
       ins: The Open Group
     date: 1997-02
-
-informative:
-  RFC6585:
 
 --- abstract
 
@@ -64,7 +61,8 @@ usage quotas.
 
 This was partially addressed by the `Retry-After` header field
 defined in {{!SEMANTICS=I-D.ietf-httpbis-semantics}} to be returned in
-`429 Too Many Requests` or `503 Service Unavailable` responses.
+`429 Too Many Requests` (see {{?STATUS429=RFC6525}})
+or `503 Service Unavailable` responses.
 
 Still, there is not a standard way to communicate service quotas
 so that the client can throttle its requests
@@ -993,75 +991,18 @@ Specification document(s):  {{ratelimit-reset-field}} of this document
 
 --- back
 
-# Change Log
-
-RFC EDITOR PLEASE DELETE THIS SECTION.
-
-
 # Acknowledgements
 
 Thanks to Willi Schoenborn, Alejandro Martinez Ruiz, Alessandro Ranellucci,
 Amos Jeffries,
 Martin Thomson,
 Erik Wilde and Mark Nottingham for being the initial contributors
- of these specifications.
+of these specifications.
 Kudos to the first community implementors:
 Aapo Talvensaari,
 Nathan Friedly
 and Sanyam Dogra.
 
-# RateLimit fields currently used on the web
-{:numbered="false"}
-
-_RFC Editor: Please remove this section before publication._
-
-Commonly used header field names are:
-
-- `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`;
-- `X-Rate-Limit-Limit`, `X-Rate-Limit-Remaining`, `X-Rate-Limit-Reset`.
-
-There are variants too, where the window is specified
-in the header field name, eg:
-
-- `x-ratelimit-limit-minute`, `x-ratelimit-limit-hour`, `x-ratelimit-limit-day`
-- `x-ratelimit-remaining-minute`, `x-ratelimit-remaining-hour`, `x-ratelimit-remaining-day`
-
-Here are some interoperability issues:
-
-- `X-RateLimit-Remaining` references different values, depending on the implementation:
-
-   * seconds remaining to the window expiration
-   * milliseconds remaining to the window expiration
-   * seconds since UTC, in UNIX Timestamp
-   * a datetime, either `IMF-fixdate` {{SEMANTICS}} or {{?RFC3339}}
-
-- different headers, with the same semantic, are used by different implementers:
-
-  * X-RateLimit-Limit and X-Rate-Limit-Limit
-  * X-RateLimit-Remaining and X-Rate-Limit-Remaining
-  * X-RateLimit-Reset and X-Rate-Limit-Reset
-
-The semantic of RateLimit-Remaining depends on the windowing algorithm.
-A sliding window policy for example may result in having a 
-`RateLimit-Remaining`
-value related to the ratio between the current and the maximum throughput.
-Eg.
-
-~~~ example
-RateLimit-Limit: 12, 12;w=1
-RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
-RateLimit-Reset: 1
-~~~
-
-If this is the case, the optimal solution is to achieve
-
-~~~ example
-RateLimit-Limit: 12, 12;w=1
-RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
-RateLimit-Reset: 1
-~~~
-
-At this point you should stop increasing your request rate.
 
 # FAQ
 
@@ -1196,6 +1137,59 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     e.g. when they enforce stricter quota-policies,
     or when they are an active component of the service.
     In those case we will consider them as part of the originating infrastructure.
+
+# RateLimit fields currently used on the web
+{:numbered="false"}
+
+_RFC Editor: Please remove this section before publication._
+
+Commonly used header field names are:
+
+- `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`;
+- `X-Rate-Limit-Limit`, `X-Rate-Limit-Remaining`, `X-Rate-Limit-Reset`.
+
+There are variants too, where the window is specified
+in the header field name, eg:
+
+- `x-ratelimit-limit-minute`, `x-ratelimit-limit-hour`, `x-ratelimit-limit-day`
+- `x-ratelimit-remaining-minute`, `x-ratelimit-remaining-hour`, `x-ratelimit-remaining-day`
+
+Here are some interoperability issues:
+
+- `X-RateLimit-Remaining` references different values, depending on the implementation:
+
+   * seconds remaining to the window expiration
+   * milliseconds remaining to the window expiration
+   * seconds since UTC, in UNIX Timestamp [UNIX]
+   * a datetime, either `IMF-fixdate` {{SEMANTICS}} or {{?RFC3339}}
+
+- different headers, with the same semantic, are used by different implementers:
+
+  * X-RateLimit-Limit and X-Rate-Limit-Limit
+  * X-RateLimit-Remaining and X-Rate-Limit-Remaining
+  * X-RateLimit-Reset and X-Rate-Limit-Reset
+
+The semantic of RateLimit-Remaining depends on the windowing algorithm.
+A sliding window policy for example may result in having a 
+`RateLimit-Remaining`
+value related to the ratio between the current and the maximum throughput.
+Eg.
+
+~~~ example
+RateLimit-Limit: 12, 12;w=1
+RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
+RateLimit-Reset: 1
+~~~
+
+If this is the case, the optimal solution is to achieve
+
+~~~ example
+RateLimit-Limit: 12, 12;w=1
+RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
+RateLimit-Reset: 1
+~~~
+
+At this point you should stop increasing your request rate.
 
 # Changes
 {:numbered="false"}
