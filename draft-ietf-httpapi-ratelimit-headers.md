@@ -62,7 +62,7 @@ The widespreading of HTTP as a distributed computation protocol
 requires an explicit way of communicating service status and
 usage quotas.
 
-This was partially addressed with the `Retry-After` header field
+This was partially addressed by the `Retry-After` header field
 defined in {{!SEMANTICS=I-D.ietf-httpbis-semantics}} to be returned in
 `429 Too Many Requests` or `503 Service Unavailable` responses.
 
@@ -480,8 +480,8 @@ The `quota-policy` values and comments provided in `RateLimit-Limit` are informa
 and MAY be ignored.
 
 If a response contains both the `RateLimit-Reset` and `Retry-After` fields,
-the `Retry-After` header field MUST take precedence and
-the `RateLimit-Reset` field MAY be ignored.
+`Retry-After` MUST take precedence and
+`RateLimit-Reset` MAY be ignored.
 
 # Examples
 
@@ -614,8 +614,8 @@ RateLimit-Reset: 56
 
 ### Use in throttled responses
 
-A client exhausted its quota and the server throttles the request
-sending the `Retry-After` response header field.
+A client exhausted its quota and the server throttles it
+sending `Retry-After`.
 
 In this example, the values of `Retry-After` and `RateLimit-Reset` reference the same moment,
 but this is not a requirement.
@@ -750,7 +750,7 @@ Ratelimit-Reset: 20
 ## Dynamic limits for pushing back with Retry-After and slow down
 
 Alternatively, given the same context where the previous example starts, we
-can convey the same information to the client via the Retry-After header, with
+can convey the same information to the client via `Retry-After`, with
 the advantage that the server can now specify the policy's nominal limit and
 window that will apply after the reset, ie. assuming the resource exhaustion
 is likely to be gone by then, so the advertised policy does not need to be
@@ -781,8 +781,8 @@ Ratelimit-Reset: 40
 }
 ~~~
 
-Note that in this last response the client is expected to honor the
-`Retry-After` header and perform no requests for the specified amount of
+Note that in this last response the client is expected to honor
+`Retry-After` and perform no requests for the specified amount of
 time, whereas the previous example would not force the client to stop
 requests before the reset time is elapsed, as it would still be free to
 query again the server even if it is likely to have the request rejected.
