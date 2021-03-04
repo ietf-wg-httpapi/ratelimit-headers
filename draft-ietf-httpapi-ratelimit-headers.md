@@ -194,6 +194,9 @@ The term Origin is to be interpreted as described in Section 7 of {{!RFC6454}}.
 
 The "delay-seconds" rule is defined in Section 10.2.4 of {{SEMANTICS}}.
 
+This specification uses Structured Headers {{!SF=I-D.ietf-httpbis-header-structure}} to specify syntax.
+The terms sf-list, sf-item, sf-string, sf-token, sf-integer and key refer to the structured types defined therein.
+
 # Expressing rate-limit policies
 
 ## Time window {#time-window}
@@ -324,10 +327,11 @@ and can be sent in a trailer section.
 The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{request-quota}}
 associated to the client.
 
-The header value is
+`RateLimit-Remaining` is an Item {{SF}}.
+Its value MUST be a non-negative Integer.
 
-~~~
-   RateLimit-Remaining = quota-units
+~~~ abnf
+   RateLimit-Remaining = sf-integer
 ~~~
 
 This header MUST NOT occur multiple times
