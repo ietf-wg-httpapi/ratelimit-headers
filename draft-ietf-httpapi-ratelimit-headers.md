@@ -150,8 +150,9 @@ The goals of this proposal are:
    2. Improve resiliency of HTTP infrastructures simplifying
       the enforcement and the adoption of rate-limit headers;
 
-   3. Simplify API documentation avoiding expliciting
-      rate-limit fields semantic in documentation.
+   3. Simplify API documentation by eliminating the need
+      to include detailed quota limits
+      and related header fields in API documentation.
 
 The goals do not include:
 
