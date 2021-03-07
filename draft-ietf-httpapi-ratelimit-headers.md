@@ -36,7 +36,7 @@ informative:
 --- abstract
 
 This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset fields for HTTP,
-thus allowing servers to publish current request quotas and
+thus allowing servers to publish current service limits and
 clients to shape their request policy and avoid being throttled out.
 
 --- note_Note_to_Readers
@@ -204,27 +204,27 @@ A time window is expressed in seconds, using the following syntax:
 
 Subsecond precision is not supported.
 
-## Request quota {#request-quota}
+## Service limit {#service-limit}
 
-The request-quota is a value associated to the maximum number of requests
+The service-limit is a value associated to the maximum number of requests
 that the server is willing to accept
 from one or more clients
 on a given basis (originating IP, authenticated user, geographical, ..)
 during a `time-window` as defined in {{time-window}}.
 
-The `request-quota` is expressed in `quota-units` and has the following syntax:
+The `service-limit` is expressed in `quota-units` and has the following syntax:
 
 ~~~
-   request-quota = quota-units
+   service-limit = quota-units
    quota-units = 1*DIGIT
 ~~~
 
-The `request-quota` SHOULD match the maximum number of acceptable requests.
+The `service-limit` SHOULD match the maximum number of acceptable requests.
 
-The `request-quota` MAY differ from the total number of acceptable requests
+The `service-limit` MAY differ from the total number of acceptable requests
 when weight mechanisms, bursts, or other server policies are implemented.
 
-If the `request-quota` does not match the maximum number of acceptable requests
+If the `service-limit` does not match the maximum number of acceptable requests
 the relation with that SHOULD be communicated out-of-band.
 
 Example: A server could
@@ -235,9 +235,9 @@ Example: A server could
 so that we have the following counters
 
 ~~~ example
-GET /books/123                  ; request-quota=4, remaining: 3, status=200
-GET /books?author=Camilleri     ; request-quota=4, remaining: 1, status=200
-GET /books?author=Eco           ; request-quota=4, remaining: 0, status=429
+GET /books/123                  ; service-limit=4, remaining: 3, status=200
+GET /books?author=Camilleri     ; service-limit=4, remaining: 1, status=200
+GET /books?author=Eco           ; service-limit=4, remaining: 0, status=429
 ~~~
 
 ## Quota policy {#quota-policy}
@@ -245,7 +245,7 @@ GET /books?author=Eco           ; request-quota=4, remaining: 0, status=429
 This specification allows describing a quota policy with the following syntax:
 
 ~~~
-   quota-policy = request-quota; "w" "=" time-window
+   quota-policy = service-limit; "w" "=" time-window
                   *( OWS ";" OWS quota-comment)
    quota-comment = token "=" (token / quoted-string)
 ~~~
@@ -274,7 +274,7 @@ The following `RateLimit` response fields are defined
 ## RateLimit-Limit {#ratelimit-limit-field}
 
 The `RateLimit-Limit` response field indicates
-the `request-quota` associated to the client
+the `service-limit` associated to the client
 in the current `time-window`.
 
 If the client exceeds that limit, it MAY not be served.
@@ -283,10 +283,10 @@ The field value is
 
 ~~~
    RateLimit-Limit = expiring-limit [, 1#quota-policy ]
-   expiring-limit = request-quota
+   expiring-limit = service-limit
 ~~~
 
-The `expiring-limit` value MUST be set to the `request-quota` that is closer to reach its limit.
+The `expiring-limit` value MUST be set to the `service-limit` that is closer to reach its limit.
 
 The `quota-policy` is defined in {{quota-policy}}, and its values are informative.
 
@@ -319,7 +319,7 @@ and can be sent in a trailer section.
 
 ## RateLimit-Remaining {#ratelimit-remaining-field}
 
-The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{request-quota}}
+The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{service-limit}}
 associated to the client.
 
 The field value is
@@ -370,7 +370,7 @@ An example of `RateLimit-Reset` use is below.
    RateLimit-Reset: 50
 ~~~
 
-The client MUST NOT assume that all its `request-quota` will be restored
+The client MUST NOT assume that all its `service-limit` will be restored
 after the moment referenced by `RateLimit-Reset`.
 The server MAY arbitrarily alter the `RateLimit-Reset` value between subsequent requests
 eg. in case of resource saturation or to implement sliding window policies.
@@ -392,7 +392,7 @@ Example: a successful response with the following fields
 ~~~
 
 does not guarantee that the next request will be successful. Server metrics may be subject to other
-conditions like the one shown in the example from {{request-quota}}.
+conditions like the one shown in the example from {{service-limit}}.
 
 A server MAY return `RateLimit` response fields independently
 of the response status code.  This includes throttled responses.
@@ -460,7 +460,7 @@ A client MUST process the received `RateLimit` fields.
 A client MUST validate the values received in the `RateLimit` fields before using them
 and check if there are significant discrepancies
 with the expected ones.
-This includes a `RateLimit-Reset` moment too far in the future or a `request-quota` too high.
+This includes a `RateLimit-Reset` moment too far in the future or a `service-limit` too high.
 
 Malformed `RateLimit` fields MAY be ignored.
 
@@ -487,7 +487,7 @@ If a response contains both the `RateLimit-Reset` and `Retry-After` fields,
 
 ### Throttling information in responses
 
-The client exhausted its request-quota for the next 50 seconds.
+The client exhausted its service-limit for the next 50 seconds.
 The `time-window` is communicated out-of-band or inferred by the field values.
 
 Request:
@@ -912,7 +912,7 @@ values or not serve the request anyway.
 
 ## Reliability of RateLimit-Reset
 
-Consider that `request-quota` may not be restored after the moment referenced by `RateLimit-Reset`,
+Consider that `service-limit` may not be restored after the moment referenced by `RateLimit-Reset`,
 and the `RateLimit-Reset` value should not be considered fixed nor constant.
 
 Subsequent requests may return an higher `RateLimit-Reset` value to limit
