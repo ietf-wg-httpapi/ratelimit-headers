@@ -145,10 +145,13 @@ using multiple and variable time windows and dynamic quotas, or implementing con
 
 The goals of this proposal are:
 
-   1. Standardizing the names and semantic of rate-limit headers;
+   1. Standardizing the names and semantic of rate-limit headers
+      to ease their enforcement and adoption;
 
-   2. Improve resiliency of HTTP infrastructures simplifying
-      the enforcement and the adoption of rate-limit headers;
+   2. Improve resiliency of HTTP infrastructures
+      providing clients with information useful
+      to throttle their requests and
+      prevent 4xx or 5xx responses;
 
    3. Simplify API documentation by eliminating the need
       to include detailed quota limits
