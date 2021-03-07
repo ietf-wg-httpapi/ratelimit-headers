@@ -937,6 +937,28 @@ there's a high probability that all clients will show up at `18:00:00`.
 
 This could be mitigated adding some jitter to the field-value.
 
+A service returning `RateLimit` fields MUST NOT convey values
+exposing an unwanted volume of requests
+and SHOULD implement mechanisms to cap the ratio between `RateLimit-Remaining`
+`RateLimit-Reset`.
+
+The following example describes a service
+with a policy of 10000 quota-units per 1000 seconds
+that have not been consumed.
+
+~~~ example
+RateLimit-Limit: 10000, 10000;w=1000
+RateLimit-Remaining: 10000
+RateLimit-Reset: 10
+~~~
+
+In the last 10 seconds, the above fields expose
+an average throughput of 1000 quota-units per second.
+If the service cannot handle such load, it should return
+either a lower ~RateLimit-Remaining` value
+or an higher `RateLimit-Reset` value.
+
+
 ## Denial of Service
 
 `RateLimit` fields may assume unexpected values by chance or purpose.
@@ -1137,6 +1159,17 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     e.g. when they enforce stricter quota-policies,
     or when they are an active component of the service.
     In those case we will consider them as part of the originating infrastructure.
+
+14. Why the `window` parameter is just informative?
+    Could it be used by a client to determine the request rate?
+
+    A non-informative `window` parameter might be fine in an environment
+    where client and servers are thighly coupled. Conveying policies
+    with this detail on a large scale would be very complex and implementations
+    would be likely not interoperable. We thus decided to leave `w` as 
+    an informational parameter and only rely on `RateLimit-Limit`,
+    `RateLimit-Remaining` and `RateLimit-Reset` for defining the throttling
+    behavior.
 
 # RateLimit fields currently used on the web
 {:numbered="false"}
