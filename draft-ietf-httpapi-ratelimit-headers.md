@@ -940,7 +940,7 @@ This could be mitigated adding some jitter to the field-value.
 A service returning `RateLimit` fields MUST NOT convey values
 exposing an unwanted volume of requests
 and SHOULD implement mechanisms to cap the ratio between `RateLimit-Remaining`
-`RateLimit-Reset`.
+and `RateLimit-Reset`.
 
 The following example describes a service
 with a policy of 10000 quota-units per 1000 seconds
@@ -956,7 +956,7 @@ In the last 10 seconds, the above fields expose
 an average throughput of 1000 quota-units per second.
 If the service cannot handle such load, it should return
 either a lower ~RateLimit-Remaining` value
-or an higher `RateLimit-Reset` value.
+or a higher `RateLimit-Reset` value.
 
 
 ## Denial of Service
@@ -1164,7 +1164,7 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     Could it be used by a client to determine the request rate?
 
     A non-informative `window` parameter might be fine in an environment
-    where client and servers are thighly coupled. Conveying policies
+    where client and servers are tightly coupled. Conveying policies
     with this detail on a large scale would be very complex and implementations
     would be likely not interoperable. We thus decided to leave `w` as 
     an informational parameter and only rely on `RateLimit-Limit`,
