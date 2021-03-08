@@ -193,7 +193,7 @@ The term Origin is to be interpreted as described in Section 7 of {{!RFC6454}}.
 
 The "delay-seconds" rule is defined in Section 10.2.4 of {{SEMANTICS}}.
 
-This specification uses Structured Headers {{!SF=I-D.ietf-httpbis-header-structure}} to specify syntax.
+This specification uses Structured Headers {{!SF=RFC8941}} to specify syntax.
 The terms sf-list, sf-item, sf-string, sf-token, sf-integer and key refer to the structured types defined therein.
 
 # Expressing rate-limit policies
