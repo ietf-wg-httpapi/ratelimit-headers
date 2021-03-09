@@ -964,15 +964,14 @@ RateLimit-Reset: 10
 A client implementing a simple ratio between `RateLimit-Remaining` and
 `RateLimit-Reset` could infer an average throughput of
 1000 quota-units per second,
-while the average throughput exposed by the `quota-policy` was of
-10 quota-units per second.
-
-Complement large-`time-window` quota-policies with
-short-`time-window` ones mitigates those risks.
+while `RateLimit-Limit` conveys a quota-policy 
+with an average of 10 quota-units per second.
 
 If the service cannot handle such load, it should return
 either a lower `RateLimit-Remaining` value
 or an higher `RateLimit-Reset` value.
+Moreover, complementing large `time-window` quota-policies with
+a short `time-window` one mitigates those risks.
 
 
 ## Denial of Service
@@ -1180,7 +1179,7 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     Could it be used by a client to determine the request rate?
 
     A non-informative `window` parameter might be fine in an environment
-    where client and servers are thighly coupled. Conveying policies
+    where client and servers are tightly coupled. Conveying policies
     with this detail on a large scale would be very complex and implementations
     would be likely not interoperable. We thus decided to leave `w` as 
     an informational parameter and only rely on `RateLimit-Limit`,
