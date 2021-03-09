@@ -259,6 +259,10 @@ An example policy of 100 quota-units per minute.
    100;w=60
 ~~~
 
+The definition of a quota-policy do not imply any specific
+distribution of quota-units over time.
+Such non-standard details can be conveyed in the `quota-comments`.
+
 Two examples of providing further details via custom parameters
 in `quota-comments`.
 
@@ -404,6 +408,12 @@ the value of `RateLimit-Reset` SHOULD reference the same point in time as
 When using a policy involving more than one `time-window`,
 the server MUST reply with the `RateLimit` fields related to the window
 with the lower `RateLimit-Remaining` values.
+
+A service returning `RateLimit` fields MUST NOT convey values
+exposing an unwanted volume of requests
+and SHOULD implement mechanisms to cap the ratio between `RateLimit-Remaining`
+`RateLimit-Reset` (see {{sec-resource-exhaustion}});
+this is especially important when quota-policies use a large `time-window`.
 
 Under certain conditions, a server MAY artificially lower `RateLimit` field values between subsequent requests,
 eg. to respond to Denial of Service attacks or in case of resource saturation.
@@ -937,14 +947,13 @@ there's a high probability that all clients will show up at `18:00:00`.
 
 This could be mitigated adding some jitter to the field-value.
 
-A service returning `RateLimit` fields MUST NOT convey values
-exposing an unwanted volume of requests
-and SHOULD implement mechanisms to cap the ratio between `RateLimit-Remaining`
-`RateLimit-Reset`.
+Resource exhaustion issues can be associated with quota policies
+using a large `time-window`, because a user agent by chance or purpose might
+consume most of its quota-units in a significantly shorter interval.
 
+This behavior can be even triggered by the provided `RateLimit` fields.
 The following example describes a service
-with a policy of 10000 quota-units per 1000 seconds
-that have not been consumed.
+with an unconsumed quota-policy of 10000 quota-units per 1000 seconds.
 
 ~~~ example
 RateLimit-Limit: 10000, 10000;w=1000
@@ -952,10 +961,17 @@ RateLimit-Remaining: 10000
 RateLimit-Reset: 10
 ~~~
 
-In the last 10 seconds, the above fields expose
-an average throughput of 1000 quota-units per second.
+A client implementing a simple ratio between `RateLimit-Remaining` and
+`RateLimit-Reset` could infer an average throughput of
+1000 quota-units per second,
+while the average throughput exposed by the `quota-policy` was of
+10 quota-units per second.
+
+Complement large-`time-window` quota-policies with
+short-`time-window` ones mitigates those risks.
+
 If the service cannot handle such load, it should return
-either a lower ~RateLimit-Remaining` value
+either a lower `RateLimit-Remaining` value
 or an higher `RateLimit-Reset` value.
 
 
