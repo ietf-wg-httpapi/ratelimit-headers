@@ -450,8 +450,11 @@ without notifying the client, and thus consuming quota-units.
 
 As is the ordinary case for HTTP caching ({{?RFC7234}}), a response with
 RateLimit fields might be cached and re-used for subsequent requests.
-A cached RateLimit response, does not modify quota counters but could contain stale information.
-Clients interested in determining the freshness of the RateLimit fields could rely on fields such as `Date` and on the `window` value of a `quota-policy`.
+A cached `RateLimit` response does not modify quota counters but could
+contain stale information.
+Clients interested in determining the freshness of the `RateLimit` fields
+could rely on fields such as `Date`
+and on the `time-window` of a `quota-policy`.
 
 # Receiving RateLimit fields
 
@@ -471,7 +474,7 @@ A client MAY still probe the server if the `RateLimit-Reset` is considered too h
 
 The value of `RateLimit-Reset` is generated at response time:
 a client aware of a significant network latency MAY behave accordingly
-and use other information (eg. the `Date` response field, or otherwise gathered metrics) to better
+and use other information (eg. the `Date` response header field, or otherwise gathered metrics) to better
 estimate the `RateLimit-Reset` moment intended by the server.
 
 The `quota-policy` values and comments provided in `RateLimit-Limit` are informative
