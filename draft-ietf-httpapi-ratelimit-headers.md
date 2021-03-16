@@ -395,7 +395,13 @@ does not guarantee that the next request will be successful. Server metrics may 
 conditions like the one shown in the example from {{service-limit}}.
 
 A server MAY return `RateLimit` response fields independently
-of the response status code.  This includes throttled responses.
+of the response status code.
+This includes throttled responses.
+
+Servers should be careful in returning `RateLimit` fields in
+redirection responses (eg. 3xx status codes) because
+a low `RateLimit-Remaining` value could refrain the client
+from issuing requests.
 
 If a response contains both the `Retry-After` and the `RateLimit-Reset` fields,
 the value of `RateLimit-Reset` SHOULD reference the same point in time as
