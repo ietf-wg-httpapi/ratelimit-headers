@@ -332,10 +332,13 @@ This field MUST NOT occur multiple times
 and can be sent in a trailer section.
 
 Clients MUST NOT assume that a positive `RateLimit-Remaining` value is
-a guarantee of being served.
+a guarantee that further requests will be served.
 
-A low `RateLimit-Remaining` value is like a yellow traffic-light: the red light
-may arrive suddenly.
+A low `RateLimit-Remaining` value is like a yellow traffic-light
+for either the number of requests issued in the `time-window`
+or the request throughput:
+the red light may arrive suddenly
+(see {{providing-ratelimit-fields}}).
 
 One example of `RateLimit-Remaining` use is below.
 
@@ -483,6 +486,13 @@ and MAY be ignored.
 If a response contains both the `RateLimit-Reset` and `Retry-After` fields,
 `Retry-After` MUST take precedence and
 `RateLimit-Reset` MAY be ignored.
+
+This specification does not mandate a specific throttling behavior
+and implementers can adopt their preferred policies, including:
+
+- slowing down or preemptively backoff their request rate when
+  approaching quota limits;
+- consuming all the quota according to the exposed limits and then wait.
 
 # Examples
 
@@ -1077,14 +1087,7 @@ and Sanyam Dogra.
 8. Do a positive value of `RateLimit-Remaining` imply any service guarantee for my
    future requests to be served?
 
-   No. The returned values were used to decide whether to serve or not *the current request*
-   and do not imply any guarantee that future requests will be successful.
-
-   Instead they help to understand when future requests
-   will probably be throttled. A low value for `RateLimit-Remaining`
-   should be interpreted as a yellow traffic-light for either
-   the number of requests issued in the `time-window`
-   or the request throughput.
+   No. FAQ integrated in {{ratelimit-remaining-field}}.
 
 9. Is the quota-policy definition {{quota-policy}} too complex?
 
