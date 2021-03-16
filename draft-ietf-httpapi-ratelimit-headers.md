@@ -1020,7 +1020,10 @@ and Sanyam Dogra.
 3. Are those specs tied to RFC 6585?
 
    No. {{?RFC6585}} defines the `429` status code and we use it just as an example of a throttled request,
-   that could instead use even 403 or whatever status code.
+   that could instead use even `403` or whatever status code.
+   The goal of this specification is to standardize the name and semantic of three ratelimit fields
+   widely used on the internet. Stricter relations with status codes or error response payloads 
+   would impose behaviors to all the existing implementations making the adoption more complex.
 
 4. Why don't pass the throttling scope as a parameter?
 
