@@ -966,7 +966,6 @@ A client implementing a simple ratio between `RateLimit-Remaining` and
 1000 quota-units per second,
 while `RateLimit-Limit` conveys a quota-policy 
 with an average of 10 quota-units per second.
-
 If the service cannot handle such load, it should return
 either a lower `RateLimit-Remaining` value
 or an higher `RateLimit-Reset` value.
