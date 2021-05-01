@@ -1178,7 +1178,7 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     Could it be used by a client to determine the request rate?
 
     A non-informative `w` parameter might be fine in an environment
-    where client and servers are tightly coupled. Conveying policies
+    where clients and servers are tightly coupled. Conveying policies
     with this detail on a large scale would be very complex and implementations
     would be likely not interoperable. We thus decided to leave `w` as 
     an informational parameter and only rely on `RateLimit-Limit`,
