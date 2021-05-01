@@ -148,7 +148,7 @@ The goals of this proposal are:
    1. Standardizing the names and semantics of rate-limit headers
       to ease their enforcement and adoption;
 
-   2. Improve resiliency of HTTP infrastructures
+   2. Improve resiliency of HTTP infrastructure by
       providing clients with information useful
       to throttle their requests and
       prevent 4xx or 5xx responses;
