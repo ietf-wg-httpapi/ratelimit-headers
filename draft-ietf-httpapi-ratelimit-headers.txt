@@ -384,8 +384,8 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
       100;w=60
 
    The definition of a quota-policy does not imply any specific
-   distribution of quota-units over time.  Such non-standard details can
-   be conveyed in the "quota-comments".
+   distribution of quota-units over time.  Such service specific details
+   can be conveyed in the "quota-comments".
 
 
 
