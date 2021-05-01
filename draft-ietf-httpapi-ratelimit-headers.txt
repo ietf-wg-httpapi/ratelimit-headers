@@ -255,13 +255,16 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    The goals of this proposal are:
 
-   1.  Standardizing the names and semantic of rate-limit headers;
+   1.  Standardizing the names and semantics of rate-limit headers to
+       ease their enforcement and adoption;
 
-   2.  Improve resiliency of HTTP infrastructures simplifying the
-       enforcement and the adoption of rate-limit headers;
+   2.  Improve resiliency of HTTP infrastructure by providing clients
+       with information useful to throttle their requests and prevent
+       4xx or 5xx responses;
 
-   3.  Simplify API documentation avoiding expliciting rate-limit fields
-       semantic in documentation.
+   3.  Simplify API documentation by eliminating the need to include
+       detailed quota limits and related header fields in API
+       documentation.
 
    The goals do not include:
 
@@ -272,9 +275,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
       scope, that may be the given resource-target, its parent path or
       the whole Origin (see Section 7 of [RFC6454]).
 
-   Response status code:  The rate-limit fields may be returned in both
-
-
 
 
 Polli & Martinez         Expires 2 November 2021                [Page 5]
@@ -282,6 +282,7 @@ Polli & Martinez         Expires 2 November 2021                [Page 5]
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
+   Response status code:  The rate-limit fields may be returned in both
       Successful and non Successful responses.  This specification does
       not cover whether non Successful responses count on quota usage.
 
@@ -329,7 +330,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    requests that the server is willing to accept from one or more
    clients on a given basis (originating IP, authenticated user,
    geographical, ..) during a "time-window" as defined in Section 2.1.
-
 
 
 
