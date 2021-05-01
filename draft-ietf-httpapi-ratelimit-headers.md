@@ -417,6 +417,19 @@ moment.
 Nonetheless servers MAY decide to send the `RateLimit` fields
 in a trailer section.
 
+## Performance considerations
+
+Servers are not required to return `RateLimit` fields
+in every response,
+and clients need to take this into account.
+For example, an implementer concerned with performance might
+provide `RateLimit` fields only when a given quota is going
+to expire.
+
+Implementers concerned with response fields' size, might take into account
+their ratio with respect to the payload data, or use header-compression
+http features such as {{?HPACK=RFC7541}}.
+
 # Intermediaries {#intermediaries}
 
 This section documents the considerations advised in
@@ -467,6 +480,10 @@ A client MUST validate the values received in the `RateLimit` fields before usin
 and check if there are significant discrepancies
 with the expected ones.
 This includes a `RateLimit-Reset` moment too far in the future or a `service-limit` too high.
+
+A client receiving `RateLimit` fields MUST NOT assume that subsequent
+responses contain the same `RateLimit` fields, or any `RateLimit` fields
+at all.
 
 Malformed `RateLimit` fields MAY be ignored.
 
