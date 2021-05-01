@@ -412,7 +412,7 @@ with the lower `RateLimit-Remaining` values.
 A service returning `RateLimit` fields MUST NOT convey values
 exposing an unwanted volume of requests
 and SHOULD implement mechanisms to cap the ratio between `RateLimit-Remaining`
-`RateLimit-Reset` (see {{sec-resource-exhaustion}});
+and `RateLimit-Reset` (see {{sec-resource-exhaustion}});
 this is especially important when quota-policies use a large `time-window`.
 
 Under certain conditions, a server MAY artificially lower `RateLimit` field values between subsequent requests,
