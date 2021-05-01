@@ -5,8 +5,8 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 1 November 2021                                         Red Hat
-                                                           30 April 2021
+Expires: 2 November 2021                                         Red Hat
+                                                              1 May 2021
 
 
                     RateLimit Header Fields for HTTP
@@ -47,15 +47,15 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 November 2021.
+   This Internet-Draft will expire on 2 November 2021.
 
 
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 1]
+Polli & Martinez         Expires 2 November 2021                [Page 1]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 Copyright Notice
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 2]
+Polli & Martinez         Expires 2 November 2021                [Page 2]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
        8.3.2.  Use with multiple windows . . . . . . . . . . . . . .  19
@@ -165,9 +165,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 3]
+Polli & Martinez         Expires 2 November 2021                [Page 3]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    When quota is exceeded, servers usually do not serve the request
@@ -221,9 +221,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 4]
+Polli & Martinez         Expires 2 November 2021                [Page 4]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    User Agents interfacing with different servers may thus need to
@@ -277,9 +277,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 5]
+Polli & Martinez         Expires 2 November 2021                [Page 5]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
       Successful and non Successful responses.  This specification does
@@ -333,9 +333,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 6]
+Polli & Martinez         Expires 2 November 2021                [Page 6]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    The "service-limit" is expressed in "quota-units" and has the
@@ -383,15 +383,15 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
       100;w=60
 
-   The definition of a quota-policy do not imply any specific
+   The definition of a quota-policy does not imply any specific
    distribution of quota-units over time.  Such non-standard details can
    be conveyed in the "quota-comments".
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 7]
+Polli & Martinez         Expires 2 November 2021                [Page 7]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    Two examples of providing further details via custom parameters in
@@ -445,9 +445,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 8]
+Polli & Martinez         Expires 2 November 2021                [Page 8]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
       RateLimit-Limit: 10, 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
@@ -501,9 +501,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021                [Page 9]
+Polli & Martinez         Expires 2 November 2021                [Page 9]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    This field MUST NOT occur multiple times and can be sent in a trailer
@@ -557,9 +557,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 10]
+Polli & Martinez         Expires 2 November 2021               [Page 10]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    Under certain conditions, a server MAY artificially lower "RateLimit"
@@ -613,9 +613,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 11]
+Polli & Martinez         Expires 2 November 2021               [Page 11]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 7.  Receiving RateLimit fields
@@ -669,9 +669,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 12]
+Polli & Martinez         Expires 2 November 2021               [Page 12]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    HTTP/1.1 200 Ok
@@ -725,9 +725,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 13]
+Polli & Martinez         Expires 2 November 2021               [Page 13]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 8.1.3.  Use for limiting concurrency
@@ -781,9 +781,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 14]
+Polli & Martinez         Expires 2 November 2021               [Page 14]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 8.1.4.  Use in throttled responses
@@ -837,9 +837,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 15]
+Polli & Martinez         Expires 2 November 2021               [Page 15]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    HTTP/1.1 200 Ok
@@ -893,9 +893,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 16]
+Polli & Martinez         Expires 2 November 2021               [Page 16]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    The server advertises a smaller window with a lower limit to slow
@@ -949,9 +949,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 17]
+Polli & Martinez         Expires 2 November 2021               [Page 17]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    HTTP/1.1 429 Too Many Requests
@@ -1005,9 +1005,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 18]
+Polli & Martinez         Expires 2 November 2021               [Page 18]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    HTTP/1.1 200 Ok
@@ -1061,9 +1061,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 19]
+Polli & Martinez         Expires 2 November 2021               [Page 19]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 9.  Security Considerations
@@ -1117,9 +1117,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 20]
+Polli & Martinez         Expires 2 November 2021               [Page 20]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 9.5.  Resource exhaustion
@@ -1173,9 +1173,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 21]
+Polli & Martinez         Expires 2 November 2021               [Page 21]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    *  passed by a misconfigured server;
@@ -1229,9 +1229,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 22]
+Polli & Martinez         Expires 2 November 2021               [Page 22]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -1285,9 +1285,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 23]
+Polli & Martinez         Expires 2 November 2021               [Page 23]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    [STATUS429]
@@ -1341,9 +1341,9 @@ Appendix B.  FAQ
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 24]
+Polli & Martinez         Expires 2 November 2021               [Page 24]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
        Using delay-seconds aligns with "Retry-After", which is returned
@@ -1397,9 +1397,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 25]
+Polli & Martinez         Expires 2 November 2021               [Page 25]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    8.  Do a positive value of "RateLimit-Remaining" imply any service
@@ -1453,9 +1453,9 @@ Internet-Draft      RateLimit Header Fields for HTTP          April 2021
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 26]
+Polli & Martinez         Expires 2 November 2021               [Page 26]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
        see Section 9.2) &#65532; and complicate client compliance;
@@ -1509,9 +1509,9 @@ RateLimit fields currently used on the web
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 27]
+Polli & Martinez         Expires 2 November 2021               [Page 27]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    *  "x-ratelimit-remaining-minute", "x-ratelimit-remaining-hour", "x-
@@ -1565,9 +1565,9 @@ Since draft-ietf-httpapi-ratelimit-headers-00
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 28]
+Polli & Martinez         Expires 2 November 2021               [Page 28]
 
-Internet-Draft      RateLimit Header Fields for HTTP          April 2021
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    *  Use I-D.httpbis-semantics, which includes referencing "delay-
@@ -1621,4 +1621,4 @@ Authors' Addresses
 
 
 
-Polli & Martinez         Expires 1 November 2021               [Page 29]
+Polli & Martinez         Expires 2 November 2021               [Page 29]
