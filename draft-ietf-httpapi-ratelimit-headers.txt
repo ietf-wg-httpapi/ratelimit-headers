@@ -551,9 +551,9 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    A service returning "RateLimit" fields MUST NOT convey values
    exposing an unwanted volume of requests and SHOULD implement
-   mechanisms to cap the ratio between "RateLimit-Remaining" "RateLimit-
-   Reset" (see Section 9.5); this is especially important when quota-
-   policies use a large "time-window".
+   mechanisms to cap the ratio between "RateLimit-Remaining" and
+   "RateLimit-Reset" (see Section 9.5); this is especially important
+   when quota-policies use a large "time-window".
 
 
 
