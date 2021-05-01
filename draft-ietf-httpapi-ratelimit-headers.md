@@ -259,7 +259,7 @@ An example policy of 100 quota-units per minute.
    100;w=60
 ~~~
 
-The definition of a quota-policy do not imply any specific
+The definition of a quota-policy does not imply any specific
 distribution of quota-units over time.
 Such non-standard details can be conveyed in the `quota-comments`.
 
