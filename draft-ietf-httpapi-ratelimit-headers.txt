@@ -1481,9 +1481,9 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
        client to determine the request rate?
 
        A non-informative "w" parameter might be fine in an environment
-       where client and servers are tightly coupled.  Conveying policies
-       with this detail on a large scale would be very complex and
-       implementations would be likely not interoperable.  We thus
+       where clients and servers are tightly coupled.  Conveying
+       policies with this detail on a large scale would be very complex
+       and implementations would be likely not interoperable.  We thus
        decided to leave "w" as an informational parameter and only rely
        on "RateLimit-Limit", "RateLimit-Remaining" and "RateLimit-Reset"
        for defining the throttling behavior.
