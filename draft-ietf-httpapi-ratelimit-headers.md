@@ -261,7 +261,7 @@ An example policy of 100 quota-units per minute.
 
 The definition of a quota-policy does not imply any specific
 distribution of quota-units over time.
-Such non-standard details can be conveyed in the `quota-comments`.
+Such service specific details can be conveyed in the `quota-comments`.
 
 Two examples of providing further details via custom parameters
 in `quota-comments`.
