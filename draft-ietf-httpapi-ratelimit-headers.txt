@@ -258,9 +258,9 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    1.  Standardizing the names and semantics of rate-limit headers to
        ease their enforcement and adoption;
 
-   2.  Improve resiliency of HTTP infrastructures providing clients with
-       information useful to throttle their requests and prevent 4xx or
-       5xx responses;
+   2.  Improve resiliency of HTTP infrastructure by providing clients
+       with information useful to throttle their requests and prevent
+       4xx or 5xx responses;
 
    3.  Simplify API documentation by eliminating the need to include
        detailed quota limits and related header fields in API
