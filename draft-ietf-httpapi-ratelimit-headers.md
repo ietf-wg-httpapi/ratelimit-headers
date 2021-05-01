@@ -945,7 +945,7 @@ and your server returns the `RateLimit-Reset` accordingly
 
 there's a high probability that all clients will show up at `18:00:00`.
 
-This could be mitigated adding some jitter to the field-value.
+This could be mitigated by adding some jitter to the field-value.
 
 Resource exhaustion issues can be associated with quota policies
 using a large `time-window`, because a user agent by chance or purpose might
