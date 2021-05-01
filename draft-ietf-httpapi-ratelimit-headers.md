@@ -400,7 +400,7 @@ This includes throttled responses.
 
 Servers should be careful in returning `RateLimit` fields in
 redirection responses (eg. 3xx status codes) because
-a low `RateLimit-Remaining` value could refrain the client
+a low `RateLimit-Remaining` value could limit the client
 from issuing requests.
 
 If a response contains both the `Retry-After` and the `RateLimit-Reset` fields,
