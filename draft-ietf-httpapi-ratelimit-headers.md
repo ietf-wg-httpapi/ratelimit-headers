@@ -402,7 +402,25 @@ does not guarantee that the next request will be successful. Server metrics may 
 conditions like the one shown in the example from {{service-limit}}.
 
 A server MAY return `RateLimit` response fields independently
-of the response status code.  This includes throttled responses.
+of the response status code.
+This includes throttled responses.
+
+Servers should be careful in returning `RateLimit` fields in
+redirection responses (eg. 3xx status codes) because
+a low `RateLimit-Remaining` value could limit the client
+from issuing requests.
+For example, given the rate limiting fields below,
+a client could decide to wait 10 seconds before following
+the `Location` header, because  `RateLimit-Remaining` is 0.
+
+~~~ http-message
+HTTP/1.1 301 Moved Permanently
+Location: /foo/123
+RateLimit-Remaining: 0
+RateLimit-Limit: 10
+RateLimit-Reset: 10
+
+~~~
 
 If a response contains both the `Retry-After` and the `RateLimit-Reset` fields,
 the value of `RateLimit-Reset` SHOULD reference the same point in time as
