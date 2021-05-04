@@ -170,7 +170,7 @@ The goals do not include:
 
   Response status code:
   : The rate-limit fields may be returned in both
-    Successful and non Successful responses.
+    successful (see Section 15.3 of {{SEMANTICS}}) and non-successful responses.
     This specification does not cover whether non Successful
     responses count on quota usage,
     nor it mandates any correlation between the RateLimit values
