@@ -1263,11 +1263,9 @@ Origin (see Section 7 of <span>[<a href="#RFC6454" class="xref">RFC6454</a>]</sp
 Response status code:  </dt>
           <dd style="margin-left: 1.5em" id="section-1.4-4.6">
             <p id="section-1.4-4.6.1">The rate-limit fields may be returned in both
-successful (see Section 15.3 of <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>) and non-successful responses.
+Successful and non Successful responses.
 This specification does not cover whether non Successful
-responses count on quota usage,
-nor it mandates any correlation between the RateLimit values
-and the returned status code.<a href="#section-1.4-4.6.1" class="pilcrow">¶</a></p>
+responses count on quota usage.<a href="#section-1.4-4.6.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-1.4-4.7">
@@ -1387,13 +1385,16 @@ quota-comment tokens MUST NOT occur multiple times within the same quota-policy.
    100;w=60
 </pre><a href="#section-2.3-5" class="pilcrow">¶</a>
 </div>
-<p id="section-2.3-6">Two examples of providing further details via custom parameters
-in <code>quota-comments</code>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
-<div id="section-2.3-7">
+<p id="section-2.3-6">The definition of a quota-policy does not imply any specific
+distribution of quota-units over time.
+Such service specific details can be conveyed in the <code>quota-comments</code>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-7">Two examples of providing further details via custom parameters
+in <code>quota-comments</code>.<a href="#section-2.3-7" class="pilcrow">¶</a></p>
+<div id="section-2.3-8">
 <pre class="sourcecode lang-example">
    100;w=60;comment="fixed window"
    12;w=1;burst=1000;policy="leaky bucket"
-</pre><a href="#section-2.3-7" class="pilcrow">¶</a>
+</pre><a href="#section-2.3-8" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -1546,16 +1547,14 @@ conditions like the one shown in the example from <a href="#service-limit" class
 <p id="section-4-6">A server MAY return <code>RateLimit</code> response fields independently
 of the response status code.
 This includes throttled responses.<a href="#section-4-6" class="pilcrow">¶</a></p>
-<p id="section-4-7">This document does not mandate any correlation between the <code>RateLimit</code>
-values and the returned status code.<a href="#section-4-7" class="pilcrow">¶</a></p>
-<p id="section-4-8">Servers should be careful in returning <code>RateLimit</code> fields in
+<p id="section-4-7">Servers should be careful in returning <code>RateLimit</code> fields in
 redirection responses (eg. 3xx status codes) because
 a low <code>RateLimit-Remaining</code> value could limit the client
 from issuing requests.
 For example, given the rate limiting fields below,
 a client could decide to wait 10 seconds before following
-the <code>Location</code> header, because  <code>RateLimit-Remaining</code> is 0.<a href="#section-4-8" class="pilcrow">¶</a></p>
-<div id="section-4-9">
+the <code>Location</code> header, because  <code>RateLimit-Remaining</code> is 0.<a href="#section-4-7" class="pilcrow">¶</a></p>
+<div id="section-4-8">
 <pre class="sourcecode lang-http-message">
 HTTP/1.1 301 Moved Permanently
 Location: /foo/123
@@ -1563,14 +1562,19 @@ RateLimit-Remaining: 0
 RateLimit-Limit: 10
 RateLimit-Reset: 10
 
-</pre><a href="#section-4-9" class="pilcrow">¶</a>
+</pre><a href="#section-4-8" class="pilcrow">¶</a>
 </div>
-<p id="section-4-10">If a response contains both the <code>Retry-After</code> and the <code>RateLimit-Reset</code> fields,
+<p id="section-4-9">If a response contains both the <code>Retry-After</code> and the <code>RateLimit-Reset</code> fields,
 the value of <code>RateLimit-Reset</code> SHOULD reference the same point in time as
-<code>Retry-After</code>.<a href="#section-4-10" class="pilcrow">¶</a></p>
-<p id="section-4-11">When using a policy involving more than one <code>time-window</code>,
+<code>Retry-After</code>.<a href="#section-4-9" class="pilcrow">¶</a></p>
+<p id="section-4-10">When using a policy involving more than one <code>time-window</code>,
 the server MUST reply with the <code>RateLimit</code> fields related to the window
-with the lower <code>RateLimit-Remaining</code> values.<a href="#section-4-11" class="pilcrow">¶</a></p>
+with the lower <code>RateLimit-Remaining</code> values.<a href="#section-4-10" class="pilcrow">¶</a></p>
+<p id="section-4-11">A service returning <code>RateLimit</code> fields MUST NOT convey values
+exposing an unwanted volume of requests
+and SHOULD implement mechanisms to cap the ratio between <code>RateLimit-Remaining</code>
+and <code>RateLimit-Reset</code> (see <a href="#sec-resource-exhaustion" class="xref">Section 9.5</a>);
+this is especially important when quota-policies use a large <code>time-window</code>.<a href="#section-4-11" class="pilcrow">¶</a></p>
 <p id="section-4-12">Under certain conditions, a server MAY artificially lower <code>RateLimit</code> field values between subsequent requests,
 eg. to respond to Denial of Service attacks or in case of resource saturation.<a href="#section-4-12" class="pilcrow">¶</a></p>
 <p id="section-4-13">Servers usually establish whether the request is in-quota before creating a
@@ -1717,33 +1721,6 @@ Ratelimit-Reset: 50
 
 {"hello": "world"}
 </pre><a href="#section-8.1.1-5" class="pilcrow">¶</a>
-</div>
-<p id="section-8.1.1-6">Since the field values are not necessarily correlated with
-the response status code,
-a subsequent request is not required to fail.
-The example below shows that the server decided to serve the
-request even if <code>RateLimit-Remaining</code> is 0.
-Another server, or the same server under other load conditions,
-could have decided to throttle the request instead.<a href="#section-8.1.1-6" class="pilcrow">¶</a></p>
-<p id="section-8.1.1-7">Request:<a href="#section-8.1.1-7" class="pilcrow">¶</a></p>
-<div id="section-8.1.1-8">
-<pre class="sourcecode lang-http-message">
-GET /items/456 HTTP/1.1
-Host: api.example
-
-</pre><a href="#section-8.1.1-8" class="pilcrow">¶</a>
-</div>
-<p id="section-8.1.1-9">Response:<a href="#section-8.1.1-9" class="pilcrow">¶</a></p>
-<div id="section-8.1.1-10">
-<pre class="sourcecode lang-http-message">
-HTTP/1.1 200 Ok
-Content-Type: application/json
-RateLimit-Limit: 100
-Ratelimit-Remaining: 0
-Ratelimit-Reset: 48
-
-{"still": "successful"}
-</pre><a href="#section-8.1.1-10" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2221,7 +2198,30 @@ and your server returns the <code>RateLimit-Reset</code> accordingly<a href="#se
 </pre><a href="#section-9.5-4" class="pilcrow">¶</a>
 </div>
 <p id="section-9.5-5">there's a high probability that all clients will show up at <code>18:00:00</code>.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
-<p id="section-9.5-6">This could be mitigated adding some jitter to the field-value.<a href="#section-9.5-6" class="pilcrow">¶</a></p>
+<p id="section-9.5-6">This could be mitigated by adding some jitter to the field-value.<a href="#section-9.5-6" class="pilcrow">¶</a></p>
+<p id="section-9.5-7">Resource exhaustion issues can be associated with quota policies
+using a large <code>time-window</code>, because a user agent by chance or purpose might
+consume most of its quota-units in a significantly shorter interval.<a href="#section-9.5-7" class="pilcrow">¶</a></p>
+<p id="section-9.5-8">This behavior can be even triggered by the provided <code>RateLimit</code> fields.
+The following example describes a service
+with an unconsumed quota-policy of 10000 quota-units per 1000 seconds.<a href="#section-9.5-8" class="pilcrow">¶</a></p>
+<div id="section-9.5-9">
+<pre class="sourcecode lang-example">
+RateLimit-Limit: 10000, 10000;w=1000
+RateLimit-Remaining: 10000
+RateLimit-Reset: 10
+</pre><a href="#section-9.5-9" class="pilcrow">¶</a>
+</div>
+<p id="section-9.5-10">A client implementing a simple ratio between <code>RateLimit-Remaining</code> and
+<code>RateLimit-Reset</code> could infer an average throughput of
+1000 quota-units per second,
+while <code>RateLimit-Limit</code> conveys a quota-policy 
+with an average of 10 quota-units per second.
+If the service cannot handle such load, it should return
+either a lower <code>RateLimit-Remaining</code> value
+or an higher <code>RateLimit-Reset</code> value.
+Moreover, complementing large <code>time-window</code> quota-policies with
+a short <code>time-window</code> one mitigates those risks.<a href="#section-9.5-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="denial-of-service">
@@ -2521,6 +2521,18 @@ There are reasonable use cases for intermediaries mangling RateLimit fields thou
 e.g. when they enforce stricter quota-policies,
 or when they are an active component of the service.
 In those case we will consider them as part of the originating infrastructure.<a href="#section-appendix.b-10.2.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-10.3">
+          <p id="section-appendix.b-10.3.1">Why the <code>w</code> parameter is just informative?
+Could it be used by a client to determine the request rate?<a href="#section-appendix.b-10.3.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-10.3.2">
+A non-informative <code>w</code> parameter might be fine in an environment
+where clients and servers are tightly coupled. Conveying policies
+with this detail on a large scale would be very complex and implementations
+would be likely not interoperable. We thus decided to leave <code>w</code> as 
+an informational parameter and only rely on <code>RateLimit-Limit</code>,
+<code>RateLimit-Remaining</code> and <code>RateLimit-Reset</code> for defining the throttling
+behavior.<a href="#section-appendix.b-10.3.2" class="pilcrow">¶</a></p>
 </li>
       </ol>
 </section>
