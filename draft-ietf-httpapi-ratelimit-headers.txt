@@ -83,7 +83,7 @@ Table of Contents
      1.5.  Notational Conventions  . . . . . . . . . . . . . . . . .   6
    2.  Expressing rate-limit policies  . . . . . . . . . . . . . . .   6
      2.1.  Time window . . . . . . . . . . . . . . . . . . . . . . .   6
-     2.2.  Service limit . . . . . . . . . . . . . . . . . . . . . .   6
+     2.2.  Service limit . . . . . . . . . . . . . . . . . . . . . .   7
      2.3.  Quota policy  . . . . . . . . . . . . . . . . . . . . . .   7
    3.  Header Specifications . . . . . . . . . . . . . . . . . . . .   8
      3.1.  RateLimit-Limit . . . . . . . . . . . . . . . . . . . . .   8
@@ -91,21 +91,21 @@ Table of Contents
      3.3.  RateLimit-Reset . . . . . . . . . . . . . . . . . . . . .   9
    4.  Providing RateLimit fields  . . . . . . . . . . . . . . . . .  10
      4.1.  Performance considerations  . . . . . . . . . . . . . . .  11
-   5.  Intermediaries  . . . . . . . . . . . . . . . . . . . . . . .  11
+   5.  Intermediaries  . . . . . . . . . . . . . . . . . . . . . . .  12
    6.  Caching . . . . . . . . . . . . . . . . . . . . . . . . . . .  12
    7.  Receiving RateLimit fields  . . . . . . . . . . . . . . . . .  12
    8.  Examples  . . . . . . . . . . . . . . . . . . . . . . . . . .  13
      8.1.  Unparameterized responses . . . . . . . . . . . . . . . .  13
        8.1.1.  Throttling information in responses . . . . . . . . .  13
        8.1.2.  Use in conjunction with custom fields . . . . . . . .  14
-       8.1.3.  Use for limiting concurrency  . . . . . . . . . . . .  14
-       8.1.4.  Use in throttled responses  . . . . . . . . . . . . .  15
-     8.2.  Parameterized responses . . . . . . . . . . . . . . . . .  16
-       8.2.1.  Throttling window specified via parameter . . . . . .  16
-       8.2.2.  Dynamic limits with parameterized windows . . . . . .  16
-       8.2.3.  Dynamic limits for pushing back and slowing down  . .  17
+       8.1.3.  Use for limiting concurrency  . . . . . . . . . . . .  15
+       8.1.4.  Use in throttled responses  . . . . . . . . . . . . .  16
+     8.2.  Parameterized responses . . . . . . . . . . . . . . . . .  17
+       8.2.1.  Throttling window specified via parameter . . . . . .  17
+       8.2.2.  Dynamic limits with parameterized windows . . . . . .  17
+       8.2.3.  Dynamic limits for pushing back and slowing down  . .  18
      8.3.  Dynamic limits for pushing back with Retry-After and slow
-           down  . . . . . . . . . . . . . . . . . . . . . . . . . .  18
+           down  . . . . . . . . . . . . . . . . . . . . . . . . . .  19
 
 
 
@@ -114,29 +114,29 @@ Polli & Martinez         Expires 5 November 2021                [Page 2]
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
-       8.3.1.  Missing Remaining information . . . . . . . . . . . .  19
-       8.3.2.  Use with multiple windows . . . . . . . . . . . . . .  19
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  20
+       8.3.1.  Missing Remaining information . . . . . . . . . . . .  20
+       8.3.2.  Use with multiple windows . . . . . . . . . . . . . .  20
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  21
      9.1.  Throttling does not prevent clients from issuing
-           requests  . . . . . . . . . . . . . . . . . . . . . . . .  20
-     9.2.  Information disclosure  . . . . . . . . . . . . . . . . .  20
-     9.3.  Remaining quota-units are not granted requests  . . . . .  21
-     9.4.  Reliability of RateLimit-Reset  . . . . . . . . . . . . .  21
-     9.5.  Resource exhaustion . . . . . . . . . . . . . . . . . . .  21
-     9.6.  Denial of Service . . . . . . . . . . . . . . . . . . . .  22
-   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  22
-     10.1.  RateLimit-Limit Field Registration . . . . . . . . . . .  22
-     10.2.  RateLimit-Remaining Field Registration . . . . . . . . .  23
-     10.3.  RateLimit-Reset Field Registration . . . . . . . . . . .  23
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  23
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  23
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  24
-   Appendix A.  Acknowledgements . . . . . . . . . . . . . . . . . .  24
-   Appendix B.  FAQ  . . . . . . . . . . . . . . . . . . . . . . . .  24
-   RateLimit fields currently used on the web  . . . . . . . . . . .  28
-   Changes . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  29
-     Since draft-ietf-httpapi-ratelimit-headers-00 . . . . . . . . .  29
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  29
+           requests  . . . . . . . . . . . . . . . . . . . . . . . .  21
+     9.2.  Information disclosure  . . . . . . . . . . . . . . . . .  21
+     9.3.  Remaining quota-units are not granted requests  . . . . .  22
+     9.4.  Reliability of RateLimit-Reset  . . . . . . . . . . . . .  22
+     9.5.  Resource exhaustion . . . . . . . . . . . . . . . . . . .  22
+     9.6.  Denial of Service . . . . . . . . . . . . . . . . . . . .  23
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  23
+     10.1.  RateLimit-Limit Field Registration . . . . . . . . . . .  23
+     10.2.  RateLimit-Remaining Field Registration . . . . . . . . .  24
+     10.3.  RateLimit-Reset Field Registration . . . . . . . . . . .  24
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  24
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  24
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  25
+   Appendix A.  Acknowledgements . . . . . . . . . . . . . . . . . .  25
+   Appendix B.  FAQ  . . . . . . . . . . . . . . . . . . . . . . . .  25
+   RateLimit fields currently used on the web  . . . . . . . . . . .  29
+   Changes . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  30
+     Since draft-ietf-httpapi-ratelimit-headers-00 . . . . . . . . .  30
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  30
 
 1.  Introduction
 
@@ -283,8 +283,11 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
    Response status code:  The rate-limit fields may be returned in both
-      Successful and non Successful responses.  This specification does
-      not cover whether non Successful responses count on quota usage.
+      successful (see Section 15.3 of [SEMANTICS]) and non-successful
+      responses.  This specification does not cover whether non
+      Successful responses count on quota usage, nor it mandates any
+      correlation between the RateLimit values and the returned status
+      code.
 
    Throttling policy:  This specification does not mandate a specific
       throttling policy.  The values published in the fields, including
@@ -324,12 +327,9 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    Subsecond precision is not supported.
 
-2.2.  Service limit
 
-   The service-limit is a value associated to the maximum number of
-   requests that the server is willing to accept from one or more
-   clients on a given basis (originating IP, authenticated user,
-   geographical, ..) during a "time-window" as defined in Section 2.1.
+
+
 
 
 
@@ -337,6 +337,13 @@ Polli & Martinez         Expires 5 November 2021                [Page 6]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
+
+2.2.  Service limit
+
+   The service-limit is a value associated to the maximum number of
+   requests that the server is willing to accept from one or more
+   clients on a given basis (originating IP, authenticated user,
+   geographical, ..) during a "time-window" as defined in Section 2.1.
 
    The "service-limit" is expressed in "quota-units" and has the
    following syntax:
@@ -379,13 +386,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    quota-policy parameters like "w" and quota-comment tokens MUST NOT
    occur multiple times within the same quota-policy.
 
-   An example policy of 100 quota-units per minute.
-
-      100;w=60
-
-   The definition of a quota-policy does not imply any specific
-   distribution of quota-units over time.  Such service specific details
-   can be conveyed in the "quota-comments".
 
 
 
@@ -393,6 +393,14 @@ Polli & Martinez         Expires 5 November 2021                [Page 7]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
+
+   An example policy of 100 quota-units per minute.
+
+      100;w=60
+
+   The definition of a quota-policy does not imply any specific
+   distribution of quota-units over time.  Such service specific details
+   can be conveyed in the "quota-comments".
 
    Two examples of providing further details via custom parameters in
    "quota-comments".
@@ -433,14 +441,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    If the "expiring-limit" is not associated to a "time-window", the
    "time-window" MUST either be:
 
-   *  inferred by the value of "RateLimit-Reset" at the moment of the
-      reset, or
-
-   *  communicated out-of-band (eg. in the documentation).
-
-   Policies using multiple quota limits MAY be returned using multiple
-   "quota-policy" items, like shown in the following two examples:
-
 
 
 
@@ -449,6 +449,14 @@ Polli & Martinez         Expires 5 November 2021                [Page 8]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
+
+   *  inferred by the value of "RateLimit-Reset" at the moment of the
+      reset, or
+
+   *  communicated out-of-band (eg. in the documentation).
+
+   Policies using multiple quota limits MAY be returned using multiple
+   "quota-policy" items, like shown in the following two examples:
 
       RateLimit-Limit: 10, 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
       RateLimit-Limit: 10, 10;w=1;burst=1000, 1000;w=3600
@@ -490,6 +498,14 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
       RateLimit-Reset = delay-seconds
 
+
+
+
+Polli & Martinez         Expires 5 November 2021                [Page 9]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
+
    The delay-seconds format is used because:
 
    *  it does not rely on clock synchronization and is resilient to
@@ -498,13 +514,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    *  it mitigates the risk related to thundering herd when too many
       clients are serviced with the same timestamp.
-
-
-
-Polli & Martinez         Expires 5 November 2021                [Page 9]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
-
 
    This field MUST NOT occur multiple times and can be sent in a trailer
    section.
@@ -541,6 +550,18 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    A server MAY return "RateLimit" response fields independently of the
    response status code.  This includes throttled responses.
 
+   This document does not mandate any correlation between the
+   "RateLimit" values and the returned status code.
+
+
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 10]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
+
    Servers should be careful in returning "RateLimit" fields in
    redirection responses (eg. 3xx status codes) because a low
    "RateLimit-Remaining" value could limit the client from issuing
@@ -553,14 +574,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    RateLimit-Remaining: 0
    RateLimit-Limit: 10
    RateLimit-Reset: 10
-
-
-
-
-Polli & Martinez         Expires 5 November 2021               [Page 10]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
-
 
    If a response contains both the "Retry-After" and the "RateLimit-
    Reset" fields, the value of "RateLimit-Reset" SHOULD reference the
@@ -596,6 +609,15 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    account their ratio with respect to the payload data, or use header-
    compression http features such as [HPACK].
 
+
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 11]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
+
 5.  Intermediaries
 
    This section documents the considerations advised in Section 16.3.3
@@ -609,14 +631,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    An intermediary MAY alter the RateLimit fields in such a way as to
    communicate a more restrictive quota-policy when:
-
-
-
-
-Polli & Martinez         Expires 5 November 2021               [Page 11]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
-
 
    *  it is aware of the quota-unit semantic used by the Origin Server;
 
@@ -652,6 +666,14 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    with the expected ones.  This includes a "RateLimit-Reset" moment too
    far in the future or a "service-limit" too high.
 
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 12]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
+
    A client receiving "RateLimit" fields MUST NOT assume that subsequent
    responses contain the same "RateLimit" fields, or any "RateLimit"
    fields at all.
@@ -663,16 +685,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    A client MAY still probe the server if the "RateLimit-Reset" is
    considered too high.
-
-
-
-
-
-
-Polli & Martinez         Expires 5 November 2021               [Page 12]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
-
 
    The value of "RateLimit-Reset" is generated at response time: a
    client aware of a significant network latency MAY behave accordingly
@@ -711,6 +723,13 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    GET /items/123 HTTP/1.1
    Host: api.example
 
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 13]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
+
    Response:
 
    HTTP/1.1 200 Ok
@@ -721,14 +740,27 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    {"hello": "world"}
 
+   Since the field values are not necessarily correlated with the
+   response status code, a subsequent request is not required to fail.
+   The example below shows that the server decided to serve the request
+   even if "RateLimit-Remaining" is 0.  Another server, or the same
+   server under other load conditions, could have decided to throttle
+   the request instead.
 
+   Request:
 
+   GET /items/456 HTTP/1.1
+   Host: api.example
 
+   Response:
 
-Polli & Martinez         Expires 5 November 2021               [Page 13]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+   HTTP/1.1 200 Ok
+   Content-Type: application/json
+   RateLimit-Limit: 100
+   Ratelimit-Remaining: 0
+   Ratelimit-Reset: 48
 
+   {"still": "successful"}
 
 8.1.2.  Use in conjunction with custom fields
 
@@ -746,6 +778,13 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    The server then exposes the "RateLimit-*" fields to inform the client
    that:
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 14]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
 
    *  it has only 100 quota-units left;
 
@@ -778,14 +817,6 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    in case of resource exhaustion adapts the returned values reducing
    both "RateLimit-Limit" and "RateLimit-Remaining".
 
-
-
-
-Polli & Martinez         Expires 5 November 2021               [Page 14]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
-
-
    After 2 seconds the client consumed 40 quota-units
 
    Request:
@@ -802,6 +833,14 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    RateLimit-Reset: 58
 
    {"elapsed": 2, "issued": 40}
+
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 15]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
 
    At the subsequent request - due to resource exhaustion - the server
    advertises only "RateLimit-Remaining: 20".
@@ -834,18 +873,30 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
    Request:
 
-
-
-
-Polli & Martinez         Expires 5 November 2021               [Page 15]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
-
-
    GET /items/123 HTTP/1.1
    Host: api.example
 
    Response:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 16]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
 
    HTTP/1.1 429 Too Many Requests
    Content-Type: application/json
@@ -889,20 +940,19 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
    The policy conveyed by "RateLimit-Limit" states that the server
    accepts 100 quota-units per minute.
 
-
-
-
-
-Polli & Martinez         Expires 5 November 2021               [Page 16]
-
-Internet-Draft      RateLimit Header Fields for HTTP            May 2021
-
-
    To avoid resource exhaustion, the server artificially lowers the
    actual limits returned in the throttling headers.
 
    The "RateLimit-Remaining" then advertises only 9 quota-units for the
    next 50 seconds to slow down the client.
+
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 17]
+
+Internet-Draft      RateLimit Header Fields for HTTP            May 2021
+
 
    Note that the server could have lowered even the other values in
    "RateLimit-Limit": this specification does not mandate any relation
@@ -949,7 +999,13 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 17]
+
+
+
+
+
+
+Polli & Martinez         Expires 5 November 2021               [Page 18]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1005,7 +1061,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 18]
+Polli & Martinez         Expires 5 November 2021               [Page 19]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1061,7 +1117,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 19]
+Polli & Martinez         Expires 5 November 2021               [Page 20]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1117,7 +1173,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 20]
+Polli & Martinez         Expires 5 November 2021               [Page 21]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1173,7 +1229,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 21]
+Polli & Martinez         Expires 5 November 2021               [Page 22]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1229,7 +1285,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 22]
+Polli & Martinez         Expires 5 November 2021               [Page 23]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1285,7 +1341,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 23]
+Polli & Martinez         Expires 5 November 2021               [Page 24]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1341,7 +1397,7 @@ Appendix B.  FAQ
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 24]
+Polli & Martinez         Expires 5 November 2021               [Page 25]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1397,7 +1453,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 25]
+Polli & Martinez         Expires 5 November 2021               [Page 26]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1453,7 +1509,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 26]
+Polli & Martinez         Expires 5 November 2021               [Page 27]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1509,7 +1565,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 27]
+Polli & Martinez         Expires 5 November 2021               [Page 28]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1565,7 +1621,7 @@ RateLimit fields currently used on the web
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 28]
+Polli & Martinez         Expires 5 November 2021               [Page 29]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1621,4 +1677,4 @@ Authors' Addresses
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 29]
+Polli & Martinez         Expires 5 November 2021               [Page 30]
