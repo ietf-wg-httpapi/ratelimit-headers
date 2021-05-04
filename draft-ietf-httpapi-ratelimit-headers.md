@@ -170,9 +170,11 @@ The goals do not include:
 
   Response status code:
   : The rate-limit fields may be returned in both
-    Successful and non Successful responses.
+    successful (see Section 15.3 of {{SEMANTICS}}) and non-successful responses.
     This specification does not cover whether non Successful
-    responses count on quota usage.
+    responses count on quota usage,
+    nor it mandates any correlation between the RateLimit values
+    and the returned status code.
 
   Throttling policy:
   : This specification does not mandate a specific throttling policy.
@@ -409,6 +411,9 @@ A server MAY return `RateLimit` response fields independently
 of the response status code.
 This includes throttled responses.
 
+This document does not mandate any correlation between the `RateLimit`
+values and the returned status code.
+
 Servers should be careful in returning `RateLimit` fields in
 redirection responses (eg. 3xx status codes) because
 a low `RateLimit-Remaining` value could limit the client
@@ -571,6 +576,35 @@ Ratelimit-Reset: 50
 
 {"hello": "world"}
 ~~~
+
+Since the field values are not necessarily correlated with
+the response status code,
+a subsequent request is not required to fail.
+The example below shows that the server decided to serve the
+request even if `RateLimit-Remaining` is 0.
+Another server, or the same server under other load conditions,
+could have decided to throttle the request instead.
+
+Request:
+
+~~~ http-message
+GET /items/456 HTTP/1.1
+Host: api.example
+
+~~~
+
+Response:
+
+~~~ http-message
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 100
+Ratelimit-Remaining: 0
+Ratelimit-Reset: 48
+
+{"still": "successful"}
+~~~
+
 
 ### Use in conjunction with custom fields {#use-with-custom-fields}
 
