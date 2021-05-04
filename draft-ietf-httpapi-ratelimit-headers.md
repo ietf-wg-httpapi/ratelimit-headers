@@ -839,8 +839,9 @@ query again the server even if it is likely to have the request rejected.
 
 ### Missing Remaining information
 
-The server does not expose `RateLimit-Remaining` values, but
-resets the limit counter every second.
+The server does not expose `RateLimit-Remaining` values
+(for example, because the underlying counters are not available).
+Instead, it resets the limit counter every second.
 
 It communicates to the client the limit of 10 quota-units per second
 always returning the couple `RateLimit-Limit` and `RateLimit-Reset`.
