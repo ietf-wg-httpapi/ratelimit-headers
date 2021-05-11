@@ -1,0 +1,2699 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>RateLimit Header Fields for HTTP</title>
+<meta content="Roberto Polli" name="author">
+<meta content="Alejandro Martinez Ruiz" name="author">
+<meta content="
+       This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset fields for HTTP,
+thus allowing servers to publish current service limits and
+clients to shape their request policy and avoid being throttled out. 
+    " name="description">
+<meta content="xml2rfc 3.7.0" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-ietf-httpapi-ratelimit-headers-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.7.0
+    Python 3.8.8
+    appdirs 1.4.4
+    ConfigArgParse 1.2.3
+    google-i18n-address 2.4.0
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 2.11.2
+    kitchen 1.2.6
+    lxml 4.6.3
+    pycountry 20.7.3
+    pyflakes 2.2.0
+    PyYAML 5.4.1
+    requests 2.25.1
+    setuptools 51.3.3
+    six 1.15.0
+-->
+<link href="draft-ietf-httpapi-ratelimit-headers.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
+
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --small-font-size: 14.5px;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  padding: 1em 0 0.2em;
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 26px;
+}
+h4, h5, h6 {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+dd.break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href].selfRef {
+  color: var(--text-color);
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+  table {
+    display: inline-block;
+    overflow-x: auto;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  visibility: hidden;
+  user-select: none;
+}
+a.pilcrow[href] { color: #ddd; }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media screen {
+  :hover > a.pilcrow {
+    visibility: visible;
+  }
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">RateLimit Header Fields for HTTP</td>
+<td class="right">May 2021</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Polli &amp; Martinez</td>
+<td class="center">Expires 12 November 2021</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">HTTPAPI</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-httpapi-ratelimit-headers-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2021-05-11" class="published">11 May 2021</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2021-11-12">12 November 2021</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">R. Polli</div>
+<div class="org">Team Digitale, Italian Government</div>
+</div>
+<div class="author">
+      <div class="author-name">A. Martinez</div>
+<div class="org">Red Hat</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">RateLimit Header Fields for HTTP</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset fields for HTTP,
+thus allowing servers to publish current service limits and
+clients to shape their request policy and avoid being throttled out.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-note-to-readers">
+<a href="#name-note-to-readers" class="section-name selfRef">Note to Readers</a>
+      </h2>
+<p id="section-note.1-1"><em>RFC EDITOR: please remove this section before publication</em><a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this draft takes place on the HTTP working group mailing list
+(httpapi@ietf.org), which is archived at
+<a href="https://lists.w3.org/Archives/Public/ietf-httpapi-wg/">https://lists.w3.org/Archives/Public/ietf-httpapi-wg/</a>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">The source code and issues list for this draft can be found at
+<a href="https://github.com/ietf-wg-httpapi/ratelimit-headers">https://github.com/ietf-wg-httpapi/ratelimit-headers</a>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 12 November 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2021 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-rate-limiting-and-quotas" class="xref">Rate-limiting and quotas</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="xref">1.2</a>.  <a href="#name-current-landscape-of-rate-l" class="xref">Current landscape of rate-limiting headers</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.1.2.2.2.1">
+                    <p id="section-toc.1-1.1.2.2.2.1.1" class="keepWithNext"><a href="#section-1.2.1" class="xref">1.2.1</a>.  <a href="#name-interoperability-issues" class="xref">Interoperability issues</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.1.2.3">
+                <p id="section-toc.1-1.1.2.3.1"><a href="#section-1.3" class="xref">1.3</a>.  <a href="#name-this-proposal" class="xref">This proposal</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.1.2.4">
+                <p id="section-toc.1-1.1.2.4.1"><a href="#section-1.4" class="xref">1.4</a>.  <a href="#name-goals" class="xref">Goals</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.1.2.5">
+                <p id="section-toc.1-1.1.2.5.1"><a href="#section-1.5" class="xref">1.5</a>.  <a href="#name-notational-conventions" class="xref">Notational Conventions</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-expressing-rate-limit-polic" class="xref">Expressing rate-limit policies</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-time-window" class="xref">Time window</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-service-limit" class="xref">Service limit</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="xref">2.3</a>.  <a href="#name-quota-policy" class="xref">Quota policy</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-header-specifications" class="xref">Header Specifications</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-ratelimit-limit" class="xref">RateLimit-Limit</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-ratelimit-remaining" class="xref">RateLimit-Remaining</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-ratelimit-reset" class="xref">RateLimit-Reset</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-providing-ratelimit-fields" class="xref">Providing RateLimit fields</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-performance-considerations" class="xref">Performance considerations</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-intermediaries" class="xref">Intermediaries</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-caching" class="xref">Caching</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-receiving-ratelimit-fields" class="xref">Receiving RateLimit fields</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-examples" class="xref">Examples</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-unparameterized-responses" class="xref">Unparameterized responses</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.8.2.1.2.1">
+                    <p id="section-toc.1-1.8.2.1.2.1.1"><a href="#section-8.1.1" class="xref">8.1.1</a>.  <a href="#name-throttling-information-in-r" class="xref">Throttling information in responses</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.1.2.2">
+                    <p id="section-toc.1-1.8.2.1.2.2.1"><a href="#section-8.1.2" class="xref">8.1.2</a>.  <a href="#name-use-in-conjunction-with-cus" class="xref">Use in conjunction with custom fields</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.1.2.3">
+                    <p id="section-toc.1-1.8.2.1.2.3.1"><a href="#section-8.1.3" class="xref">8.1.3</a>.  <a href="#name-use-for-limiting-concurrenc" class="xref">Use for limiting concurrency</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.1.2.4">
+                    <p id="section-toc.1-1.8.2.1.2.4.1"><a href="#section-8.1.4" class="xref">8.1.4</a>.  <a href="#name-use-in-throttled-responses" class="xref">Use in throttled responses</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-parameterized-responses" class="xref">Parameterized responses</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.8.2.2.2.1">
+                    <p id="section-toc.1-1.8.2.2.2.1.1"><a href="#section-8.2.1" class="xref">8.2.1</a>.  <a href="#name-throttling-window-specified" class="xref">Throttling window specified via parameter</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.2.2.2">
+                    <p id="section-toc.1-1.8.2.2.2.2.1"><a href="#section-8.2.2" class="xref">8.2.2</a>.  <a href="#name-dynamic-limits-with-paramet" class="xref">Dynamic limits with parameterized windows</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.2.2.3">
+                    <p id="section-toc.1-1.8.2.2.2.3.1"><a href="#section-8.2.3" class="xref">8.2.3</a>.  <a href="#name-dynamic-limits-for-pushing-" class="xref">Dynamic limits for pushing back and slowing down</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="xref">8.3</a>.  <a href="#name-dynamic-limits-for-pushing-b" class="xref">Dynamic limits for pushing back with Retry-After and slow down</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.8.2.3.2.1">
+                    <p id="section-toc.1-1.8.2.3.2.1.1"><a href="#section-8.3.1" class="xref">8.3.1</a>.  <a href="#name-missing-remaining-informati" class="xref">Missing Remaining information</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.3.2.2">
+                    <p id="section-toc.1-1.8.2.3.2.2.1"><a href="#section-8.3.2" class="xref">8.3.2</a>.  <a href="#name-use-with-multiple-windows" class="xref">Use with multiple windows</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="xref">9.1</a>.  <a href="#name-throttling-does-not-prevent" class="xref">Throttling does not prevent clients from issuing requests</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="xref">9.2</a>.  <a href="#name-information-disclosure" class="xref">Information disclosure</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.9.2.3">
+                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="xref">9.3</a>.  <a href="#name-remaining-quota-units-are-n" class="xref">Remaining quota-units are not granted requests</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.9.2.4">
+                <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="xref">9.4</a>.  <a href="#name-reliability-of-ratelimit-re" class="xref">Reliability of RateLimit-Reset</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.9.2.5">
+                <p id="section-toc.1-1.9.2.5.1"><a href="#section-9.5" class="xref">9.5</a>.  <a href="#name-resource-exhaustion" class="xref">Resource exhaustion</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.9.2.6">
+                <p id="section-toc.1-1.9.2.6.1"><a href="#section-9.6" class="xref">9.6</a>.  <a href="#name-denial-of-service" class="xref">Denial of Service</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="xref">10.1</a>.  <a href="#name-ratelimit-limit-field-regis" class="xref">RateLimit-Limit Field Registration</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="xref">10.2</a>.  <a href="#name-ratelimit-remaining-field-r" class="xref">RateLimit-Remaining Field Registration</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="xref">10.3</a>.  <a href="#name-ratelimit-reset-field-regis" class="xref">RateLimit-Reset Field Registration</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-references" class="xref">References</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="xref">11.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="xref">11.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-appendix.a" class="xref">Appendix A</a>.  <a href="#name-acknowledgements" class="xref">Acknowledgements</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-appendix.b" class="xref">Appendix B</a>.  <a href="#name-faq" class="xref">FAQ</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#section-appendix.c" class="xref"></a><a href="#name-ratelimit-fields-currently-" class="xref">RateLimit fields currently used on the web</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#section-appendix.d" class="xref"></a><a href="#name-changes" class="xref">Changes</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.15.2.1">
+                <p id="section-toc.1-1.15.2.1.1"><a href="#section-d.1" class="xref"></a><a href="#name-since-draft-ietf-httpapi-ra" class="xref">Since draft-ietf-httpapi-ratelimit-headers-00</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.16">
+            <p id="section-toc.1-1.16.1"><a href="#section-appendix.e" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The widespreading of HTTP as a distributed computation protocol
+requires an explicit way of communicating service status and
+usage quotas.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This was partially addressed by the <code>Retry-After</code> header field
+defined in <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span> to be returned in
+<code>429 Too Many Requests</code> (see <span>[<a href="#STATUS429" class="xref">STATUS429</a>]</span>)
+or <code>503 Service Unavailable</code> responses.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Still, there is not a standard way to communicate service quotas
+so that the client can throttle its requests
+and prevent 4xx or 5xx responses.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<div id="rate-limiting">
+<section id="section-1.1">
+        <h3 id="name-rate-limiting-and-quotas">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-rate-limiting-and-quotas" class="section-name selfRef">Rate-limiting and quotas</a>
+        </h3>
+<p id="section-1.1-1">Servers use quota mechanisms to avoid systems overload,
+to ensure an equitable distribution of computational resources
+or to enforce other policies - eg. monetization.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">A basic quota mechanism limits the number of acceptable
+requests in a given time window, eg. 10 requests per second.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">When quota is exceeded, servers usually do not serve the request
+replying instead with a <code>4xx</code> HTTP status code (eg. 429 or 403)
+or adopt more aggressive policies like dropping connections.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<p id="section-1.1-4">Quotas may be enforced on different basis (eg. per user, per IP, per geographic area, ..) and
+at different levels. For example, an user may be allowed to issue:<a href="#section-1.1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.1-5.1">10 requests per second;<a href="#section-1.1-5.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-5.2">limited to 60 request per minute;<a href="#section-1.1-5.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.1-5.3">limited to 1000 request per hour.<a href="#section-1.1-5.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-1.1-6">Moreover system metrics, statistics and heuristics can be used
+to implement more complex policies, where
+the number of acceptable request and the time window
+are computed dynamically.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="current-landscape-of-rate-limiting-headers">
+<section id="section-1.2">
+        <h3 id="name-current-landscape-of-rate-l">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-current-landscape-of-rate-l" class="section-name selfRef">Current landscape of rate-limiting headers</a>
+        </h3>
+<p id="section-1.2-1">To help clients throttling their requests, servers may expose
+the counters used to evaluate quota policies via HTTP header fields.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-2">Those response headers may be added by HTTP intermediaries
+such as API gateways and reverse proxies.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">On the web we can find many different rate-limit headers, usually
+containing the number of allowed requests
+in a given time window, and when the window is reset.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-4">The common choice is to return three headers containing:<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.2-5.1">the maximum number of allowed requests in the time window;<a href="#section-1.2-5.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-5.2">the number of remaining requests in the current window;<a href="#section-1.2-5.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-5.3">the time remaining in the current window expressed in seconds or
+as a timestamp;<a href="#section-1.2-5.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<div id="interoperability-issues">
+<section id="section-1.2.1">
+          <h4 id="name-interoperability-issues">
+<a href="#section-1.2.1" class="section-number selfRef">1.2.1. </a><a href="#name-interoperability-issues" class="section-name selfRef">Interoperability issues</a>
+          </h4>
+<p id="section-1.2.1-1">A major interoperability issue in throttling is the lack
+of standard headers, because:<a href="#section-1.2.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.2.1-2.1">each implementation associates different semantics to the
+same header field names;<a href="#section-1.2.1-2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-1.2.1-2.2">header field names proliferates.<a href="#section-1.2.1-2.2" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-1.2.1-3">User Agents interfacing with different servers may thus
+need to process different headers,
+or the very same application interface that sits behind different
+reverse proxies may reply with different throttling headers.<a href="#section-1.2.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="this-proposal">
+<section id="section-1.3">
+        <h3 id="name-this-proposal">
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-this-proposal" class="section-name selfRef">This proposal</a>
+        </h3>
+<p id="section-1.3-1">This proposal defines syntax and semantics for the following fields:<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.3-2.1">
+            <code>RateLimit-Limit</code>: containing the requests quota in the time window;<a href="#section-1.3-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.3-2.2">
+            <code>RateLimit-Remaining</code>: containing the remaining requests quota in the current window;<a href="#section-1.3-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.3-2.3">
+            <code>RateLimit-Reset</code>: containing the time remaining in the current window, specified in seconds.<a href="#section-1.3-2.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-1.3-3">The behavior of <code>RateLimit-Reset</code> is compatible with the <code>delay-seconds</code> notation of <code>Retry-After</code>.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+<p id="section-1.3-4">The fields definition allows to describe complex policies, including the ones
+using multiple and variable time windows and dynamic quotas, or implementing concurrency limits.<a href="#section-1.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="goals">
+<section id="section-1.4">
+        <h3 id="name-goals">
+<a href="#section-1.4" class="section-number selfRef">1.4. </a><a href="#name-goals" class="section-name selfRef">Goals</a>
+        </h3>
+<p id="section-1.4-1">The goals of this proposal are:<a href="#section-1.4-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-1.4-2">
+<li id="section-1.4-2.1">Standardizing the names and semantics of rate-limit headers
+to ease their enforcement and adoption;<a href="#section-1.4-2.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-1.4-2.2">Improve resiliency of HTTP infrastructure by
+providing clients with information useful
+to throttle their requests and
+prevent 4xx or 5xx responses;<a href="#section-1.4-2.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-1.4-2.3">Simplify API documentation by eliminating the need
+to include detailed quota limits
+and related header fields in API documentation.<a href="#section-1.4-2.3" class="pilcrow">¶</a>
+</li>
+        </ol>
+<p id="section-1.4-3">The goals do not include:<a href="#section-1.4-3" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-1.4-4">
+          <dt id="section-1.4-4.1">
+Authorization:  </dt>
+          <dd style="margin-left: 1.5em" id="section-1.4-4.2">
+            <p id="section-1.4-4.2.1">The rate-limit fields described here are not meant to support
+authorization or other kinds of access controls.<a href="#section-1.4-4.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-1.4-4.3">
+Throttling scope:  </dt>
+          <dd style="margin-left: 1.5em" id="section-1.4-4.4">
+            <p id="section-1.4-4.4.1">This specification does not cover the throttling scope,
+that may be the given resource-target, its parent path or the whole
+Origin (see Section 7 of <span>[<a href="#RFC6454" class="xref">RFC6454</a>]</span>).<a href="#section-1.4-4.4.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-1.4-4.5">
+Response status code:  </dt>
+          <dd style="margin-left: 1.5em" id="section-1.4-4.6">
+            <p id="section-1.4-4.6.1">The rate-limit fields may be returned in both
+successful (see Section 15.3 of <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>) and non-successful responses.
+This specification does not cover whether non Successful
+responses count on quota usage,
+nor it mandates any correlation between the RateLimit values
+and the returned status code.<a href="#section-1.4-4.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-1.4-4.7">
+Throttling policy:  </dt>
+          <dd style="margin-left: 1.5em" id="section-1.4-4.8">
+            <p id="section-1.4-4.8.1">This specification does not mandate a specific throttling policy.
+The values published in the fields, including the window size,
+can be statically or dynamically evaluated.<a href="#section-1.4-4.8.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-1.4-4.9">
+Service Level Agreement:  </dt>
+          <dd style="margin-left: 1.5em" id="section-1.4-4.10">
+            <p id="section-1.4-4.10.1">Conveyed quota hints do not imply any service guarantee.
+Server is free to throttle respectful clients under certain circumstances.<a href="#section-1.4-4.10.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="notational-conventions">
+<section id="section-1.5">
+        <h3 id="name-notational-conventions">
+<a href="#section-1.5" class="section-number selfRef">1.5. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+        </h3>
+<p id="section-1.5-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+"MAY", and "OPTIONAL" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
+<p id="section-1.5-2">This document uses the Augmented BNF defined in <span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span> and updated
+by <span>[<a href="#RFC7405" class="xref">RFC7405</a>]</span> along with the "#rule" extension
+defined in Section 5.6.1 of <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>.<a href="#section-1.5-2" class="pilcrow">¶</a></p>
+<p id="section-1.5-3">The term Origin is to be interpreted as described in Section 7 of <span>[<a href="#RFC6454" class="xref">RFC6454</a>]</span>.<a href="#section-1.5-3" class="pilcrow">¶</a></p>
+<p id="section-1.5-4">The "delay-seconds" rule is defined in Section 10.2.4 of <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>.<a href="#section-1.5-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="expressing-rate-limit-policies">
+<section id="section-2">
+      <h2 id="name-expressing-rate-limit-polic">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-expressing-rate-limit-polic" class="section-name selfRef">Expressing rate-limit policies</a>
+      </h2>
+<div id="time-window">
+<section id="section-2.1">
+        <h3 id="name-time-window">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-time-window" class="section-name selfRef">Time window</a>
+        </h3>
+<p id="section-2.1-1">Rate limit policies limit the number of acceptable requests in a given time window.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">A time window is expressed in seconds, using the following syntax:<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-2.1-3">
+<pre>
+time-window = delay-seconds
+</pre><a href="#section-2.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2.1-4">Subsecond precision is not supported.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="service-limit">
+<section id="section-2.2">
+        <h3 id="name-service-limit">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-service-limit" class="section-name selfRef">Service limit</a>
+        </h3>
+<p id="section-2.2-1">The service-limit is a value associated to the maximum number of requests
+that the server is willing to accept
+from one or more clients
+on a given basis (originating IP, authenticated user, geographical, ..)
+during a <code>time-window</code> as defined in <a href="#time-window" class="xref">Section 2.1</a>.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">The <code>service-limit</code> is expressed in <code>quota-units</code> and has the following syntax:<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-2.2-3">
+<pre>
+   service-limit = quota-units
+   quota-units = 1*DIGIT
+</pre><a href="#section-2.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2.2-4">The <code>service-limit</code> SHOULD match the maximum number of acceptable requests.<a href="#section-2.2-4" class="pilcrow">¶</a></p>
+<p id="section-2.2-5">The <code>service-limit</code> MAY differ from the total number of acceptable requests
+when weight mechanisms, bursts, or other server policies are implemented.<a href="#section-2.2-5" class="pilcrow">¶</a></p>
+<p id="section-2.2-6">If the <code>service-limit</code> does not match the maximum number of acceptable requests
+the relation with that SHOULD be communicated out-of-band.<a href="#section-2.2-6" class="pilcrow">¶</a></p>
+<p id="section-2.2-7">Example: A server could<a href="#section-2.2-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-8.1">count once requests like <code>/books/{id}</code><a href="#section-2.2-8.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-8.2">count twice search requests like <code>/books?author=Camilleri</code><a href="#section-2.2-8.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-2.2-9">so that we have the following counters<a href="#section-2.2-9" class="pilcrow">¶</a></p>
+<div id="section-2.2-10">
+<pre class="sourcecode lang-example">
+GET /books/123                  ; service-limit=4, remaining: 3, status=200
+GET /books?author=Camilleri     ; service-limit=4, remaining: 1, status=200
+GET /books?author=Eco           ; service-limit=4, remaining: 0, status=429
+</pre><a href="#section-2.2-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="quota-policy">
+<section id="section-2.3">
+        <h3 id="name-quota-policy">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-quota-policy" class="section-name selfRef">Quota policy</a>
+        </h3>
+<p id="section-2.3-1">This specification allows describing a quota policy with the following syntax:<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-2.3-2">
+<pre>
+   quota-policy = service-limit; "w" "=" time-window
+                  *( OWS ";" OWS quota-comment)
+   quota-comment = token "=" (token / quoted-string)
+</pre><a href="#section-2.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-2.3-3">quota-policy parameters like <code>w</code> and
+quota-comment tokens MUST NOT occur multiple times within the same quota-policy.<a href="#section-2.3-3" class="pilcrow">¶</a></p>
+<p id="section-2.3-4">An example policy of 100 quota-units per minute.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+<div id="section-2.3-5">
+<pre class="sourcecode lang-example">
+   100;w=60
+</pre><a href="#section-2.3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-2.3-6">The definition of a quota-policy does not imply any specific
+distribution of quota-units over time.
+Such service specific details can be conveyed in the <code>quota-comments</code>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-7">Two examples of providing further details via custom parameters
+in <code>quota-comments</code>.<a href="#section-2.3-7" class="pilcrow">¶</a></p>
+<div id="section-2.3-8">
+<pre class="sourcecode lang-example">
+   100;w=60;comment="fixed window"
+   12;w=1;burst=1000;policy="leaky bucket"
+</pre><a href="#section-2.3-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="header-specifications">
+<section id="section-3">
+      <h2 id="name-header-specifications">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-header-specifications" class="section-name selfRef">Header Specifications</a>
+      </h2>
+<p id="section-3-1">The following <code>RateLimit</code> response fields are defined<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="ratelimit-limit-field">
+<section id="section-3.1">
+        <h3 id="name-ratelimit-limit">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-ratelimit-limit" class="section-name selfRef">RateLimit-Limit</a>
+        </h3>
+<p id="section-3.1-1">The <code>RateLimit-Limit</code> response field indicates
+the <code>service-limit</code> associated to the client
+in the current <code>time-window</code>.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">If the client exceeds that limit, it MAY not be served.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">The field value is<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-3.1-4">
+<pre>
+   RateLimit-Limit = expiring-limit [, 1#quota-policy ]
+   expiring-limit = service-limit
+</pre><a href="#section-3.1-4" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-5">The <code>expiring-limit</code> value MUST be set to the <code>service-limit</code> that is closer to reach its limit.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.1-6">The <code>quota-policy</code> is defined in <a href="#quota-policy" class="xref">Section 2.3</a>, and its values are informative.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<div id="section-3.1-7">
+<pre class="sourcecode lang-example">
+   RateLimit-Limit: 100
+</pre><a href="#section-3.1-7" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-8">A <code>time-window</code> associated to <code>expiring-limit</code> can be communicated
+via an optional <code>quota-policy</code> value, like shown in the following example<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+<div id="section-3.1-9">
+<pre class="sourcecode lang-example">
+   RateLimit-Limit: 100, 100;w=10
+</pre><a href="#section-3.1-9" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-10">If the <code>expiring-limit</code> is not associated to a <code>time-window</code>, the <code>time-window</code> MUST either be:<a href="#section-3.1-10" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-11.1">inferred by the value of <code>RateLimit-Reset</code> at the moment of the reset, or<a href="#section-3.1-11.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-11.2">communicated out-of-band (eg. in the documentation).<a href="#section-3.1-11.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.1-12">Policies using multiple quota limits MAY be returned using multiple
+<code>quota-policy</code> items, like shown in the following two examples:<a href="#section-3.1-12" class="pilcrow">¶</a></p>
+<div id="section-3.1-13">
+<pre class="sourcecode lang-example">
+   RateLimit-Limit: 10, 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
+   RateLimit-Limit: 10, 10;w=1;burst=1000, 1000;w=3600
+</pre><a href="#section-3.1-13" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-14">This field MUST NOT occur multiple times
+and can be sent in a trailer section.<a href="#section-3.1-14" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ratelimit-remaining-field">
+<section id="section-3.2">
+        <h3 id="name-ratelimit-remaining">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-ratelimit-remaining" class="section-name selfRef">RateLimit-Remaining</a>
+        </h3>
+<p id="section-3.2-1">The <code>RateLimit-Remaining</code> response field indicates the remaining <code>quota-units</code> defined in <a href="#service-limit" class="xref">Section 2.2</a>
+associated to the client.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">The field value is<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-3.2-3">
+<pre>
+   RateLimit-Remaining = quota-units
+</pre><a href="#section-3.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-4">This field MUST NOT occur multiple times
+and can be sent in a trailer section.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.2-5">Clients MUST NOT assume that a positive <code>RateLimit-Remaining</code> value is
+a guarantee that further requests will be served.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.2-6">A low <code>RateLimit-Remaining</code> value is like a yellow traffic-light
+for either the number of requests issued in the <code>time-window</code>
+or the request throughput:
+the red light may arrive suddenly
+(see <a href="#providing-ratelimit-fields" class="xref">Section 4</a>).<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.2-7">One example of <code>RateLimit-Remaining</code> use is below.<a href="#section-3.2-7" class="pilcrow">¶</a></p>
+<div id="section-3.2-8">
+<pre class="sourcecode lang-example">
+   RateLimit-Remaining: 50
+</pre><a href="#section-3.2-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="ratelimit-reset-field">
+<section id="section-3.3">
+        <h3 id="name-ratelimit-reset">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-ratelimit-reset" class="section-name selfRef">RateLimit-Reset</a>
+        </h3>
+<p id="section-3.3-1">The <code>RateLimit-Reset</code> response field indicates either<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-2.1">the number of seconds until the quota resets.<a href="#section-3.3-2.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.3-3">The field value is<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-3.3-4">
+<pre>
+   RateLimit-Reset = delay-seconds
+</pre><a href="#section-3.3-4" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-5">The delay-seconds format is used because:<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.3-6.1">it does not rely on clock synchronization and is resilient to clock adjustment
+and clock skew between client and server (see Section 5.6.7 of <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>);<a href="#section-3.3-6.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.3-6.2">it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.<a href="#section-3.3-6.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-3.3-7">This field MUST NOT occur multiple times
+and can be sent in a trailer section.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<p id="section-3.3-8">An example of <code>RateLimit-Reset</code> use is below.<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<div id="section-3.3-9">
+<pre class="sourcecode lang-example">
+   RateLimit-Reset: 50
+</pre><a href="#section-3.3-9" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-10">The client MUST NOT assume that all its <code>service-limit</code> will be restored
+after the moment referenced by <code>RateLimit-Reset</code>.
+The server MAY arbitrarily alter the <code>RateLimit-Reset</code> value between subsequent requests
+eg. in case of resource saturation or to implement sliding window policies.<a href="#section-3.3-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="providing-ratelimit-fields">
+<section id="section-4">
+      <h2 id="name-providing-ratelimit-fields">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-providing-ratelimit-fields" class="section-name selfRef">Providing RateLimit fields</a>
+      </h2>
+<p id="section-4-1">A server MAY use one or more <code>RateLimit</code> response fields
+defined in this document to communicate its quota policies.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">The returned values refers to the metrics used to evaluate if the current request
+respects the quota policy and MAY not apply to subsequent requests.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">Example: a successful response with the following fields<a href="#section-4-3" class="pilcrow">¶</a></p>
+<div id="section-4-4">
+<pre class="sourcecode lang-example">
+   RateLimit-Limit: 10
+   RateLimit-Remaining: 1
+   RateLimit-Reset: 7
+</pre><a href="#section-4-4" class="pilcrow">¶</a>
+</div>
+<p id="section-4-5">does not guarantee that the next request will be successful. Server metrics may be subject to other
+conditions like the one shown in the example from <a href="#service-limit" class="xref">Section 2.2</a>.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<p id="section-4-6">A server MAY return <code>RateLimit</code> response fields independently
+of the response status code.
+This includes throttled responses.<a href="#section-4-6" class="pilcrow">¶</a></p>
+<p id="section-4-7">This document does not mandate any correlation between the <code>RateLimit</code>
+values and the returned status code.<a href="#section-4-7" class="pilcrow">¶</a></p>
+<p id="section-4-8">Servers should be careful in returning <code>RateLimit</code> fields in
+redirection responses (eg. 3xx status codes) because
+a low <code>RateLimit-Remaining</code> value could limit the client
+from issuing requests.
+For example, given the rate limiting fields below,
+a client could decide to wait 10 seconds before following
+the <code>Location</code> header, because  <code>RateLimit-Remaining</code> is 0.<a href="#section-4-8" class="pilcrow">¶</a></p>
+<div id="section-4-9">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 301 Moved Permanently
+Location: /foo/123
+RateLimit-Remaining: 0
+RateLimit-Limit: 10
+RateLimit-Reset: 10
+
+</pre><a href="#section-4-9" class="pilcrow">¶</a>
+</div>
+<p id="section-4-10">If a response contains both the <code>Retry-After</code> and the <code>RateLimit-Reset</code> fields,
+the value of <code>RateLimit-Reset</code> SHOULD reference the same point in time as
+<code>Retry-After</code>.<a href="#section-4-10" class="pilcrow">¶</a></p>
+<p id="section-4-11">When using a policy involving more than one <code>time-window</code>,
+the server MUST reply with the <code>RateLimit</code> fields related to the window
+with the lower <code>RateLimit-Remaining</code> values.<a href="#section-4-11" class="pilcrow">¶</a></p>
+<p id="section-4-12">A service returning <code>RateLimit</code> fields MUST NOT convey values
+exposing an unwanted volume of requests
+and SHOULD implement mechanisms to cap the ratio between <code>RateLimit-Remaining</code>
+and <code>RateLimit-Reset</code> (see <a href="#sec-resource-exhaustion" class="xref">Section 9.5</a>);
+this is especially important when quota-policies use a large <code>time-window</code>.<a href="#section-4-12" class="pilcrow">¶</a></p>
+<p id="section-4-13">Under certain conditions, a server MAY artificially lower <code>RateLimit</code> field values between subsequent requests,
+eg. to respond to Denial of Service attacks or in case of resource saturation.<a href="#section-4-13" class="pilcrow">¶</a></p>
+<p id="section-4-14">Servers usually establish whether the request is in-quota before creating a
+response, so the RateLimit field values should be already available in that
+moment.
+Nonetheless servers MAY decide to send the <code>RateLimit</code> fields
+in a trailer section.<a href="#section-4-14" class="pilcrow">¶</a></p>
+<div id="performance-considerations">
+<section id="section-4.1">
+        <h3 id="name-performance-considerations">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-performance-considerations" class="section-name selfRef">Performance considerations</a>
+        </h3>
+<p id="section-4.1-1">Servers are not required to return <code>RateLimit</code> fields
+in every response,
+and clients need to take this into account.
+For example, an implementer concerned with performance might
+provide <code>RateLimit</code> fields only when a given quota is going
+to expire.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">Implementers concerned with response fields' size, might take into account
+their ratio with respect to the payload data, or use header-compression
+http features such as <span>[<a href="#HPACK" class="xref">HPACK</a>]</span>.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="intermediaries">
+<section id="section-5">
+      <h2 id="name-intermediaries">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-intermediaries" class="section-name selfRef">Intermediaries</a>
+      </h2>
+<p id="section-5-1">This section documents the considerations advised in
+Section 16.3.3 of <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">An intermediary that is not part of the originating service infrastructure
+and is not aware of the quota-policy semantic used by the Origin Server
+SHOULD NOT alter the RateLimit fields' values
+in such a way as to communicate a more permissive quota-policy;
+this includes removing the RateLimit fields.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">An intermediary MAY alter the RateLimit fields 
+in such a way as to communicate a more restrictive quota-policy when:<a href="#section-5-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5-4.1">it is aware of the quota-unit semantic used by the Origin Server;<a href="#section-5-4.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-5-4.2">it implements this specification and enforces a quota-policy which
+is more restrictive than the one conveyed in the fields.<a href="#section-5-4.2" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-5-5">An intermediary
+SHOULD forward a request even when presuming that it
+might not be serviced;
+the service returning the RateLimit fields is the sole responsible
+of enforcing the communicated quota-policy,
+and it is always free to service incoming requests.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">This specification does not mandate any behavior on intermediaries
+respect to retries,
+nor requires that intermediaries have any role in respecting quota-policies.
+For example, it is legitimate for a proxy to retransmit a request
+without notifying the client, and thus consuming quota-units.<a href="#section-5-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="caching">
+<section id="section-6">
+      <h2 id="name-caching">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-caching" class="section-name selfRef">Caching</a>
+      </h2>
+<p id="section-6-1">As is the ordinary case for HTTP caching (<span>[<a href="#RFC7234" class="xref">RFC7234</a>]</span>), a response with
+RateLimit fields might be cached and re-used for subsequent requests.
+A cached <code>RateLimit</code> response does not modify quota counters but could
+contain stale information.
+Clients interested in determining the freshness of the <code>RateLimit</code> fields
+could rely on fields such as <code>Date</code>
+and on the <code>time-window</code> of a <code>quota-policy</code>.<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="receiving-ratelimit-fields">
+<section id="section-7">
+      <h2 id="name-receiving-ratelimit-fields">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-receiving-ratelimit-fields" class="section-name selfRef">Receiving RateLimit fields</a>
+      </h2>
+<p id="section-7-1">A client MUST process the received <code>RateLimit</code> fields.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">A client MUST validate the values received in the <code>RateLimit</code> fields before using them
+and check if there are significant discrepancies
+with the expected ones.
+This includes a <code>RateLimit-Reset</code> moment too far in the future or a <code>service-limit</code> too high.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">A client receiving <code>RateLimit</code> fields MUST NOT assume that subsequent
+responses contain the same <code>RateLimit</code> fields, or any <code>RateLimit</code> fields
+at all.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-4">Malformed <code>RateLimit</code> fields MAY be ignored.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<p id="section-7-5">A client SHOULD NOT exceed the <code>quota-units</code> expressed in <code>RateLimit-Remaining</code> before the <code>time-window</code> expressed
+in <code>RateLimit-Reset</code>.<a href="#section-7-5" class="pilcrow">¶</a></p>
+<p id="section-7-6">A client MAY still probe the server if the <code>RateLimit-Reset</code> is considered too high.<a href="#section-7-6" class="pilcrow">¶</a></p>
+<p id="section-7-7">The value of <code>RateLimit-Reset</code> is generated at response time:
+a client aware of a significant network latency MAY behave accordingly
+and use other information (eg. the <code>Date</code> response header field, or otherwise gathered metrics) to better
+estimate the <code>RateLimit-Reset</code> moment intended by the server.<a href="#section-7-7" class="pilcrow">¶</a></p>
+<p id="section-7-8">The <code>quota-policy</code> values and comments provided in <code>RateLimit-Limit</code> are informative
+and MAY be ignored.<a href="#section-7-8" class="pilcrow">¶</a></p>
+<p id="section-7-9">If a response contains both the <code>RateLimit-Reset</code> and <code>Retry-After</code> fields,
+<code>Retry-After</code> MUST take precedence and
+<code>RateLimit-Reset</code> MAY be ignored.<a href="#section-7-9" class="pilcrow">¶</a></p>
+<p id="section-7-10">This specification does not mandate a specific throttling behavior
+and implementers can adopt their preferred policies, including:<a href="#section-7-10" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7-11.1">slowing down or preemptively backoff their request rate when
+approaching quota limits;<a href="#section-7-11.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-7-11.2">consuming all the quota according to the exposed limits and then wait.<a href="#section-7-11.2" class="pilcrow">¶</a>
+</li>
+      </ul>
+</section>
+</div>
+<div id="examples">
+<section id="section-8">
+      <h2 id="name-examples">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      </h2>
+<div id="unparameterized-responses">
+<section id="section-8.1">
+        <h3 id="name-unparameterized-responses">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-unparameterized-responses" class="section-name selfRef">Unparameterized responses</a>
+        </h3>
+<div id="throttling-information-in-responses">
+<section id="section-8.1.1">
+          <h4 id="name-throttling-information-in-r">
+<a href="#section-8.1.1" class="section-number selfRef">8.1.1. </a><a href="#name-throttling-information-in-r" class="section-name selfRef">Throttling information in responses</a>
+          </h4>
+<p id="section-8.1.1-1">The client exhausted its service-limit for the next 50 seconds.
+The <code>time-window</code> is communicated out-of-band or inferred by the field values.<a href="#section-8.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1.1-2">Request:<a href="#section-8.1.1-2" class="pilcrow">¶</a></p>
+<div id="section-8.1.1-3">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.1.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.1-4">Response:<a href="#section-8.1.1-4" class="pilcrow">¶</a></p>
+<div id="section-8.1.1-5">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 100
+Ratelimit-Remaining: 0
+Ratelimit-Reset: 50
+
+{"hello": "world"}
+</pre><a href="#section-8.1.1-5" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.1-6">Since the field values are not necessarily correlated with
+the response status code,
+a subsequent request is not required to fail.
+The example below shows that the server decided to serve the
+request even if <code>RateLimit-Remaining</code> is 0.
+Another server, or the same server under other load conditions,
+could have decided to throttle the request instead.<a href="#section-8.1.1-6" class="pilcrow">¶</a></p>
+<p id="section-8.1.1-7">Request:<a href="#section-8.1.1-7" class="pilcrow">¶</a></p>
+<div id="section-8.1.1-8">
+<pre class="sourcecode lang-http-message">
+GET /items/456 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.1.1-8" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.1-9">Response:<a href="#section-8.1.1-9" class="pilcrow">¶</a></p>
+<div id="section-8.1.1-10">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 100
+Ratelimit-Remaining: 0
+Ratelimit-Reset: 48
+
+{"still": "successful"}
+</pre><a href="#section-8.1.1-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="use-with-custom-fields">
+<section id="section-8.1.2">
+          <h4 id="name-use-in-conjunction-with-cus">
+<a href="#section-8.1.2" class="section-number selfRef">8.1.2. </a><a href="#name-use-in-conjunction-with-cus" class="section-name selfRef">Use in conjunction with custom fields</a>
+          </h4>
+<p id="section-8.1.2-1">The server uses two custom fields,
+namely <code>acme-RateLimit-DayLimit</code> and <code>acme-RateLimit-HourLimit</code>
+to expose the following policy:<a href="#section-8.1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.1.2-2.1">5000 daily quota-units;<a href="#section-8.1.2-2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-8.1.2-2.2">1000 hourly quota-units.<a href="#section-8.1.2-2.2" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-8.1.2-3">The client consumed 4900 quota-units in the first 14 hours.<a href="#section-8.1.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.1.2-4">Despite the next hourly limit of 1000 quota-units, the closest limit
+to reach is the daily one.<a href="#section-8.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-8.1.2-5">The server then exposes the <code>RateLimit-*</code> fields to
+inform the client that:<a href="#section-8.1.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.1.2-6.1">it has only 100 quota-units left;<a href="#section-8.1.2-6.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-8.1.2-6.2">the window will reset in 10 hours.<a href="#section-8.1.2-6.2" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-8.1.2-7">Request:<a href="#section-8.1.2-7" class="pilcrow">¶</a></p>
+<div id="section-8.1.2-8">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.1.2-8" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.2-9">Response:<a href="#section-8.1.2-9" class="pilcrow">¶</a></p>
+<div id="section-8.1.2-10">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+acme-RateLimit-DayLimit: 5000
+acme-RateLimit-HourLimit: 1000
+RateLimit-Limit: 5000
+RateLimit-Remaining: 100
+RateLimit-Reset: 36000
+
+{"hello": "world"}
+</pre><a href="#section-8.1.2-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="use-for-limiting-concurrency">
+<section id="section-8.1.3">
+          <h4 id="name-use-for-limiting-concurrenc">
+<a href="#section-8.1.3" class="section-number selfRef">8.1.3. </a><a href="#name-use-for-limiting-concurrenc" class="section-name selfRef">Use for limiting concurrency</a>
+          </h4>
+<p id="section-8.1.3-1">Throttling fields may be used to limit concurrency,
+advertising limits that are lower than the usual ones
+in case of saturation, thus increasing availability.<a href="#section-8.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.1.3-2">The server adopted a basic policy of 100 quota-units
+per minute,
+and in case of resource exhaustion adapts the returned values
+reducing both <code>RateLimit-Limit</code> and <code>RateLimit-Remaining</code>.<a href="#section-8.1.3-2" class="pilcrow">¶</a></p>
+<p id="section-8.1.3-3">After 2 seconds the client consumed 40 quota-units<a href="#section-8.1.3-3" class="pilcrow">¶</a></p>
+<p id="section-8.1.3-4">Request:<a href="#section-8.1.3-4" class="pilcrow">¶</a></p>
+<div id="section-8.1.3-5">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.1.3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.3-6">Response:<a href="#section-8.1.3-6" class="pilcrow">¶</a></p>
+<div id="section-8.1.3-7">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 100
+RateLimit-Remaining: 60
+RateLimit-Reset: 58
+
+{"elapsed": 2, "issued": 40}
+</pre><a href="#section-8.1.3-7" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.3-8">At the subsequent request - due to resource exhaustion -
+the server advertises only <code>RateLimit-Remaining: 20</code>.<a href="#section-8.1.3-8" class="pilcrow">¶</a></p>
+<p id="section-8.1.3-9">Request:<a href="#section-8.1.3-9" class="pilcrow">¶</a></p>
+<div id="section-8.1.3-10">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.1.3-10" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.3-11">Response:<a href="#section-8.1.3-11" class="pilcrow">¶</a></p>
+<div id="section-8.1.3-12">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 100
+RateLimit-Remaining: 20
+RateLimit-Reset: 56
+
+{"elapsed": 4, "issued": 41}
+</pre><a href="#section-8.1.3-12" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="use-in-throttled-responses">
+<section id="section-8.1.4">
+          <h4 id="name-use-in-throttled-responses">
+<a href="#section-8.1.4" class="section-number selfRef">8.1.4. </a><a href="#name-use-in-throttled-responses" class="section-name selfRef">Use in throttled responses</a>
+          </h4>
+<p id="section-8.1.4-1">A client exhausted its quota and the server throttles it
+sending <code>Retry-After</code>.<a href="#section-8.1.4-1" class="pilcrow">¶</a></p>
+<p id="section-8.1.4-2">In this example, the values of <code>Retry-After</code> and <code>RateLimit-Reset</code> reference the same moment,
+but this is not a requirement.<a href="#section-8.1.4-2" class="pilcrow">¶</a></p>
+<p id="section-8.1.4-3">The <code>429 Too Many Requests</code> HTTP status code is just used as an example.<a href="#section-8.1.4-3" class="pilcrow">¶</a></p>
+<p id="section-8.1.4-4">Request:<a href="#section-8.1.4-4" class="pilcrow">¶</a></p>
+<div id="section-8.1.4-5">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.1.4-5" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1.4-6">Response:<a href="#section-8.1.4-6" class="pilcrow">¶</a></p>
+<div id="section-8.1.4-7">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 429 Too Many Requests
+Content-Type: application/json
+Date: Mon, 05 Aug 2019 09:27:00 GMT
+Retry-After: Mon, 05 Aug 2019 09:27:05 GMT
+RateLimit-Reset: 5
+RateLimit-Limit: 100
+Ratelimit-Remaining: 0
+
+{
+"title": "Too Many Requests",
+"status": 429,
+"detail": "You have exceeded your quota"
+}
+</pre><a href="#section-8.1.4-7" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="parameterized-responses">
+<section id="section-8.2">
+        <h3 id="name-parameterized-responses">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-parameterized-responses" class="section-name selfRef">Parameterized responses</a>
+        </h3>
+<div id="throttling-window-specified-via-parameter">
+<section id="section-8.2.1">
+          <h4 id="name-throttling-window-specified">
+<a href="#section-8.2.1" class="section-number selfRef">8.2.1. </a><a href="#name-throttling-window-specified" class="section-name selfRef">Throttling window specified via parameter</a>
+          </h4>
+<p id="section-8.2.1-1">The client has 99 <code>quota-units</code> left for the next 50 seconds.
+The <code>time-window</code> is communicated by the <code>w</code> parameter, so we know the throughput is 100 <code>quota-units</code> per minute.<a href="#section-8.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.2.1-2">Request:<a href="#section-8.2.1-2" class="pilcrow">¶</a></p>
+<div id="section-8.2.1-3">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.2.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-8.2.1-4">Response:<a href="#section-8.2.1-4" class="pilcrow">¶</a></p>
+<div id="section-8.2.1-5">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 100, 100;w=60
+Ratelimit-Remaining: 99
+Ratelimit-Reset: 50
+
+{"hello": "world"}
+</pre><a href="#section-8.2.1-5" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="dynamic-limits-with-parameterized-windows">
+<section id="section-8.2.2">
+          <h4 id="name-dynamic-limits-with-paramet">
+<a href="#section-8.2.2" class="section-number selfRef">8.2.2. </a><a href="#name-dynamic-limits-with-paramet" class="section-name selfRef">Dynamic limits with parameterized windows</a>
+          </h4>
+<p id="section-8.2.2-1">The policy conveyed by <code>RateLimit-Limit</code> states that
+the server accepts 100 quota-units per minute.<a href="#section-8.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2.2-2">To avoid resource exhaustion, the server artificially lowers
+the actual limits returned in the throttling headers.<a href="#section-8.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2.2-3">The  <code>RateLimit-Remaining</code> then advertises
+only 9 quota-units for the next 50 seconds to slow down the client.<a href="#section-8.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.2.2-4">Note that the server could have lowered even the other
+values in <code>RateLimit-Limit</code>: this specification
+does not mandate any relation between the field values
+contained in subsequent responses.<a href="#section-8.2.2-4" class="pilcrow">¶</a></p>
+<p id="section-8.2.2-5">Request:<a href="#section-8.2.2-5" class="pilcrow">¶</a></p>
+<div id="section-8.2.2-6">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.2.2-6" class="pilcrow">¶</a>
+</div>
+<p id="section-8.2.2-7">Response:<a href="#section-8.2.2-7" class="pilcrow">¶</a></p>
+<div id="section-8.2.2-8">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 10, 100;w=60
+Ratelimit-Remaining: 9
+Ratelimit-Reset: 50
+
+{
+  "status": 200,
+  "detail": "Just slow down without waiting."
+}
+</pre><a href="#section-8.2.2-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="dynamic-limits-for-pushing-back-and-slowing-down">
+<section id="section-8.2.3">
+          <h4 id="name-dynamic-limits-for-pushing-">
+<a href="#section-8.2.3" class="section-number selfRef">8.2.3. </a><a href="#name-dynamic-limits-for-pushing-" class="section-name selfRef">Dynamic limits for pushing back and slowing down</a>
+          </h4>
+<p id="section-8.2.3-1">Continuing the previous example, let's say the client waits 10 seconds and
+performs a new request which, due to resource exhaustion, the server rejects
+and pushes back, advertising <code>RateLimit-Remaining: 0</code> for the next 20 seconds.<a href="#section-8.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.2.3-2">The server advertises a smaller window with a lower limit to slow
+down the client for the rest of its original window after the 20 seconds elapse.<a href="#section-8.2.3-2" class="pilcrow">¶</a></p>
+<p id="section-8.2.3-3">Request:<a href="#section-8.2.3-3" class="pilcrow">¶</a></p>
+<div id="section-8.2.3-4">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.2.3-4" class="pilcrow">¶</a>
+</div>
+<p id="section-8.2.3-5">Response:<a href="#section-8.2.3-5" class="pilcrow">¶</a></p>
+<div id="section-8.2.3-6">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 429 Too Many Requests
+Content-Type: application/json
+RateLimit-Limit: 0, 15;w=20
+Ratelimit-Remaining: 0
+Ratelimit-Reset: 20
+
+{
+  "status": 429,
+  "detail": "Wait 20 seconds, then slow down!"
+}
+</pre><a href="#section-8.2.3-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="dynamic-limits-for-pushing-back-with-retry-after-and-slow-down">
+<section id="section-8.3">
+        <h3 id="name-dynamic-limits-for-pushing-b">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-dynamic-limits-for-pushing-b" class="section-name selfRef">Dynamic limits for pushing back with Retry-After and slow down</a>
+        </h3>
+<p id="section-8.3-1">Alternatively, given the same context where the previous example starts, we
+can convey the same information to the client via <code>Retry-After</code>, with
+the advantage that the server can now specify the policy's nominal limit and
+window that will apply after the reset, ie. assuming the resource exhaustion
+is likely to be gone by then, so the advertised policy does not need to be
+adjusted, yet we managed to stop requests for a while and slow down the rest of
+the current window.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">Request:<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+<div id="section-8.3-3">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.3-3" class="pilcrow">¶</a>
+</div>
+<p id="section-8.3-4">Response:<a href="#section-8.3-4" class="pilcrow">¶</a></p>
+<div id="section-8.3-5">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 429 Too Many Requests
+Content-Type: application/json
+Retry-After: 20
+RateLimit-Limit: 15, 100;w=60
+Ratelimit-Remaining: 15
+Ratelimit-Reset: 40
+
+{
+  "status": 429,
+  "detail": "Wait 20 seconds, then slow down!"
+}
+</pre><a href="#section-8.3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-8.3-6">Note that in this last response the client is expected to honor
+<code>Retry-After</code> and perform no requests for the specified amount of
+time, whereas the previous example would not force the client to stop
+requests before the reset time is elapsed, as it would still be free to
+query again the server even if it is likely to have the request rejected.<a href="#section-8.3-6" class="pilcrow">¶</a></p>
+<div id="missing-remaining-information">
+<section id="section-8.3.1">
+          <h4 id="name-missing-remaining-informati">
+<a href="#section-8.3.1" class="section-number selfRef">8.3.1. </a><a href="#name-missing-remaining-informati" class="section-name selfRef">Missing Remaining information</a>
+          </h4>
+<p id="section-8.3.1-1">The server does not expose <code>RateLimit-Remaining</code> values, but
+resets the limit counter every second.<a href="#section-8.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.3.1-2">It communicates to the client the limit of 10 quota-units per second
+always returning the couple <code>RateLimit-Limit</code> and <code>RateLimit-Reset</code>.<a href="#section-8.3.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.3.1-3">Request:<a href="#section-8.3.1-3" class="pilcrow">¶</a></p>
+<div id="section-8.3.1-4">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.3.1-4" class="pilcrow">¶</a>
+</div>
+<p id="section-8.3.1-5">Response:<a href="#section-8.3.1-5" class="pilcrow">¶</a></p>
+<div id="section-8.3.1-6">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 10
+Ratelimit-Reset: 1
+
+{"first": "request"}
+</pre><a href="#section-8.3.1-6" class="pilcrow">¶</a>
+</div>
+<p id="section-8.3.1-7">Request:<a href="#section-8.3.1-7" class="pilcrow">¶</a></p>
+<div id="section-8.3.1-8">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.3.1-8" class="pilcrow">¶</a>
+</div>
+<p id="section-8.3.1-9">Response:<a href="#section-8.3.1-9" class="pilcrow">¶</a></p>
+<div id="section-8.3.1-10">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 Ok
+Content-Type: application/json
+RateLimit-Limit: 10
+Ratelimit-Reset: 1
+
+{"second": "request"}
+</pre><a href="#section-8.3.1-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="use-with-multiple-windows">
+<section id="section-8.3.2">
+          <h4 id="name-use-with-multiple-windows">
+<a href="#section-8.3.2" class="section-number selfRef">8.3.2. </a><a href="#name-use-with-multiple-windows" class="section-name selfRef">Use with multiple windows</a>
+          </h4>
+<p id="section-8.3.2-1">This is a standardized way of describing the policy
+detailed in <a href="#use-with-custom-fields" class="xref">Section 8.1.2</a>:<a href="#section-8.3.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.3.2-2.1">5000 daily quota-units;<a href="#section-8.3.2-2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-8.3.2-2.2">1000 hourly quota-units.<a href="#section-8.3.2-2.2" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-8.3.2-3">The client consumed 4900 quota-units in the first 14 hours.<a href="#section-8.3.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.3.2-4">Despite the next hourly limit of 1000 quota-units, the closest limit
+to reach is the daily one.<a href="#section-8.3.2-4" class="pilcrow">¶</a></p>
+<p id="section-8.3.2-5">The server then exposes the <code>RateLimit</code> fields to
+inform the client that:<a href="#section-8.3.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-8.3.2-6.1">it has only 100 quota-units left;<a href="#section-8.3.2-6.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-8.3.2-6.2">the window will reset in 10 hours;<a href="#section-8.3.2-6.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-8.3.2-6.3">the <code>expiring-limit</code> is 5000.<a href="#section-8.3.2-6.3" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-8.3.2-7">Request:<a href="#section-8.3.2-7" class="pilcrow">¶</a></p>
+<div id="section-8.3.2-8">
+<pre class="sourcecode lang-http-message">
+GET /items/123 HTTP/1.1
+Host: api.example
+
+</pre><a href="#section-8.3.2-8" class="pilcrow">¶</a>
+</div>
+<p id="section-8.3.2-9">Response:<a href="#section-8.3.2-9" class="pilcrow">¶</a></p>
+<div id="section-8.3.2-10">
+<pre class="sourcecode lang-http-message">
+HTTP/1.1 200 OK
+Content-Type: application/json
+RateLimit-Limit: 5000, 1000;w=3600, 5000;w=86400
+RateLimit-Remaining: 100
+RateLimit-Reset: 36000
+
+{"hello": "world"}
+</pre><a href="#section-8.3.2-10" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-9">
+      <h2 id="name-security-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<div id="sec-throttling-does-not-prevent">
+<section id="section-9.1">
+        <h3 id="name-throttling-does-not-prevent">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-throttling-does-not-prevent" class="section-name selfRef">Throttling does not prevent clients from issuing requests</a>
+        </h3>
+<p id="section-9.1-1">This specification does not prevent clients to
+make over-quota requests.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
+<p id="section-9.1-2">Servers should always implement mechanisms
+to prevent resource exhaustion.<a href="#section-9.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-information-disclosure">
+<section id="section-9.2">
+        <h3 id="name-information-disclosure">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-information-disclosure" class="section-name selfRef">Information disclosure</a>
+        </h3>
+<p id="section-9.2-1">Servers should not disclose operational capacity information that
+can be used to saturate its resources.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<p id="section-9.2-2">While this specification does not mandate whether non 2xx responses
+consume quota, if 401 and 403 responses count on quota
+a malicious client could probe the endpoint
+to get traffic information of another
+user.<a href="#section-9.2-2" class="pilcrow">¶</a></p>
+<p id="section-9.2-3">As intermediaries might retransmit requests and consume
+quota-units without prior knowledge of the User Agent,
+RateLimit fields might reveal the existence of an intermediary
+to the User Agent.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="remaining-quota-units-are-not-granted-requests">
+<section id="section-9.3">
+        <h3 id="name-remaining-quota-units-are-n">
+<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-remaining-quota-units-are-n" class="section-name selfRef">Remaining quota-units are not granted requests</a>
+        </h3>
+<p id="section-9.3-1"><code>RateLimit-*</code> fields convey hints from the server
+to the clients in order to avoid being throttled out.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
+<p id="section-9.3-2">Clients MUST NOT consider the <code>quota-units</code> returned in <code>RateLimit-Remaining</code>
+as a service level agreement.<a href="#section-9.3-2" class="pilcrow">¶</a></p>
+<p id="section-9.3-3">In case of resource saturation, the server MAY artificially lower the returned
+values or not serve the request anyway.<a href="#section-9.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="reliability-of-ratelimit-reset">
+<section id="section-9.4">
+        <h3 id="name-reliability-of-ratelimit-re">
+<a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-reliability-of-ratelimit-re" class="section-name selfRef">Reliability of RateLimit-Reset</a>
+        </h3>
+<p id="section-9.4-1">Consider that <code>service-limit</code> may not be restored after the moment referenced by <code>RateLimit-Reset</code>,
+and the <code>RateLimit-Reset</code> value should not be considered fixed nor constant.<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-2">Subsequent requests may return an higher <code>RateLimit-Reset</code> value to limit
+concurrency or implement dynamic or adaptive throttling policies.<a href="#section-9.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-resource-exhaustion">
+<section id="section-9.5">
+        <h3 id="name-resource-exhaustion">
+<a href="#section-9.5" class="section-number selfRef">9.5. </a><a href="#name-resource-exhaustion" class="section-name selfRef">Resource exhaustion</a>
+        </h3>
+<p id="section-9.5-1">When returning <code>RateLimit-Reset</code> you must be aware that many throttled
+clients may come back at the very moment specified.<a href="#section-9.5-1" class="pilcrow">¶</a></p>
+<p id="section-9.5-2">This is true for <code>Retry-After</code> too.<a href="#section-9.5-2" class="pilcrow">¶</a></p>
+<p id="section-9.5-3">For example, if the quota resets every day at <code>18:00:00</code>
+and your server returns the <code>RateLimit-Reset</code> accordingly<a href="#section-9.5-3" class="pilcrow">¶</a></p>
+<div id="section-9.5-4">
+<pre class="sourcecode lang-example">
+   Date: Tue, 15 Nov 1994 08:00:00 GMT
+   RateLimit-Reset: 36000
+</pre><a href="#section-9.5-4" class="pilcrow">¶</a>
+</div>
+<p id="section-9.5-5">there's a high probability that all clients will show up at <code>18:00:00</code>.<a href="#section-9.5-5" class="pilcrow">¶</a></p>
+<p id="section-9.5-6">This could be mitigated by adding some jitter to the field-value.<a href="#section-9.5-6" class="pilcrow">¶</a></p>
+<p id="section-9.5-7">Resource exhaustion issues can be associated with quota policies
+using a large <code>time-window</code>, because a user agent by chance or purpose might
+consume most of its quota-units in a significantly shorter interval.<a href="#section-9.5-7" class="pilcrow">¶</a></p>
+<p id="section-9.5-8">This behavior can be even triggered by the provided <code>RateLimit</code> fields.
+The following example describes a service
+with an unconsumed quota-policy of 10000 quota-units per 1000 seconds.<a href="#section-9.5-8" class="pilcrow">¶</a></p>
+<div id="section-9.5-9">
+<pre class="sourcecode lang-example">
+RateLimit-Limit: 10000, 10000;w=1000
+RateLimit-Remaining: 10000
+RateLimit-Reset: 10
+</pre><a href="#section-9.5-9" class="pilcrow">¶</a>
+</div>
+<p id="section-9.5-10">A client implementing a simple ratio between <code>RateLimit-Remaining</code> and
+<code>RateLimit-Reset</code> could infer an average throughput of
+1000 quota-units per second,
+while <code>RateLimit-Limit</code> conveys a quota-policy 
+with an average of 10 quota-units per second.
+If the service cannot handle such load, it should return
+either a lower <code>RateLimit-Remaining</code> value
+or an higher <code>RateLimit-Reset</code> value.
+Moreover, complementing large <code>time-window</code> quota-policies with
+a short <code>time-window</code> one mitigates those risks.<a href="#section-9.5-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="denial-of-service">
+<section id="section-9.6">
+        <h3 id="name-denial-of-service">
+<a href="#section-9.6" class="section-number selfRef">9.6. </a><a href="#name-denial-of-service" class="section-name selfRef">Denial of Service</a>
+        </h3>
+<p id="section-9.6-1"><code>RateLimit</code> fields may assume unexpected values by chance or purpose.
+For example, an excessively high <code>RateLimit-Remaining</code> value may be:<a href="#section-9.6-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.6-2.1">used by a malicious intermediary to trigger a Denial of Service attack
+or consume client resources boosting its requests;<a href="#section-9.6-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-9.6-2.2">passed by a misconfigured server;<a href="#section-9.6-2.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-9.6-3">or an high <code>RateLimit-Reset</code> value could inhibit clients to contact
+the server.<a href="#section-9.6-3" class="pilcrow">¶</a></p>
+<p id="section-9.6-4">Clients MUST validate the received values to mitigate those risks.<a href="#section-9.6-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-10">
+      <h2 id="name-iana-considerations">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="ratelimit-limit-field-registration">
+<section id="section-10.1">
+        <h3 id="name-ratelimit-limit-field-regis">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-ratelimit-limit-field-regis" class="section-name selfRef">RateLimit-Limit Field Registration</a>
+        </h3>
+<p id="section-10.1-1">This section registers the <code>RateLimit-Limit</code> field in the
+"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry (<span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>).<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.1-2">Field name:  <code>RateLimit-Limit</code><a href="#section-10.1-2" class="pilcrow">¶</a></p>
+<p id="section-10.1-3">Status:  permanent<a href="#section-10.1-3" class="pilcrow">¶</a></p>
+<p id="section-10.1-4">Specification document(s):  <a href="#ratelimit-limit-field" class="xref">Section 3.1</a> of this document<a href="#section-10.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ratelimit-remaining-field-registration">
+<section id="section-10.2">
+        <h3 id="name-ratelimit-remaining-field-r">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-ratelimit-remaining-field-r" class="section-name selfRef">RateLimit-Remaining Field Registration</a>
+        </h3>
+<p id="section-10.2-1">This section registers the <code>RateLimit-Remaining</code> field in the
+"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry (<span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>).<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-2">Field name:  <code>RateLimit-Remaining</code><a href="#section-10.2-2" class="pilcrow">¶</a></p>
+<p id="section-10.2-3">Status:  permanent<a href="#section-10.2-3" class="pilcrow">¶</a></p>
+<p id="section-10.2-4">Specification document(s):  <a href="#ratelimit-remaining-field" class="xref">Section 3.2</a> of this document<a href="#section-10.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ratelimit-reset-field-registration">
+<section id="section-10.3">
+        <h3 id="name-ratelimit-reset-field-regis">
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-ratelimit-reset-field-regis" class="section-name selfRef">RateLimit-Reset Field Registration</a>
+        </h3>
+<p id="section-10.3-1">This section registers the <code>RateLimit-Reset</code> field in the
+"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry (<span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>).<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-2">Field name:  <code>RateLimit-Reset</code><a href="#section-10.3-2" class="pilcrow">¶</a></p>
+<p id="section-10.3-3">Status:  permanent<a href="#section-10.3-3" class="pilcrow">¶</a></p>
+<p id="section-10.3-4">Specification document(s):  <a href="#ratelimit-reset-field" class="xref">Section 3.3</a> of this document<a href="#section-10.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<section id="section-11">
+      <h2 id="name-references">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-11.1">
+        <h3 id="name-normative-references">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6454">[RFC6454]</dt>
+        <dd>
+<span class="refAuthor">Barth, A.</span>, <span class="refTitle">"The Web Origin Concept"</span>, <span class="seriesInfo">RFC 6454</span>, <span class="seriesInfo">DOI 10.17487/RFC6454</span>, <time datetime="2011-12" class="refDate">December 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6454">https://www.rfc-editor.org/info/rfc6454</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7405">[RFC7405]</dt>
+        <dd>
+<span class="refAuthor">Kyzivat, P.</span>, <span class="refTitle">"Case-Sensitive String Support in ABNF"</span>, <span class="seriesInfo">RFC 7405</span>, <span class="seriesInfo">DOI 10.17487/RFC7405</span>, <time datetime="2014-12" class="refDate">December 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7405">https://www.rfc-editor.org/info/rfc7405</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SEMANTICS">[SEMANTICS]</dt>
+      <dd>
+<span class="refAuthor">Fielding, R. T.</span>, <span class="refAuthor">Nottingham, M.</span>, and <span class="refAuthor">J. Reschke</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-semantics-15</span>, <time datetime="2021-03-30" class="refDate">30 March 2021</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-ietf-httpbis-semantics-15.txt">https://www.ietf.org/archive/id/draft-ietf-httpbis-semantics-15.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-11.2">
+        <h3 id="name-informative-references">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="HPACK">[HPACK]</dt>
+        <dd>
+<span class="refAuthor">Peon, R.</span> and <span class="refAuthor">H. Ruellan</span>, <span class="refTitle">"HPACK: Header Compression for HTTP/2"</span>, <span class="seriesInfo">RFC 7541</span>, <span class="seriesInfo">DOI 10.17487/RFC7541</span>, <time datetime="2015-05" class="refDate">May 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7541">https://www.rfc-editor.org/info/rfc7541</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3339">[RFC3339]</dt>
+        <dd>
+<span class="refAuthor">Klyne, G.</span> and <span class="refAuthor">C. Newman</span>, <span class="refTitle">"Date and Time on the Internet: Timestamps"</span>, <span class="seriesInfo">RFC 3339</span>, <span class="seriesInfo">DOI 10.17487/RFC3339</span>, <time datetime="2002-07" class="refDate">July 2002</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc3339">https://www.rfc-editor.org/info/rfc3339</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6585">[RFC6585]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">R. Fielding</span>, <span class="refTitle">"Additional HTTP Status Codes"</span>, <span class="seriesInfo">RFC 6585</span>, <span class="seriesInfo">DOI 10.17487/RFC6585</span>, <time datetime="2012-04" class="refDate">April 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6585">https://www.rfc-editor.org/info/rfc6585</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7234">[RFC7234]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Caching"</span>, <span class="seriesInfo">RFC 7234</span>, <span class="seriesInfo">DOI 10.17487/RFC7234</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7234">https://www.rfc-editor.org/info/rfc7234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="STATUS429">[STATUS429]</dt>
+        <dd>
+<span class="refAuthor">Stewart, R.</span>, <span class="refAuthor">Tuexen, M.</span>, and <span class="refAuthor">P. Lei</span>, <span class="refTitle">"Stream Control Transmission Protocol (SCTP) Stream Reconfiguration"</span>, <span class="seriesInfo">RFC 6525</span>, <span class="seriesInfo">DOI 10.17487/RFC6525</span>, <time datetime="2012-02" class="refDate">February 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6525">https://www.rfc-editor.org/info/rfc6525</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="UNIX">[UNIX]</dt>
+      <dd>
+<span class="refAuthor">The Open Group, .</span>, <span class="refTitle">"The Single UNIX Specification, Version 2 - 6 Vol Set for UNIX 98"</span>, <time datetime="1997-02" class="refDate">February 1997</time>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="acknowledgements">
+<section id="section-appendix.a">
+      <h2 id="name-acknowledgements">
+<a href="#section-appendix.a" class="section-number selfRef">Appendix A. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="section-appendix.a-1">Thanks to Willi Schoenborn, Alejandro Martinez Ruiz, Alessandro Ranellucci,
+Amos Jeffries,
+Martin Thomson,
+Erik Wilde and Mark Nottingham for being the initial contributors
+of these specifications.
+Kudos to the first community implementors:
+Aapo Talvensaari,
+Nathan Friedly
+and Sanyam Dogra.<a href="#section-appendix.a-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="faq">
+<section id="section-appendix.b">
+      <h2 id="name-faq">
+<a href="#section-appendix.b" class="section-number selfRef">Appendix B. </a><a href="#name-faq" class="section-name selfRef">FAQ</a>
+      </h2>
+<ol start="1" type="1" class="normal type-1" id="section-appendix.b-1">
+<li id="section-appendix.b-1.1">
+          <p id="section-appendix.b-1.1.1">Why defining standard fields for throttling?<a href="#section-appendix.b-1.1.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.1.2">
+To simplify enforcement of throttling policies.<a href="#section-appendix.b-1.1.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-1.2">
+          <p id="section-appendix.b-1.2.1">Can I use RateLimit-* in throttled responses (eg with status code 429)?<a href="#section-appendix.b-1.2.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.2.2">
+Yes, you can.<a href="#section-appendix.b-1.2.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-1.3">
+          <p id="section-appendix.b-1.3.1">Are those specs tied to RFC 6585?<a href="#section-appendix.b-1.3.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.3.2">
+No. <span>[<a href="#RFC6585" class="xref">RFC6585</a>]</span> defines the <code>429</code> status code and we use it just as an example of a throttled request,
+that could instead use even <code>403</code> or whatever status code.
+The goal of this specification is to standardize the name and semantic of three ratelimit fields
+widely used on the internet. Stricter relations with status codes or error response payloads 
+would impose behaviors to all the existing implementations making the adoption more complex.<a href="#section-appendix.b-1.3.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-1.4">
+          <p id="section-appendix.b-1.4.1">Why don't pass the throttling scope as a parameter?<a href="#section-appendix.b-1.4.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.4.2">
+After a discussion on a <a href="https://github.com/httpwg/http-core/pull/317#issuecomment-585868767">similar thread</a>
+we will probably add a new "RateLimit-Scope" field to this spec.<a href="#section-appendix.b-1.4.2" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.4.3">
+I'm open to suggestions: comment on <a href="https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/70">this issue</a><a href="#section-appendix.b-1.4.3" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-1.5">
+          <p id="section-appendix.b-1.5.1">Why using delay-seconds instead of a UNIX Timestamp?
+Why not using subsecond precision?<a href="#section-appendix.b-1.5.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.5.2">
+Using delay-seconds aligns with <code>Retry-After</code>, which is returned in similar contexts,
+eg on 429 responses.<a href="#section-appendix.b-1.5.2" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.5.3">
+Timestamps require a clock synchronization protocol 
+(see Section 5.6.7 of <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span>).
+This may be problematic (eg. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
+IoT devices, ..).
+Moreover timestamps may not be monotonically increasing due to clock adjustment.
+See <a href="https://community.ntppool.org/t/another-ntp-client-failure-story/1014/">Another NTP client failure story</a><a href="#section-appendix.b-1.5.3" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.5.4">
+We did not use subsecond precision because:<a href="#section-appendix.b-1.5.4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-appendix.b-1.5.5.1">that is more subject to system clock correction
+like the one implemented via the adjtimex() Linux system call;<a href="#section-appendix.b-1.5.5.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-appendix.b-1.5.5.2">response-time latency may not make it worth. A brief discussion on the subject is
+on the <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/2019JulSep/0202.html">httpwg ml</a><a href="#section-appendix.b-1.5.5.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-appendix.b-1.5.5.3">almost all rate-limit headers implementations do not use it.<a href="#section-appendix.b-1.5.5.3" class="pilcrow">¶</a>
+</li>
+          </ul>
+</li>
+        <li id="section-appendix.b-1.6">
+          <p id="section-appendix.b-1.6.1">Why not support multiple quota remaining?<a href="#section-appendix.b-1.6.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.6.2">
+While this might be of some value, my experience suggests that overly-complex quota implementations
+results in lower effectiveness of this policy. This spec allows the client to easily focusing on
+RateLimit-Remaining and RateLimit-Reset.<a href="#section-appendix.b-1.6.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-1.7">
+          <p id="section-appendix.b-1.7.1">Shouldn't I limit concurrency instead of request rate?<a href="#section-appendix.b-1.7.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.7.2">
+You can use this specification to limit concurrency
+at the HTTP level (see {#use-for-limiting-concurrency})
+and help clients to
+shape their requests avoiding being throttled out.<a href="#section-appendix.b-1.7.2" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.7.3">
+A problematic way to limit concurrency is connection dropping,
+especially when connections are multiplexed (eg. HTTP/2)
+because this results in unserviced client requests,
+which is something we want to avoid.<a href="#section-appendix.b-1.7.3" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.7.4">
+A semantic way to limit concurrency is to return 503 + Retry-After
+in case of resource saturation (eg. thrashing, connection queues too long,
+Service Level Objectives not meet, ..).
+Saturation conditions can be either dynamic or static: all this is out of
+the scope for the current document.<a href="#section-appendix.b-1.7.4" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-1.8">
+          <p id="section-appendix.b-1.8.1">Do a positive value of <code>RateLimit-Remaining</code> imply any service guarantee for my
+future requests to be served?<a href="#section-appendix.b-1.8.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.8.2">
+No. FAQ integrated in <a href="#ratelimit-remaining-field" class="xref">Section 3.2</a>.<a href="#section-appendix.b-1.8.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-1.9">
+          <p id="section-appendix.b-1.9.1">Is the quota-policy definition <a href="#quota-policy" class="xref">Section 2.3</a> too complex?<a href="#section-appendix.b-1.9.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-1.9.2">
+You can always return the simplest form of the 3 fields<a href="#section-appendix.b-1.9.2" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<div id="section-appendix.b-2">
+<pre class="sourcecode lang-example">
+RateLimit-Limit: 100
+RateLimit-Remaining: 50
+RateLimit-Reset: 60
+</pre><a href="#section-appendix.b-2" class="pilcrow">¶</a>
+</div>
+<p id="section-appendix.b-3">The key runtime value is the first element of the list: <code>expiring-limit</code>, the others <code>quota-policy</code> are informative.
+   So for the following field:<a href="#section-appendix.b-3" class="pilcrow">¶</a></p>
+<div id="section-appendix.b-4">
+<pre class="sourcecode lang-example">
+RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;burst=0;comment="fixed window"
+</pre><a href="#section-appendix.b-4" class="pilcrow">¶</a>
+</div>
+<p id="section-appendix.b-5">the key value is the one referencing the lowest limit: <code>100</code><a href="#section-appendix.b-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-appendix.b-6">
+<li id="section-appendix.b-6.1">Can we use shorter names? Why don't put everything in one field?<a href="#section-appendix.b-6.1" class="pilcrow">¶</a>
+</li>
+      </ol>
+<p id="section-appendix.b-7">The most common syntax we found on the web is <code>X-RateLimit-*</code> and
+   when starting this I-D <a href="https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/34#issuecomment-519366481">we opted for it</a><a href="#section-appendix.b-7" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-8">The basic form of those fields is easily parseable, even by
+   implementors procesing responses using technologies like
+   dynamic interpreter with limited syntax.<a href="#section-appendix.b-8" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-9">Using a single field complicates parsing and takes
+   a significantly different approach from the existing
+   ones: this can limit adoption.<a href="#section-appendix.b-9" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-appendix.b-10">
+<li id="section-appendix.b-10.1">
+          <p id="section-appendix.b-10.1.1">Why don't mention connections?<a href="#section-appendix.b-10.1.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-10.1.2">
+Beware of the term "connection":
+&amp;#65532;
+&amp;#65532;   - it is just <em>one</em> possible saturation cause. Once you go that path
+&amp;#65532;     you will expose other infrastructural details (bandwidth, CPU, .. see <a href="#sec-information-disclosure" class="xref">Section 9.2</a>)
+&amp;#65532;     and complicate client compliance;
+&amp;#65532;   - it is an infrastructural detail defined in terms of server and network
+&amp;#65532;     rather than the consumed service.
+  This specification protects the services first,
+  and then the infrastructures through client cooperation (see <a href="#sec-throttling-does-not-prevent" class="xref">Section 9.1</a>).
+&amp;#65532;
+&amp;#65532;   RateLimit fields enable sending <em>on the same connection</em> different limit values
+&amp;#65532;   on each response, depending on the policy scope (eg. per-user, per-custom-key, ..)
+&amp;#65532;<a href="#section-appendix.b-10.1.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-10.2">
+          <p id="section-appendix.b-10.2.1">Can intermediaries alter RateLimit fields?<a href="#section-appendix.b-10.2.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-10.2.2">
+Generally, they should not because it might result in unserviced requests.
+There are reasonable use cases for intermediaries mangling RateLimit fields though,
+e.g. when they enforce stricter quota-policies,
+or when they are an active component of the service.
+In those case we will consider them as part of the originating infrastructure.<a href="#section-appendix.b-10.2.2" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-appendix.b-10.3">
+          <p id="section-appendix.b-10.3.1">Why the <code>w</code> parameter is just informative?
+Could it be used by a client to determine the request rate?<a href="#section-appendix.b-10.3.1" class="pilcrow">¶</a></p>
+<p id="section-appendix.b-10.3.2">
+A non-informative <code>w</code> parameter might be fine in an environment
+where clients and servers are tightly coupled. Conveying policies
+with this detail on a large scale would be very complex and implementations
+would be likely not interoperable. We thus decided to leave <code>w</code> as 
+an informational parameter and only rely on <code>RateLimit-Limit</code>,
+<code>RateLimit-Remaining</code> and <code>RateLimit-Reset</code> for defining the throttling
+behavior.<a href="#section-appendix.b-10.3.2" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+</section>
+</div>
+<div id="ratelimit-fields-currently-used-on-the-web">
+<section id="section-appendix.c">
+      <h2 id="name-ratelimit-fields-currently-">
+<a href="#name-ratelimit-fields-currently-" class="section-name selfRef">RateLimit fields currently used on the web</a>
+      </h2>
+<p id="section-appendix.c-1"><em>RFC Editor: Please remove this section before publication.</em><a href="#section-appendix.c-1" class="pilcrow">¶</a></p>
+<p id="section-appendix.c-2">Commonly used header field names are:<a href="#section-appendix.c-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-appendix.c-3.1">
+          <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code>;<a href="#section-appendix.c-3.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-appendix.c-3.2">
+          <code>X-Rate-Limit-Limit</code>, <code>X-Rate-Limit-Remaining</code>, <code>X-Rate-Limit-Reset</code>.<a href="#section-appendix.c-3.2" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-appendix.c-4">There are variants too, where the window is specified
+in the header field name, eg:<a href="#section-appendix.c-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-appendix.c-5.1">
+          <code>x-ratelimit-limit-minute</code>, <code>x-ratelimit-limit-hour</code>, <code>x-ratelimit-limit-day</code><a href="#section-appendix.c-5.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-appendix.c-5.2">
+          <code>x-ratelimit-remaining-minute</code>, <code>x-ratelimit-remaining-hour</code>, <code>x-ratelimit-remaining-day</code><a href="#section-appendix.c-5.2" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-appendix.c-6">Here are some interoperability issues:<a href="#section-appendix.c-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-appendix.c-7.1">
+          <p id="section-appendix.c-7.1.1"><code>X-RateLimit-Remaining</code> references different values, depending on the implementation:<a href="#section-appendix.c-7.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-appendix.c-7.1.2.1">seconds remaining to the window expiration<a href="#section-appendix.c-7.1.2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-appendix.c-7.1.2.2">milliseconds remaining to the window expiration<a href="#section-appendix.c-7.1.2.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-appendix.c-7.1.2.3">seconds since UTC, in UNIX Timestamp <span>[<a href="#UNIX" class="xref">UNIX</a>]</span><a href="#section-appendix.c-7.1.2.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-appendix.c-7.1.2.4">a datetime, either <code>IMF-fixdate</code> <span>[<a href="#SEMANTICS" class="xref">SEMANTICS</a>]</span> or <span>[<a href="#RFC3339" class="xref">RFC3339</a>]</span><a href="#section-appendix.c-7.1.2.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</li>
+        <li class="normal" id="section-appendix.c-7.2">
+          <p id="section-appendix.c-7.2.1">different headers, with the same semantic, are used by different implementers:<a href="#section-appendix.c-7.2.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-appendix.c-7.2.2.1">X-RateLimit-Limit and X-Rate-Limit-Limit<a href="#section-appendix.c-7.2.2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-appendix.c-7.2.2.2">X-RateLimit-Remaining and X-Rate-Limit-Remaining<a href="#section-appendix.c-7.2.2.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-appendix.c-7.2.2.3">X-RateLimit-Reset and X-Rate-Limit-Reset<a href="#section-appendix.c-7.2.2.3" class="pilcrow">¶</a>
+</li>
+          </ul>
+</li>
+      </ul>
+<p id="section-appendix.c-8">The semantic of RateLimit-Remaining depends on the windowing algorithm.
+A sliding window policy for example may result in having a 
+<code>RateLimit-Remaining</code>
+value related to the ratio between the current and the maximum throughput.
+Eg.<a href="#section-appendix.c-8" class="pilcrow">¶</a></p>
+<div id="section-appendix.c-9">
+<pre class="sourcecode lang-example">
+RateLimit-Limit: 12, 12;w=1
+RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
+RateLimit-Reset: 1
+</pre><a href="#section-appendix.c-9" class="pilcrow">¶</a>
+</div>
+<p id="section-appendix.c-10">If this is the case, the optimal solution is to achieve<a href="#section-appendix.c-10" class="pilcrow">¶</a></p>
+<div id="section-appendix.c-11">
+<pre class="sourcecode lang-example">
+RateLimit-Limit: 12, 12;w=1
+RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
+RateLimit-Reset: 1
+</pre><a href="#section-appendix.c-11" class="pilcrow">¶</a>
+</div>
+<p id="section-appendix.c-12">At this point you should stop increasing your request rate.<a href="#section-appendix.c-12" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="changes">
+<section id="section-appendix.d">
+      <h2 id="name-changes">
+<a href="#name-changes" class="section-name selfRef">Changes</a>
+      </h2>
+<p id="section-appendix.d-1"><em>RFC Editor: Please remove this section before publication.</em><a href="#section-appendix.d-1" class="pilcrow">¶</a></p>
+<div id="since-draft-ietf-httpapi-ratelimit-headers-00">
+<section id="section-d.1">
+        <h2 id="name-since-draft-ietf-httpapi-ra">
+<a href="#name-since-draft-ietf-httpapi-ra" class="section-name selfRef">Since draft-ietf-httpapi-ratelimit-headers-00</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-d.1-1.1">Use I-D.httpbis-semantics, which includes referencing <code>delay-seconds</code>
+instead of <code>delta-seconds</code>. #5<a href="#section-d.1-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="section-appendix.e">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Roberto Polli</span></div>
+<div dir="auto" class="left"><span class="org">Team Digitale, Italian Government</span></div>
+<div dir="auto" class="left"><span class="country-name">Italy</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:robipolli@gmail.com" class="email">robipolli@gmail.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Alejandro Martinez Ruiz</span></div>
+<div dir="auto" class="left"><span class="org">Red Hat</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:amr@redhat.com" class="email">amr@redhat.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
