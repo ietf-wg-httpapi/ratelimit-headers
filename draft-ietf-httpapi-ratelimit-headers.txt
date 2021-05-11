@@ -5,8 +5,8 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 5 November 2021                                         Red Hat
-                                                              4 May 2021
+Expires: 12 November 2021                                        Red Hat
+                                                             11 May 2021
 
 
                     RateLimit Header Fields for HTTP
@@ -47,13 +47,13 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 November 2021.
+   This Internet-Draft will expire on 12 November 2021.
 
 
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 1]
+Polli & Martinez        Expires 12 November 2021                [Page 1]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 2]
+Polli & Martinez        Expires 12 November 2021                [Page 2]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -165,7 +165,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 3]
+Polli & Martinez        Expires 12 November 2021                [Page 3]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -221,7 +221,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 4]
+Polli & Martinez        Expires 12 November 2021                [Page 4]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -277,7 +277,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 5]
+Polli & Martinez        Expires 12 November 2021                [Page 5]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -333,7 +333,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 6]
+Polli & Martinez        Expires 12 November 2021                [Page 6]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -389,7 +389,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 7]
+Polli & Martinez        Expires 12 November 2021                [Page 7]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -445,7 +445,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 8]
+Polli & Martinez        Expires 12 November 2021                [Page 8]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -501,7 +501,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021                [Page 9]
+Polli & Martinez        Expires 12 November 2021                [Page 9]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -557,7 +557,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 10]
+Polli & Martinez        Expires 12 November 2021               [Page 10]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -613,7 +613,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 11]
+Polli & Martinez        Expires 12 November 2021               [Page 11]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -669,7 +669,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 12]
+Polli & Martinez        Expires 12 November 2021               [Page 12]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -725,7 +725,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 13]
+Polli & Martinez        Expires 12 November 2021               [Page 13]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -781,7 +781,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 14]
+Polli & Martinez        Expires 12 November 2021               [Page 14]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -837,7 +837,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 15]
+Polli & Martinez        Expires 12 November 2021               [Page 15]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -893,7 +893,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 16]
+Polli & Martinez        Expires 12 November 2021               [Page 16]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -949,7 +949,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 17]
+Polli & Martinez        Expires 12 November 2021               [Page 17]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1005,7 +1005,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 18]
+Polli & Martinez        Expires 12 November 2021               [Page 18]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1061,7 +1061,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 19]
+Polli & Martinez        Expires 12 November 2021               [Page 19]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1117,7 +1117,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 20]
+Polli & Martinez        Expires 12 November 2021               [Page 20]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1173,7 +1173,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 21]
+Polli & Martinez        Expires 12 November 2021               [Page 21]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1229,7 +1229,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 22]
+Polli & Martinez        Expires 12 November 2021               [Page 22]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1285,7 +1285,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 23]
+Polli & Martinez        Expires 12 November 2021               [Page 23]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1341,7 +1341,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 24]
+Polli & Martinez        Expires 12 November 2021               [Page 24]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1397,7 +1397,7 @@ Appendix B.  FAQ
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 25]
+Polli & Martinez        Expires 12 November 2021               [Page 25]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1453,7 +1453,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 26]
+Polli & Martinez        Expires 12 November 2021               [Page 26]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1509,7 +1509,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 27]
+Polli & Martinez        Expires 12 November 2021               [Page 27]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1565,7 +1565,7 @@ Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 28]
+Polli & Martinez        Expires 12 November 2021               [Page 28]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1621,7 +1621,7 @@ RateLimit fields currently used on the web
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 29]
+Polli & Martinez        Expires 12 November 2021               [Page 29]
 
 Internet-Draft      RateLimit Header Fields for HTTP            May 2021
 
@@ -1677,4 +1677,4 @@ Authors' Addresses
 
 
 
-Polli & Martinez         Expires 5 November 2021               [Page 30]
+Polli & Martinez        Expires 12 November 2021               [Page 30]
