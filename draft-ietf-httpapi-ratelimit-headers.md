@@ -45,7 +45,7 @@ clients to shape their request policy and avoid being throttled out.
 
 Discussion of this draft takes place on the HTTP working group mailing list
 (httpapi@ietf.org), which is archived at
-<https://lists.w3.org/Archives/Public/ietf-httpapi-wg/>.
+<https://mailarchive.ietf.org/arch/browse/httpapi/>.
 
 The source code and issues list for this draft can be found at
 <https://github.com/ietf-wg-httpapi/ratelimit-headers>.
