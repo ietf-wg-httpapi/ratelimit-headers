@@ -196,7 +196,7 @@ defined in Section 5.6.1 of {{SEMANTICS}}.
 
 The term Origin is to be interpreted as described in Section 7 of {{!RFC6454}}.
 
-The "delay-seconds" rule is defined in Section 10.2.4 of {{SEMANTICS}}.
+The "delay-seconds" rule is defined in Section 10.2.3 of {{SEMANTICS}}.
 
 # Expressing rate-limit policies
 
