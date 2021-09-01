@@ -470,7 +470,7 @@ http features such as {{?HPACK=RFC7541}}.
 # Intermediaries {#intermediaries}
 
 This section documents the considerations advised in
-Section 16.3.3 of {{SEMANTICS}}.
+Section 16.3.2 of {{SEMANTICS}}.
 
 An intermediary that is not part of the originating service infrastructure
 and is not aware of the quota-policy semantic used by the Origin Server
