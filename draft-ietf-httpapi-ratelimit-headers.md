@@ -86,12 +86,12 @@ Quotas may be enforced on different basis (eg. per user, per IP, per geographic 
 at different levels. For example, an user may be allowed to issue:
 
 - 10 requests per second;
-- limited to 60 request per minute;
-- limited to 1000 request per hour.
+- limited to 60 requests per minute;
+- limited to 1000 requests per hour.
 
 Moreover system metrics, statistics and heuristics can be used
 to implement more complex policies, where
-the number of acceptable request and the time window
+the number of acceptable requests and the time window
 are computed dynamically.
 
 ## Current landscape of rate-limiting headers
@@ -145,17 +145,20 @@ using multiple and variable time windows and dynamic quotas, or implementing con
 
 The goals of this proposal are:
 
-   1. Standardizing the names and semantics of rate-limit headers
-      to ease their enforcement and adoption;
+  Interoperability:
+  : Standardization of the names and semantics of rate-limit headers
+    to ease their enforcement and adoption;
 
-   2. Improve resiliency of HTTP infrastructure by
-      providing clients with information useful
-      to throttle their requests and
-      prevent 4xx or 5xx responses;
+  Resiliency:
+  : Improve resiliency of HTTP infrastructure by
+    providing clients with information useful
+    to throttle their requests and
+    prevent 4xx or 5xx responses;
 
-   3. Simplify API documentation by eliminating the need
-      to include detailed quota limits
-      and related header fields in API documentation.
+  Documentation:
+  : Simplify API documentation by eliminating the need
+    to include detailed quota limits
+    and related header fields in API documentation.
 
 The goals do not include:
 
