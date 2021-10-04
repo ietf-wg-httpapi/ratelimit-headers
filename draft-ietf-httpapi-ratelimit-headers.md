@@ -264,7 +264,6 @@ This specification allows describing a quota policy with the following syntax:
 ~~~
 
 where the associated bare-item is a service-limit and parameters are supported.
-Parameters MUST NOT occur multiple times within the same quota-policy.
 
 The following parameters are defined:
 
