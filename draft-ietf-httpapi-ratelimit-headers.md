@@ -199,7 +199,10 @@ defined in Section 5.6.1 of {{SEMANTICS}}.
 
 The term Origin is to be interpreted as described in Section 7 of {{!RFC6454}}.
 
-The "delay-seconds" rule is defined in Section 10.2.3 of {{SEMANTICS}}.
+This specification uses Structured Fields {{!SF=RFC8941}} to specify syntax.
+
+The terms sf-list, sf-item, sf-string, sf-token, sf-integer,
+bare-item and key refer to the structured types defined therein.
 
 # Expressing rate-limit policies
 
@@ -210,6 +213,10 @@ Rate limit policies limit the number of acceptable requests in a given time wind
 A time window is expressed in seconds, using the following syntax:
 
     time-window = delay-seconds
+    delay-seconds = sf-integer
+
+Where `delay-seconds` is a non-negative sf-integer
+compatible with the "delay-seconds" rule defined in Section 10.2.3 of {{SEMANTICS}}.
 
 Subsecond precision is not supported.
 
@@ -225,8 +232,10 @@ The `service-limit` is expressed in `quota-units` and has the following syntax:
 
 ~~~
    service-limit = quota-units
-   quota-units = 1*DIGIT
+   quota-units = sf-integer
 ~~~
+
+where quota-units is a non-negative sf-integer.
 
 The `service-limit` SHOULD match the maximum number of acceptable requests.
 
@@ -254,13 +263,18 @@ GET /books?author=Eco           ; service-limit=4, remaining: 0, status=429
 This specification allows describing a quota policy with the following syntax:
 
 ~~~
-   quota-policy = service-limit; "w" "=" time-window
-                  *( OWS ";" OWS quota-comment)
-   quota-comment = token "=" (token / quoted-string)
+   quota-policy = sf-item
 ~~~
 
-quota-policy parameters like `w` and
-quota-comment tokens MUST NOT occur multiple times within the same quota-policy.
+where the associated bare-item is a service-limit and parameters are supported.
+
+The following parameters are defined:
+
+  w:
+  :  The "w" parameter specifies a time window.
+     Its syntax is a "time-window" defined in {{time-window}}.
+
+Other parameters are allowed and can be regarded as comments.
 
 An example policy of 100 quota-units per minute.
 
@@ -270,10 +284,9 @@ An example policy of 100 quota-units per minute.
 
 The definition of a quota-policy does not imply any specific
 distribution of quota-units over time.
-Such service specific details can be conveyed in the `quota-comments`.
+Such service specific details can be conveyed as parameters.
 
 Two examples of providing further details via custom parameters
-in `quota-comments`.
 
 ~~~ example
    100;w=60;comment="fixed window"
@@ -292,11 +305,12 @@ in the current `time-window`.
 
 If the client exceeds that limit, it MAY not be served.
 
-The field value is
+The field is a List Structured Field of positive length.
+The first member is named `expiring-limit` and its syntax is `service-limit`,
+while the syntax of the other optional members is `quota-policy`
 
 ~~~
-   RateLimit-Limit = expiring-limit [, 1#quota-policy ]
-   expiring-limit = service-limit
+   RateLimit-Limit = sf-list
 ~~~
 
 The `expiring-limit` value MUST be set to the `service-limit` that is closer to reach its limit.
@@ -335,7 +349,7 @@ and can be sent in a trailer section.
 The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{service-limit}}
 associated to the client.
 
-The field value is
+The field is an Integer Structured Field and its value is
 
 ~~~
    RateLimit-Remaining = quota-units
@@ -365,7 +379,7 @@ The `RateLimit-Reset` response field indicates either
 
 - the number of seconds until the quota resets.
 
-The field value is
+The field is an Integer Structured Field and its value is
 
 ~~~
    RateLimit-Reset = delay-seconds
