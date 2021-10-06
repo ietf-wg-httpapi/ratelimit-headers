@@ -25,6 +25,9 @@ author:
     org: Red Hat
     email: amr@redhat.com
 
+normative:
+  IANA: RFC8126
+
 informative:
   UNIX:
     title: The Single UNIX Specification, Version 2 - 6 Vol Set for UNIX 98
@@ -49,6 +52,9 @@ Discussion of this draft takes place on the HTTP working group mailing list
 
 The source code and issues list for this draft can be found at
 <https://github.com/ietf-wg-httpapi/ratelimit-headers>.
+
+References to `ThisRFC` in the IANA Considerations section whould
+be replaced with the RFC number when assigned.
 
 
 --- middle
@@ -1094,40 +1100,48 @@ Clients MUST validate the received values to mitigate those risks.
 
 # IANA Considerations
 
+IANA is requested to update one registry and create one new registry.
 
-## RateLimit-Limit Field Registration
+Please add the following entries to the
+"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry
+({{SEMANTICS}}):
 
-This section registers the `RateLimit-Limit` field in the
-"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{SEMANTICS}}).
+|---------------------|-----------|---------------|
+| Field Name          | Status    | Specification |
+|---------------------|-----------|---------------|
+| RateLimit-Limit     | permanent | ThisRFC       |
+| RateLimit-Remaining | permanent | ThisRFC       |
+| RateLimit-Reset     | permanent | ThisRFC       |
+|---------------------|-----------|---------------|
 
-Field name:  `RateLimit-Limit`
+IANA is requested to create a new registry to be called
+"Hypertext Transfer Protocol (HTTP) Quota-Policy Fields Registry,"
+to be located at
+<https://www.iana.org/assignments/http-ratelimit-quota-fields>.
+Registration is done on the advice of a Designated Expert, appointed
+by the IESG or their delegate. All entries are Specification Required
+({{IANA, Section 4.6}}).
 
-Status:  permanent
+Registration requests must have the following information:
 
-Specification document(s):  {{ratelimit-limit-field}} of this document
+- Field name:
+  The name of the field, which MUST confirm to the specification in
+  `httpbis-semantics` draft, Section 5.1.
 
-## RateLimit-Remaining Field Registration
+- Specification document:
+  A reference to the document that specifies the field, preferably
+  including a URI that can be used to retrieve a copy of the document.
 
-This section registers the `RateLimit-Remaining` field in the
-"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{SEMANTICS}}).
+- Comments (optional):
+  Any additional information that can be useful.
 
-Field name:  `RateLimit-Remaining`
+The initial contents of this registry should be:
 
-Status:  permanent
-
-Specification document(s):  {{ratelimit-remaining-field}} of this document
-
-## RateLimit-Reset Field Registration
-
-This section registers the `RateLimit-Reset` field in the
-"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{SEMANTICS}}).
-
-Field name:  `RateLimit-Reset`
-
-Status:  permanent
-
-Specification document(s):  {{ratelimit-reset-field}} of this document
-
+|------------|---------------|
+| Field Name | Specification |
+|------------|---------------|
+| w          | ThisRFC       |
+|------------|---------------|
 
 --- back
 
