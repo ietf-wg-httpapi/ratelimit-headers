@@ -495,7 +495,7 @@ SHOULD NOT alter the RateLimit fields' values
 in such a way as to communicate a more permissive quota-policy;
 this includes removing the RateLimit fields.
 
-An intermediary MAY alter the RateLimit fields 
+An intermediary MAY alter the RateLimit fields
 in such a way as to communicate a more restrictive quota-policy when:
 
 - it is aware of the quota-unit semantic used by the Origin Server;
@@ -1068,7 +1068,7 @@ RateLimit-Reset: 10
 A client implementing a simple ratio between `RateLimit-Remaining` and
 `RateLimit-Reset` could infer an average throughput of
 1000 quota-units per second,
-while `RateLimit-Limit` conveys a quota-policy 
+while `RateLimit-Limit` conveys a quota-policy
 with an average of 10 quota-units per second.
 If the service cannot handle such load, it should return
 either a lower `RateLimit-Remaining` value
@@ -1159,7 +1159,7 @@ and Sanyam Dogra.
    No. {{?RFC6585}} defines the `429` status code and we use it just as an example of a throttled request,
    that could instead use even `403` or whatever status code.
    The goal of this specification is to standardize the name and semantic of three ratelimit fields
-   widely used on the internet. Stricter relations with status codes or error response payloads 
+   widely used on the internet. Stricter relations with status codes or error response payloads
    would impose behaviors to all the existing implementations making the adoption more complex.
 
 4. Why don't pass the throttling scope as a parameter?
@@ -1175,7 +1175,7 @@ and Sanyam Dogra.
    Using delay-seconds aligns with `Retry-After`, which is returned in similar contexts,
    eg on 429 responses.
 
-   Timestamps require a clock synchronization protocol 
+   Timestamps require a clock synchronization protocol
    (see Section 5.6.7 of {{SEMANTICS}}).
    This may be problematic (eg. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
    IoT devices, ..).
@@ -1280,7 +1280,7 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     A non-informative `w` parameter might be fine in an environment
     where clients and servers are tightly coupled. Conveying policies
     with this detail on a large scale would be very complex and implementations
-    would be likely not interoperable. We thus decided to leave `w` as 
+    would be likely not interoperable. We thus decided to leave `w` as
     an informational parameter and only rely on `RateLimit-Limit`,
     `RateLimit-Remaining` and `RateLimit-Reset` for defining the throttling
     behavior.
@@ -1292,8 +1292,12 @@ _RFC Editor: Please remove this section before publication._
 
 Commonly used header field names are:
 
-- `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`;
-- `X-Rate-Limit-Limit`, `X-Rate-Limit-Remaining`, `X-Rate-Limit-Reset`.
+- `X-RateLimit-Limit`,
+  `X-RateLimit-Remaining`,
+    `X-RateLimit-Reset`;
+- `X-Rate-Limit-Limit`,
+  `X-Rate-Limit-Remaining`,
+    `X-Rate-Limit-Reset`.
 
 There are variants too, where the window is specified
 in the header field name, eg:
@@ -1317,7 +1321,7 @@ Here are some interoperability issues:
   * X-RateLimit-Reset and X-Rate-Limit-Reset
 
 The semantic of RateLimit-Remaining depends on the windowing algorithm.
-A sliding window policy for example may result in having a 
+A sliding window policy for example may result in having a
 `RateLimit-Remaining`
 value related to the ratio between the current and the maximum throughput.
 Eg.
