@@ -79,16 +79,16 @@ and prevent 4xx or 5xx responses.
 
 Servers use quota mechanisms to avoid systems overload,
 to ensure an equitable distribution of computational resources
-or to enforce other policies - eg. monetization.
+or to enforce other policies - e.g. monetization.
 
 A basic quota mechanism limits the number of acceptable
-requests in a given time window, eg. 10 requests per second.
+requests in a given time window, e.g. 10 requests per second.
 
 When quota is exceeded, servers usually do not serve the request
-replying instead with a `4xx` HTTP status code (eg. 429 or 403)
+replying instead with a `4xx` HTTP status code (e.g. 429 or 403)
 or adopt more aggressive policies like dropping connections.
 
-Quotas may be enforced on different basis (eg. per user, per IP, per geographic area, ..) and
+Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, ..) and
 at different levels. For example, an user may be allowed to issue:
 
 - 10 requests per second;
@@ -340,7 +340,7 @@ via an optional `quota-policy` value, like shown in the following example
 If the `expiring-limit` is not associated to a `time-window`, the `time-window` MUST either be:
 
 - inferred by the value of `RateLimit-Reset` at the moment of the reset, or
-- communicated out-of-band (eg. in the documentation).
+- communicated out-of-band (e.g. in the documentation).
 
 Policies using multiple quota limits MAY be returned using multiple
 `quota-policy` items, like shown in the following two examples:
@@ -412,7 +412,7 @@ An example of `RateLimit-Reset` use is below.
 The client MUST NOT assume that all its `service-limit` will be restored
 after the moment referenced by `RateLimit-Reset`.
 The server MAY arbitrarily alter the `RateLimit-Reset` value between subsequent requests
-eg. in case of resource saturation or to implement sliding window policies.
+e.g. in case of resource saturation or to implement sliding window policies.
 
 # Providing RateLimit fields {#providing-ratelimit-fields}
 
@@ -441,7 +441,7 @@ This document does not mandate any correlation between the `RateLimit`
 values and the returned status code.
 
 Servers should be careful in returning `RateLimit` fields in
-redirection responses (eg. 3xx status codes) because
+redirection responses (e.g. 3xx status codes) because
 a low `RateLimit-Remaining` value could limit the client
 from issuing requests.
 For example, given the rate limiting fields below,
@@ -472,7 +472,7 @@ and `RateLimit-Reset` (see {{sec-resource-exhaustion}});
 this is especially important when quota-policies use a large `time-window`.
 
 Under certain conditions, a server MAY artificially lower `RateLimit` field values between subsequent requests,
-eg. to respond to Denial of Service attacks or in case of resource saturation.
+e.g. to respond to Denial of Service attacks or in case of resource saturation.
 
 Servers usually establish whether the request is in-quota before creating a
 response, so the RateLimit field values should be already available in that
@@ -557,7 +557,7 @@ A client MAY still probe the server if the `RateLimit-Reset` is considered too h
 
 The value of `RateLimit-Reset` is generated at response time:
 a client aware of a significant network latency MAY behave accordingly
-and use other information (eg. the `Date` response header field, or otherwise gathered metrics) to better
+and use other information (e.g. the `Date` response header field, or otherwise gathered metrics) to better
 estimate the `RateLimit-Reset` moment intended by the server.
 
 The `quota-policy` values and comments provided in `RateLimit-Limit` are informative
@@ -570,7 +570,7 @@ If a response contains both the `RateLimit-Reset` and `Retry-After` fields,
 This specification does not mandate a specific throttling behavior
 and implementers can adopt their preferred policies, including:
 
-- slowing down or preemptively backoff their request rate when
+- slowing down or preemptively back-off their request rate when
   approaching quota limits;
 - consuming all the quota according to the exposed limits and then wait.
 
@@ -872,7 +872,7 @@ Ratelimit-Reset: 20
 Alternatively, given the same context where the previous example starts, we
 can convey the same information to the client via `Retry-After`, with
 the advantage that the server can now specify the policy's nominal limit and
-window that will apply after the reset, ie. assuming the resource exhaustion
+window that will apply after the reset, e.g. assuming the resource exhaustion
 is likely to be gone by then, so the advertised policy does not need to be
 adjusted, yet we managed to stop requests for a while and slow down the rest of
 the current window.
@@ -1166,7 +1166,7 @@ Amos Jeffries,
 Martin Thomson,
 Erik Wilde and Mark Nottingham for being the initial contributors
 of these specifications.
-Kudos to the first community implementors:
+Kudos to the first community implementers:
 Aapo Talvensaari,
 Nathan Friedly
 and Sanyam Dogra.
@@ -1205,7 +1205,7 @@ and Sanyam Dogra.
 
    Timestamps require a clock synchronization protocol
    (see Section 5.6.7 of {{SEMANTICS}}).
-   This may be problematic (eg. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
+   This may be problematic (e.g. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
    IoT devices, ..).
    Moreover timestamps may not be monotonically increasing due to clock adjustment.
    See [Another NTP client failure story](https://community.ntppool.org/t/another-ntp-client-failure-story/1014/)
@@ -1232,12 +1232,12 @@ and Sanyam Dogra.
    shape their requests avoiding being throttled out.
 
    A problematic way to limit concurrency is connection dropping,
-   especially when connections are multiplexed (eg. HTTP/2)
+   especially when connections are multiplexed (e.g. HTTP/2)
    because this results in unserviced client requests,
    which is something we want to avoid.
 
    A semantic way to limit concurrency is to return 503 + Retry-After
-   in case of resource saturation (eg. thrashing, connection queues too long,
+   in case of resource saturation (e.g. thrashing, connection queues too long,
    Service Level Objectives not meet, ..).
    Saturation conditions can be either dynamic or static: all this is out of
    the scope for the current document.
@@ -1272,7 +1272,7 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
    when starting this I-D [we opted for it](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/34#issuecomment-519366481)
 
    The basic form of those fields is easily parseable, even by
-   implementors procesing responses using technologies like
+   implementers processing responses using technologies like
    dynamic interpreter with limited syntax.
 
    Using a single field complicates parsing and takes
@@ -1292,7 +1292,7 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
       and then the infrastructures through client cooperation (see {{sec-throttling-does-not-prevent}}).
 ￼
 ￼   RateLimit fields enable sending *on the same connection* different limit values
-￼   on each response, depending on the policy scope (eg. per-user, per-custom-key, ..)
+￼   on each response, depending on the policy scope (e.g. per-user, per-custom-key, ..)
 ￼
 13. Can intermediaries alter RateLimit fields?
 
@@ -1352,7 +1352,7 @@ The semantic of RateLimit-Remaining depends on the windowing algorithm.
 A sliding window policy for example may result in having a
 `RateLimit-Remaining`
 value related to the ratio between the current and the maximum throughput.
-Eg.
+e.g.
 
 ~~~ example
 RateLimit-Limit: 12, 12;w=1
