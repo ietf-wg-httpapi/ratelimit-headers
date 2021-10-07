@@ -53,7 +53,7 @@ Discussion of this draft takes place on the HTTP working group mailing list
 The source code and issues list for this draft can be found at
 <https://github.com/ietf-wg-httpapi/ratelimit-headers>.
 
-References to `ThisRFC` in the IANA Considerations section whould
+References to `ThisRFC` in the IANA Considerations section would
 be replaced with the RFC number when assigned.
 
 
