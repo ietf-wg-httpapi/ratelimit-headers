@@ -25,6 +25,9 @@ author:
     org: Red Hat
     email: amr@redhat.com
 
+normative:
+  IANA: RFC8126
+
 informative:
   UNIX:
     title: The Single UNIX Specification, Version 2 - 6 Vol Set for UNIX 98
@@ -49,6 +52,9 @@ Discussion of this draft takes place on the HTTP working group mailing list
 
 The source code and issues list for this draft can be found at
 <https://github.com/ietf-wg-httpapi/ratelimit-headers>.
+
+References to `ThisRFC` in the IANA Considerations section would
+be replaced with the RFC number when assigned.
 
 
 --- middle
@@ -275,6 +281,9 @@ The following parameters are defined:
      Its syntax is a "time-window" defined in {{time-window}}.
 
 Other parameters are allowed and can be regarded as comments.
+They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
+as described in {{iana-ratelimit-parameters}}.
+
 
 An example policy of 100 quota-units per minute.
 
@@ -1094,40 +1103,59 @@ Clients MUST validate the received values to mitigate those risks.
 
 # IANA Considerations
 
+IANA is requested to update one registry and create one new registry.
 
-## RateLimit-Limit Field Registration
+Please add the following entries to the
+"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry
+({{SEMANTICS}}):
 
-This section registers the `RateLimit-Limit` field in the
-"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{SEMANTICS}}).
+|---------------------|-----------|---------------|
+| Field Name          | Status    | Specification |
+|---------------------|-----------|---------------|
+| RateLimit-Limit     | permanent | {{ratelimit-limit-field}} of ThisRFC       |
+| RateLimit-Remaining | permanent | {{ratelimit-remaining-field}} of ThisRFC   |
+| RateLimit-Reset     | permanent | {{ratelimit-reset-field}} of ThisRFC       |
+|---------------------|-----------|---------------|
 
-Field name:  `RateLimit-Limit`
 
-Status:  permanent
+## RateLimit Parameters Registration {#iana-ratelimit-parameters}
 
-Specification document(s):  {{ratelimit-limit-field}} of this document
+IANA is requested to create a new registry to be called
+"Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
+to be located at
+<https://www.iana.org/assignments/http-ratelimit-parameters>.
+Registration is done on the advice of a Designated Expert, appointed
+by the IESG or their delegate.
+All entries are Specification Required
+({{IANA, Section 4.6}}).
 
-## RateLimit-Remaining Field Registration
+Registration requests consist of the following information:
 
-This section registers the `RateLimit-Remaining` field in the
-"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{SEMANTICS}}).
+- Parameter name:
+  The parameter name, conforming to {{SF}}.
 
-Field name:  `RateLimit-Remaining`
+- Field name:
+  The RateLimit field for which the parameter is registered. If a parameter is intended to be used
+  with multiple fields, it has to be registered
+  for each one.
 
-Status:  permanent
+- Description:
+  A brief description of the parameter.
 
-Specification document(s):  {{ratelimit-remaining-field}} of this document
+- Specification document:
+  A reference to the document that specifies the parameter, preferably
+  including a URI that can be used to retrieve a copy of the document.
 
-## RateLimit-Reset Field Registration
+- Comments (optional):
+  Any additional information that can be useful.
 
-This section registers the `RateLimit-Reset` field in the
-"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{SEMANTICS}}).
+The initial contents of this registry should be:
 
-Field name:  `RateLimit-Reset`
-
-Status:  permanent
-
-Specification document(s):  {{ratelimit-reset-field}} of this document
-
+|---|---|---|---|
+| Field Name      | Parameter name | Description | Specification | Comments (optional) |
+|---|---|---|---|
+| RateLimit-Limit | w              | Time window | {{quota-policy}} of ThisRFC |       |
+|---|---|---|---|
 
 --- back
 
