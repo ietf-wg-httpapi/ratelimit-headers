@@ -281,6 +281,9 @@ The following parameters are defined:
      Its syntax is a "time-window" defined in {{time-window}}.
 
 Other parameters are allowed and can be regarded as comments.
+They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
+as described in {{iana-ratelimit-parameters}}.
+
 
 An example policy of 100 quota-units per minute.
 
@@ -1074,7 +1077,7 @@ RateLimit-Reset: 10
 A client implementing a simple ratio between `RateLimit-Remaining` and
 `RateLimit-Reset` could infer an average throughput of
 1000 quota-units per second,
-while `RateLimit-Limit` conveys a quota-policy 
+while `RateLimit-Limit` conveys a quota-policy
 with an average of 10 quota-units per second.
 If the service cannot handle such load, it should return
 either a lower `RateLimit-Remaining` value
@@ -1109,30 +1112,38 @@ Please add the following entries to the
 |---------------------|-----------|---------------|
 | Field Name          | Status    | Specification |
 |---------------------|-----------|---------------|
-| RateLimit-Limit     | permanent | ThisRFC       |
-| RateLimit-Remaining | permanent | ThisRFC       |
-| RateLimit-Reset     | permanent | ThisRFC       |
+| RateLimit-Limit     | permanent | {{ratelimit-limit}} of ThisRFC       |
+| RateLimit-Remaining | permanent | {{ratelimit-remaining}} of ThisRFC       |
+| RateLimit-Reset     | permanent | {{ratemilit-reset}} of ThisRFC       |
 |---------------------|-----------|---------------|
 
+
+## RateLimit Parameters Registration {#iana-ratelimit-parameters}
+
 IANA is requested to create a new registry to be called
-"Hypertext Transfer Protocol (HTTP) RateLimit Fields Registry,"
+"Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
 to be located at
-<https://www.iana.org/assignments/http-ratelimit-quota-fields>.
+<https://www.iana.org/assignments/http-ratelimit-parameters>.
 Registration is done on the advice of a Designated Expert, appointed
-by the IESG or their delegate. All entries are Specification Required
+by the IESG or their delegate.
+All entries are Specification Required
 ({{IANA, Section 4.6}}).
 
-Registration requests must have the following information:
+Registration requests consist of the following information:
+
+- Parameter name:
+  The parameter name, conforming to {{SF}}.
 
 - Field name:
-  The name of the RateLimit field to which the parameter apply.
-  
-- Parameter name:
-  The name of the parameter conforming to {{SF}}.
+  The RateLimit field for which the parameter is registered. If a parameter is intended to be used
+  with multiple fields, it has to be registered
+  for each one.
 
+- Description:
+  A brief description of the parameter.
 
 - Specification document:
-  A reference to the document that specifies the field, preferably
+  A reference to the document that specifies the parameter, preferably
   including a URI that can be used to retrieve a copy of the document.
 
 - Comments (optional):
@@ -1140,11 +1151,11 @@ Registration requests must have the following information:
 
 The initial contents of this registry should be:
 
-|------------|---------------|---|
-| Field Name | Parameter name | Specification |
-|------------|---------------|---|
-| RateLimit-Limit | w          | ThisRFC       |
-|------------|---------------|---|
+|---|---|---|---|
+| Field Name      | Parameter name | Description | Specification | Comments (optional) |
+|---|---|---|---|
+| RateLimit-Limit | w              | Time window | {{quota-policy}} of ThisRFC |       |
+|---|---|---|---|
 
 --- back
 
