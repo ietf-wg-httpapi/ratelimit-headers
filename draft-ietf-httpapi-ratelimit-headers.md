@@ -1115,7 +1115,7 @@ Please add the following entries to the
 |---------------------|-----------|---------------|
 
 IANA is requested to create a new registry to be called
-"Hypertext Transfer Protocol (HTTP) Quota-Policy Fields Registry,"
+"Hypertext Transfer Protocol (HTTP) RateLimit Fields Registry,"
 to be located at
 <https://www.iana.org/assignments/http-ratelimit-quota-fields>.
 Registration is done on the advice of a Designated Expert, appointed
@@ -1125,8 +1125,11 @@ by the IESG or their delegate. All entries are Specification Required
 Registration requests must have the following information:
 
 - Field name:
-  The name of the field, which MUST confirm to the specification in
-  `httpbis-semantics` draft, Section 5.1.
+  The name of the RateLimit field to which the parameter apply.
+  
+- Parameter name:
+  The name of the parameter conforming to {{SF}}.
+
 
 - Specification document:
   A reference to the document that specifies the field, preferably
@@ -1137,11 +1140,11 @@ Registration requests must have the following information:
 
 The initial contents of this registry should be:
 
-|------------|---------------|
-| Field Name | Specification |
-|------------|---------------|
-| w          | ThisRFC       |
-|------------|---------------|
+|------------|---------------|---|
+| Field Name | Parameter name | Specification |
+|------------|---------------|---|
+| RateLimit-Limit | w          | ThisRFC       |
+|------------|---------------|---|
 
 --- back
 
