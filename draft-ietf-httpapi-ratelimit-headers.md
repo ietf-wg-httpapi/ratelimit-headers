@@ -254,14 +254,14 @@ the relation with that SHOULD be communicated out-of-band.
 Example: A server could
 
 - count once requests like `/books/{id}`
-- count twice search requests like `/books?author=Camilleri`
+- count twice search requests like `/books?author=WuMing`
 
 so that we have the following counters
 
 ~~~ example
-GET /books/123                  ; service-limit=4, remaining: 3, status=200
-GET /books?author=Camilleri     ; service-limit=4, remaining: 1, status=200
-GET /books?author=Eco           ; service-limit=4, remaining: 0, status=429
+GET /books/123           ; service-limit=4, remaining: 3, status=200
+GET /books?author=WuMing ; service-limit=4, remaining: 1, status=200
+GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
 ~~~
 
 ## Quota policy {#quota-policy}
