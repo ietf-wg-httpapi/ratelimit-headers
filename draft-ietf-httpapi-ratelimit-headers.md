@@ -1112,9 +1112,9 @@ Please add the following entries to the
 |---------------------|-----------|---------------|
 | Field Name          | Status    | Specification |
 |---------------------|-----------|---------------|
-| RateLimit-Limit     | permanent | {{ratelimit-limit}} of ThisRFC       |
-| RateLimit-Remaining | permanent | {{ratelimit-remaining}} of ThisRFC       |
-| RateLimit-Reset     | permanent | {{ratemilit-reset}} of ThisRFC       |
+| RateLimit-Limit     | permanent | {{ratelimit-limit-field}} of ThisRFC       |
+| RateLimit-Remaining | permanent | {{ratelimit-remaining-field}} of ThisRFC       |
+| RateLimit-Reset     | permanent | {{ratemilit-reset-field}} of ThisRFC       |
 |---------------------|-----------|---------------|
 
 
