@@ -242,118 +242,6 @@ Two examples of providing further details via custom parameters
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
 
-# Header Specifications
-
-The following `RateLimit` response fields are defined
-
-## RateLimit-Limit {#ratelimit-limit-field}
-
-The `RateLimit-Limit` response field indicates
-the `service-limit` associated to the client
-in the current `time-window`.
-
-If the client exceeds that limit, it MAY not be served.
-
-The field is a List Structured Field of positive length.
-The first member is named `expiring-limit` and its syntax is `service-limit`,
-while the syntax of the other optional members is `quota-policy`
-
-~~~
-   RateLimit-Limit = sf-list
-~~~
-
-The `expiring-limit` value MUST be set to the `service-limit` that is closer to reach its limit.
-
-The `quota-policy` is defined in {{quota-policy}}, and its values are informative.
-
-~~~ example
-   RateLimit-Limit: 100
-~~~
-
-A `time-window` associated to `expiring-limit` can be communicated
-via an optional `quota-policy` value, like shown in the following example
-
-~~~ example
-   RateLimit-Limit: 100, 100;w=10
-~~~
-
-If the `expiring-limit` is not associated to a `time-window`, the `time-window` MUST either be:
-
-- inferred by the value of `RateLimit-Reset` at the moment of the reset, or
-- communicated out-of-band (e.g. in the documentation).
-
-Policies using multiple quota limits MAY be returned using multiple
-`quota-policy` items, like shown in the following two examples:
-
-~~~ example
-   RateLimit-Limit: 10, 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
-   RateLimit-Limit: 10, 10;w=1;burst=1000, 1000;w=3600
-~~~
-
-This field MUST NOT occur multiple times
-and can be sent in a trailer section.
-
-## RateLimit-Remaining {#ratelimit-remaining-field}
-
-The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{service-limit}}
-associated to the client.
-
-The field is an Integer Structured Field and its value is
-
-~~~
-   RateLimit-Remaining = quota-units
-~~~
-
-This field MUST NOT occur multiple times
-and can be sent in a trailer section.
-
-Clients MUST NOT assume that a positive `RateLimit-Remaining` value is
-a guarantee that further requests will be served.
-
-A low `RateLimit-Remaining` value is like a yellow traffic-light
-for either the number of requests issued in the `time-window`
-or the request throughput:
-the red light may arrive suddenly
-(see {{providing-ratelimit-fields}}).
-
-One example of `RateLimit-Remaining` use is below.
-
-~~~ example
-   RateLimit-Remaining: 50
-~~~
-
-## RateLimit-Reset {#ratelimit-reset-field}
-
-The `RateLimit-Reset` response field indicates either
-
-- the number of seconds until the quota resets.
-
-The field is an Integer Structured Field and its value is
-
-~~~
-   RateLimit-Reset = delay-seconds
-~~~
-
-The delay-seconds format is used because:
-
-- it does not rely on clock synchronization and is resilient to clock adjustment
-  and clock skew between client and server (see Section 5.6.7 of {{SEMANTICS}});
-- it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
-
-This field MUST NOT occur multiple times
-and can be sent in a trailer section.
-
-An example of `RateLimit-Reset` use is below.
-
-~~~ example
-   RateLimit-Reset: 50
-~~~
-
-The client MUST NOT assume that all its `service-limit` will be restored
-after the moment referenced by `RateLimit-Reset`.
-The server MAY arbitrarily alter the `RateLimit-Reset` value between subsequent requests
-e.g. in case of resource saturation or to implement sliding window policies.
-
 # Providing RateLimit fields {#providing-ratelimit-fields}
 
 A server MAY use one or more `RateLimit` response fields
@@ -382,7 +270,7 @@ values and the returned status code.
 
 Servers should be careful in returning `RateLimit` fields in
 redirection responses (e.g. 3xx status codes) because
-a low `RateLimit-Remaining` value could limit the client
+a low `RateLimit-Remaining` value could prevent the client
 from issuing requests.
 For example, given the rate limiting fields below,
 a client could decide to wait 10 seconds before following
@@ -515,6 +403,117 @@ could rely on fields such as `Date`
 and on the `time-window` of a `quota-policy`.
 
 
+# Fields definition
+
+The following `RateLimit` response fields are defined
+
+## RateLimit-Limit {#ratelimit-limit-field}
+
+The `RateLimit-Limit` response field indicates
+the `service-limit` associated to the client
+in the current `time-window`.
+
+If the client exceeds that limit, it MAY not be served.
+
+The field is a List Structured Field of positive length.
+The first member is named `expiring-limit` and its syntax is `service-limit`,
+while the syntax of the other optional members is `quota-policy`
+
+~~~
+   RateLimit-Limit = sf-list
+~~~
+
+The `expiring-limit` value MUST be set to the `service-limit` that is closer to reach its limit.
+
+The `quota-policy` is defined in {{quota-policy}}, and its values are informative.
+
+~~~ example
+   RateLimit-Limit: 100
+~~~
+
+A `time-window` associated to `expiring-limit` can be communicated
+via an optional `quota-policy` value, like shown in the following example
+
+~~~ example
+   RateLimit-Limit: 100, 100;w=10
+~~~
+
+If the `expiring-limit` is not associated to a `time-window`, the `time-window` MUST either be:
+
+- inferred by the value of `RateLimit-Reset` at the moment of the reset, or
+- communicated out-of-band (e.g. in the documentation).
+
+Policies using multiple quota limits MAY be returned using multiple
+`quota-policy` items, like shown in the following two examples:
+
+~~~ example
+   RateLimit-Limit: 10, 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
+   RateLimit-Limit: 10, 10;w=1;burst=1000, 1000;w=3600
+~~~
+
+This field MUST NOT occur multiple times
+and can be sent in a trailer section.
+
+## RateLimit-Remaining {#ratelimit-remaining-field}
+
+The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{service-limit}}
+associated to the client.
+
+The field is an Integer Structured Field and its value is
+
+~~~
+   RateLimit-Remaining = quota-units
+~~~
+
+This field MUST NOT occur multiple times
+and can be sent in a trailer section.
+
+Clients MUST NOT assume that a positive `RateLimit-Remaining` value is
+a guarantee that further requests will be served.
+
+A low `RateLimit-Remaining` value is like a yellow traffic-light
+for either the number of requests issued in the `time-window`
+or the request throughput:
+the red light may arrive suddenly
+(see {{providing-ratelimit-fields}}).
+
+One example of `RateLimit-Remaining` use is below.
+
+~~~ example
+   RateLimit-Remaining: 50
+~~~
+
+## RateLimit-Reset {#ratelimit-reset-field}
+
+The `RateLimit-Reset` response field indicates either
+
+- the number of seconds until the quota resets.
+
+The field is an Integer Structured Field and its value is
+
+~~~
+   RateLimit-Reset = delay-seconds
+~~~
+
+The delay-seconds format is used because:
+
+- it does not rely on clock synchronization and is resilient to clock adjustment
+  and clock skew between client and server (see Section 5.6.7 of {{SEMANTICS}});
+- it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
+
+This field MUST NOT occur multiple times
+and can be sent in a trailer section.
+
+An example of `RateLimit-Reset` use is below.
+
+~~~ example
+   RateLimit-Reset: 50
+~~~
+
+The client MUST NOT assume that all its `service-limit` will be restored
+after the moment referenced by `RateLimit-Reset`.
+The server MAY arbitrarily alter the `RateLimit-Reset` value between subsequent requests
+e.g. in case of resource saturation or to implement sliding window policies.
 
 # Security Considerations
 
@@ -542,7 +541,7 @@ quota-units without prior knowledge of the User Agent,
 RateLimit fields might reveal the existence of an intermediary
 to the User Agent.
 
-## Remaining quota-units are not granted requests
+## Remaining quota-units are not granted requests {#sec-remaining-not-granted}
 
 `RateLimit-*` fields convey hints from the server
 to the clients in order to avoid being throttled out.
@@ -553,7 +552,7 @@ as a service level agreement.
 In case of resource saturation, the server MAY artificially lower the returned
 values or not serve the request anyway.
 
-## Reliability of RateLimit-Reset
+## Reliability of RateLimit-Reset {#sec-reset-reliability}
 
 Consider that `service-limit` may not be restored after the moment referenced by `RateLimit-Reset`,
 and the `RateLimit-Reset` value should not be considered fixed nor constant.
