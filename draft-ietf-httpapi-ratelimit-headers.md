@@ -433,47 +433,6 @@ Implementers concerned with response fields' size, might take into account
 their ratio with respect to the payload data, or use header-compression
 http features such as {{?HPACK=RFC7541}}.
 
-# Intermediaries {#intermediaries}
-
-This section documents the considerations advised in
-Section 16.3.2 of {{SEMANTICS}}.
-
-An intermediary that is not part of the originating service infrastructure
-and is not aware of the quota-policy semantic used by the Origin Server
-SHOULD NOT alter the RateLimit fields' values
-in such a way as to communicate a more permissive quota-policy;
-this includes removing the RateLimit fields.
-
-An intermediary MAY alter the RateLimit fields
-in such a way as to communicate a more restrictive quota-policy when:
-
-- it is aware of the quota-unit semantic used by the Origin Server;
-- it implements this specification and enforces a quota-policy which
-  is more restrictive than the one conveyed in the fields.
-
-An intermediary
-SHOULD forward a request even when presuming that it
-might not be serviced;
-the service returning the RateLimit fields is the sole responsible
-of enforcing the communicated quota-policy,
-and it is always free to service incoming requests.
-
-This specification does not mandate any behavior on intermediaries
-respect to retries,
-nor requires that intermediaries have any role in respecting quota-policies.
-For example, it is legitimate for a proxy to retransmit a request
-without notifying the client, and thus consuming quota-units.
-
-# Caching
-
-
-As is the ordinary case for HTTP caching ({{?RFC7234}}), a response with
-RateLimit fields might be cached and re-used for subsequent requests.
-A cached `RateLimit` response does not modify quota counters but could
-contain stale information.
-Clients interested in determining the freshness of the `RateLimit` fields
-could rely on fields such as `Date`
-and on the `time-window` of a `quota-policy`.
 
 # Receiving RateLimit fields
 
@@ -513,6 +472,47 @@ and implementers can adopt their preferred policies, including:
 - slowing down or preemptively back-off their request rate when
   approaching quota limits;
 - consuming all the quota according to the exposed limits and then wait.
+
+## Intermediaries {#intermediaries}
+
+This section documents the considerations advised in
+Section 16.3.2 of {{SEMANTICS}}.
+
+An intermediary that is not part of the originating service infrastructure
+and is not aware of the quota-policy semantic used by the Origin Server
+SHOULD NOT alter the RateLimit fields' values
+in such a way as to communicate a more permissive quota-policy;
+this includes removing the RateLimit fields.
+
+An intermediary MAY alter the RateLimit fields
+in such a way as to communicate a more restrictive quota-policy when:
+
+- it is aware of the quota-unit semantic used by the Origin Server;
+- it implements this specification and enforces a quota-policy which
+  is more restrictive than the one conveyed in the fields.
+
+An intermediary
+SHOULD forward a request even when presuming that it
+might not be serviced;
+the service returning the RateLimit fields is the sole responsible
+of enforcing the communicated quota-policy,
+and it is always free to service incoming requests.
+
+This specification does not mandate any behavior on intermediaries
+respect to retries,
+nor requires that intermediaries have any role in respecting quota-policies.
+For example, it is legitimate for a proxy to retransmit a request
+without notifying the client, and thus consuming quota-units.
+
+## Caching
+
+As is the ordinary case for HTTP caching ({{?RFC7234}}), a response with
+RateLimit fields might be cached and re-used for subsequent requests.
+A cached `RateLimit` response does not modify quota counters but could
+contain stale information.
+Clients interested in determining the freshness of the `RateLimit` fields
+could rely on fields such as `Date`
+and on the `time-window` of a `quota-policy`.
 
 
 
