@@ -1,5 +1,5 @@
 ---
-title: RateLimit Header Fields for HTTP
+title: RateLimit Fields for HTTP
 abbrev:
 docname: draft-ietf-httpapi-ratelimit-headers-latest
 category: std
@@ -164,7 +164,7 @@ The goals of this proposal are:
   Documentation:
   : Simplify API documentation by eliminating the need
     to include detailed quota limits
-    and related header fields in API documentation.
+    and related fields in API documentation.
 
 The goals do not include:
 
