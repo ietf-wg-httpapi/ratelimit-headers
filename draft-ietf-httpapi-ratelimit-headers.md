@@ -1375,6 +1375,12 @@ At this point you should stop increasing your request rate.
 
 _RFC Editor: Please remove this section before publication._
 
+## Since draft-ietf-httpapi-ratelimit-headers-01
+{:numbered="false"}
+
+* Update IANA considerations #60
+* Use Structured fields #58
+
 ## Since draft-ietf-httpapi-ratelimit-headers-00
 {:numbered="false"}
 
