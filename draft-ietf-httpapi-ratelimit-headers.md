@@ -557,7 +557,7 @@ values or not serve the request regardless of the advertised quotas.
 Consider that `service-limit` may not be restored after the moment referenced by `RateLimit-Reset`,
 and the `RateLimit-Reset` value should not be considered fixed nor constant.
 
-Subsequent requests may return an higher `RateLimit-Reset` value to limit
+Subsequent requests may return a higher `RateLimit-Reset` value to limit
 concurrency or implement dynamic or adaptive throttling policies.
 
 ## Resource exhaustion {#sec-resource-exhaustion}
