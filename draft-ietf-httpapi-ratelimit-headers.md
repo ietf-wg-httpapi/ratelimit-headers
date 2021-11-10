@@ -580,7 +580,7 @@ there's a high probability that all clients will show up at `18:00:00`.
 This could be mitigated by adding some jitter to the field-value.
 
 Resource exhaustion issues can be associated with quota policies
-using a large `time-window`, because a user agent by chance or purpose might
+using a large `time-window`, because a user agent by chance or on purpose might
 consume most of its quota-units in a significantly shorter interval.
 
 This behavior can be even triggered by the provided `RateLimit` fields.
