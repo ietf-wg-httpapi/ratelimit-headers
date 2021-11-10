@@ -550,7 +550,7 @@ Clients MUST NOT consider the `quota-units` returned in `RateLimit-Remaining`
 as a service level agreement.
 
 In case of resource saturation, the server MAY artificially lower the returned
-values or not serve the request anyway.
+values or not serve the request regardless of the advertised quotas.
 
 ## Reliability of RateLimit-Reset {#sec-reset-reliability}
 
