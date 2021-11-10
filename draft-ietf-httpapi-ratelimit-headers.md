@@ -527,7 +527,7 @@ to prevent resource exhaustion.
 
 ## Information disclosure {#sec-information-disclosure}
 
-Servers should not disclose operational capacity information that
+Servers should not disclose to untrusted parties operational capacity information that
 can be used to saturate its resources.
 
 While this specification does not mandate whether non 2xx responses
