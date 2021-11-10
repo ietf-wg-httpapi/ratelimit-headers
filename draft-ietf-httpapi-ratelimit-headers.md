@@ -1380,6 +1380,7 @@ _RFC Editor: Please remove this section before publication._
 
 * Update IANA considerations #60
 * Use Structured fields #58
+* Reorganize document #67
 
 ## Since draft-ietf-httpapi-ratelimit-headers-00
 {:numbered="false"}
