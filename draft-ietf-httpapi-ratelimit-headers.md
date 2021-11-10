@@ -528,7 +528,7 @@ to prevent resource exhaustion.
 ## Information disclosure {#sec-information-disclosure}
 
 Servers should not disclose to untrusted parties operational capacity information that
-can be used to saturate its resources.
+can be used to saturate its infrastructural resources.
 
 While this specification does not mandate whether non 2xx responses
 consume quota, if 401 and 403 responses count on quota
