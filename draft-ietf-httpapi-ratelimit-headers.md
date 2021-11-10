@@ -71,7 +71,7 @@ or `503 Service Unavailable` responses.
 
 Widely deployed quota mechanisms limit the number of acceptable
 requests in a given time window, e.g. 10 requests per second;
-still, there is not a standard way to communicate service quotas
+currently, there is no standard way to communicate service quotas
 so that the client can throttle its requests
 and prevent 4xx or 5xx responses.
 See {{rate-limiting}} for further information on
