@@ -90,7 +90,7 @@ using multiple and variable time windows and dynamic quotas, or implementing con
 
 ## Goals
 
-RateLimit fields goal are:
+The goals of the RateLimit fields are:
 
   Interoperability:
   : Standardization of the names and semantics of rate-limit headers
