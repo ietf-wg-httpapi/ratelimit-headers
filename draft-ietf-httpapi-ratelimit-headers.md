@@ -1151,6 +1151,7 @@ RateLimit-Reset: 36000
 ~~~
 
 # Acknowledgements
+{:numbered="false"}
 
 Thanks to Willi Schoenborn, Alejandro Martinez Ruiz, Alessandro Ranellucci,
 Amos Jeffries,
@@ -1164,6 +1165,9 @@ and Sanyam Dogra.
 
 
 # FAQ
+{:numbered="false"}
+
+_RFC Editor: Please remove this section before publication._
 
 1. Why defining standard fields for throttling?
 
