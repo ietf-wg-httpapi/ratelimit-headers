@@ -1150,20 +1150,10 @@ RateLimit-Reset: 36000
 {"hello": "world"}
 ~~~
 
-# Acknowledgements
-
-Thanks to Willi Schoenborn, Alejandro Martinez Ruiz, Alessandro Ranellucci,
-Amos Jeffries,
-Martin Thomson,
-Erik Wilde and Mark Nottingham for being the initial contributors
-of these specifications.
-Kudos to the first community implementers:
-Aapo Talvensaari,
-Nathan Friedly
-and Sanyam Dogra.
-
-
 # FAQ
+{:numbered="false"}
+
+_RFC Editor: Please remove this section before publication._
 
 1. Why defining standard fields for throttling?
 
@@ -1360,6 +1350,25 @@ RateLimit-Reset: 1
 ~~~
 
 At this point you should stop increasing your request rate.
+
+# Acknowledgements
+{:numbered="false"}
+
+Thanks to Willi Schoenborn, Alejandro Martinez Ruiz, Alessandro Ranellucci,
+Amos Jeffries,
+Martin Thomson,
+Erik Wilde and Mark Nottingham for being the initial contributors
+of these specifications.
+Kudos to the first community implementers:
+Aapo Talvensaari,
+Nathan Friedly
+and Sanyam Dogra.
+
+In addition to the people above, this document owes a lot to the extensive discussion
+in the HTTPAPI workgroup, including
+Rich Salz,
+Darrel Miller
+and Julian Reschke.
 
 # Changes
 {:numbered="false"}
