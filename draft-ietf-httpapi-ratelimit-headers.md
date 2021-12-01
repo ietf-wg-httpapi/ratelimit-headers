@@ -113,11 +113,6 @@ The following features are out of the scope of this document:
   : RateLimit fields are not meant to support
     authorization or other kinds of access controls.
 
-  Throttling scope:
-  : This specification does not cover the throttling scope,
-    that may be the given resource-target, its parent path or the whole
-    Origin (see Section 7 of {{!RFC6454}}).
-
   Response status code:
   : RateLimit fields may be returned in both
     successful (see Section 15.3 of {{SEMANTICS}}) and non-successful responses.
@@ -219,6 +214,14 @@ The following parameters are defined:
   w:
   :  The "w" parameter specifies a time window.
      Its syntax is a "time-window" defined in {{time-window}}.
+  s:
+  :  The OPTIONAL "s" parameter specifies a throttling scope,
+     that is whether the quota information apply
+     to the issued request, to the resource
+     or to the entire service.
+     Its value is a String (Section 3.3.3 of {{SF}}) 
+     containing a URI-reference (Section 4.1 of {{URI=RFC3986}}).
+
 
 Other parameters are allowed and can be regarded as comments.
 They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
@@ -238,7 +241,7 @@ Such service specific details can be conveyed as parameters.
 Two examples of providing further details via custom parameters
 
 ~~~ example
-   100;w=60;comment="fixed window"
+   100;w=60;s="/payments",comment="fixed window"
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
 
