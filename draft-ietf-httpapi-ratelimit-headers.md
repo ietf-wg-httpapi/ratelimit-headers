@@ -181,7 +181,7 @@ The `service-limit` is expressed in `quota-units` and has the following syntax:
    quota-units = sf-integer
 ~~~
 
-where quota-units is a non-negative sf-integer.
+where `quota-units` is a non-negative sf-integer.
 
 The `service-limit` SHOULD match the maximum number of acceptable requests.
 
@@ -235,7 +235,7 @@ The definition of a quota-policy does not imply any specific
 distribution of quota-units over time.
 Such service specific details can be conveyed as parameters.
 
-Two examples of providing further details via custom parameters
+Two policy examples containing further details via custom parameters
 
 ~~~ example
    100;w=60;comment="fixed window"
