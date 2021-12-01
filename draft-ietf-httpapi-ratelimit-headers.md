@@ -326,6 +326,14 @@ http features such as {{?HPACK=RFC7541}}.
 
 A client MUST process the received `RateLimit` fields.
 
+A client SHOULD use a Structured Fields parser, but MAY reuse an existing parser,
+for example to migrate from legacy fields supporting only integer values.
+In doing so, they SHOULD:
+
+- only process the first list item, that is always an integer;
+- ignore any further item;
+- ignore any parameter.
+
 A client MUST validate the values received in the `RateLimit` fields before using them
 and check if there are significant discrepancies
 with the expected ones.
