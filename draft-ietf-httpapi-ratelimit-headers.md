@@ -217,7 +217,7 @@ where the associated bare-item is a service-limit and parameters are supported.
 The following parameters are defined:
 
   w:
-  :  The "w" parameter specifies a time window.
+  :  The REQUIRED "w" parameter specifies a time window.
      Its syntax is a "time-window" defined in {{time-window}}.
 
 Other parameters are allowed and can be regarded as comments.
