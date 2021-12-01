@@ -220,7 +220,7 @@ The following parameters are defined:
      to the issued request, to the resource
      or to the entire service.
      Its value is a String (Section 3.3.3 of {{SF}}) 
-     containing a URI-reference (Section 4.1 of {{URI=RFC3986}}).
+     containing a URI-reference (Section 4.1 of {{!URI=RFC3986}}).
 
 
 Other parameters are allowed and can be regarded as comments.
