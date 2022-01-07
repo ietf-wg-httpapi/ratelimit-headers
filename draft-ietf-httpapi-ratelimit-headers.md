@@ -244,8 +244,13 @@ Two policy examples containing further details via custom parameters
 
 # Providing RateLimit fields {#providing-ratelimit-fields}
 
-A server MAY use one or more `RateLimit` response fields
-defined in this document to communicate its quota policies.
+A server uses the `RateLimit` response fields
+defined in this document to communicate its quota policies
+according to the following rules:
+
+- `RateLimit-Limit` and `RateLimit-Reset` are REQUIRED;
+- `RateLimit-Remaining` is RECOMMENDED.
+
 
 The returned values refers to the metrics used to evaluate if the current request
 respects the quota policy and MAY not apply to subsequent requests.
