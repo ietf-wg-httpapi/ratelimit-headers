@@ -81,7 +81,8 @@ This document defines syntax and semantics for the following fields:
 
 - `RateLimit-Limit`: containing the requests quota in the time window;
 - `RateLimit-Remaining`: containing the remaining requests quota in the current window;
-- `RateLimit-Reset`: containing the time remaining in the current window, specified in seconds.
+- `RateLimit-Reset`: containing the time remaining in the current window, specified in seconds;
+- `RateLimit-Policy`: containing the quota policy information.
 
 The behavior of `RateLimit-Reset` is compatible with the `delay-seconds` notation of `Retry-After`.
 
@@ -308,9 +309,6 @@ moment.
 Nonetheless servers MAY decide to send the `RateLimit` fields
 in a trailer section.
 
-To ease the migration from existing rate limit headers,
-a server SHOULD be able to provide the `RateLimit-Limit` field
-even without the optional `quota-policy` section.  
 
 ## Performance considerations
 
@@ -351,7 +349,7 @@ a client aware of a significant network latency MAY behave accordingly
 and use other information (e.g. the `Date` response header field, or otherwise gathered metrics) to better
 estimate the `RateLimit-Reset` moment intended by the server.
 
-The `quota-policy` values and comments provided in `RateLimit-Limit` are informative
+The `quota-policy` values and comments provided in `RateLimit-Policy` are informative
 and MAY be ignored.
 
 If a response contains both the `RateLimit-Reset` and `Retry-After` fields,
@@ -419,40 +417,57 @@ in the current `time-window`.
 
 If the client exceeds that limit, it MAY not be served.
 
-The field is a List Structured Field of positive length.
-The first member is named `expiring-limit` and its syntax is `service-limit`,
-while the syntax of the other optional members is `quota-policy`
+The field is an Integer Structured Field of positive length.
+Its value is named `expiring-limit` and its syntax is `service-limit`
 
 ~~~
-   RateLimit-Limit = sf-list
+   RateLimit-Limit = expiring-limit
+   expiring-limit = service-limit
 ~~~
 
-The `expiring-limit` value MUST be set to the `service-limit` that is closer to reach its limit.
+The `expiring-limit` value MUST be set to the `service-limit` that is closer to reach its limit,
+and the associated `time-window` MUST either be:
 
-The `quota-policy` is defined in {{quota-policy}}, and its values are informative.
+- inferred by the value of `RateLimit-Reset` at the moment of the reset, or
+- communicated out-of-band (e.g. in the documentation).
+
+The `RateLimit-Policy` field (see {{ratelimit-policy-field}}),
+might contain information on the associated `time-window`.
 
 ~~~ example
    RateLimit-Limit: 100
 ~~~
 
-A `time-window` associated to `expiring-limit` can be communicated
-via an optional `quota-policy` value, like shown in the following example
+This field MUST NOT occur multiple times
+and can be sent in a trailer section.
 
-~~~ example
-   RateLimit-Limit: 100, 100;w=10
+## RateLimit-Policy {#ratelimit-policy-field}
+
+The `RateLimit-Policy` response field indicates
+the `quota` associated to the client
+and its value is informative.
+
+The field is a List Structured Field of positive length
+and its members' syntax is `quota-policy` defined in {{quota-policy}}.
+
+~~~ abnf
+   RateLimit-Policy = sf-list
 ~~~
 
-If the `expiring-limit` is not associated to a `time-window`, the `time-window` MUST either be:
+A `time-window` associated to `expiring-limit` can be communicated
+via `RateLimit-Policy`, like shown in the following example.
 
-- inferred by the value of `RateLimit-Reset` at the moment of the reset, or
-- communicated out-of-band (e.g. in the documentation).
+~~~ example
+   RateLimit-Policy: 100;w=10
+   RateLimit-Limit: 100
+~~~
 
 Policies using multiple quota limits MAY be returned using multiple
 `quota-policy` items, like shown in the following two examples:
 
 ~~~ example
-   RateLimit-Limit: 10, 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
-   RateLimit-Limit: 10, 10;w=1;burst=1000, 1000;w=3600
+   RateLimit-Policy: 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
+   RateLimit-Policy: 10;w=1;burst=1000, 1000;w=3600
 ~~~
 
 This field MUST NOT occur multiple times
@@ -592,7 +607,8 @@ The following example describes a service
 with an unconsumed quota-policy of 10000 quota-units per 1000 seconds.
 
 ~~~ example
-RateLimit-Limit: 10000, 10000;w=1000
+RateLimit-Limit: 10000
+RateLimit-Policy: 10000;w=1000
 RateLimit-Remaining: 10000
 RateLimit-Reset: 10
 ~~~
@@ -638,6 +654,7 @@ Please add the following entries to the
 | RateLimit-Limit     | permanent | {{ratelimit-limit-field}} of ThisRFC       |
 | RateLimit-Remaining | permanent | {{ratelimit-remaining-field}} of ThisRFC   |
 | RateLimit-Reset     | permanent | {{ratelimit-reset-field}} of ThisRFC       |
+| RateLimit-Reset     | permanent | {{ratelimit-policy-field}} of ThisRFC      |
 |---------------------|-----------|---------------|
 
 
@@ -675,9 +692,9 @@ Registration requests consist of the following information:
 The initial contents of this registry should be:
 
 |---|---|---|---|
-| Field Name      | Parameter name | Description | Specification | Comments (optional) |
+| Field Name       | Parameter name | Description | Specification | Comments (optional) |
 |---|---|---|---|
-| RateLimit-Limit | w              | Time window | {{quota-policy}} of ThisRFC |       |
+| RateLimit-Policy | w              | Time window | {{quota-policy}} of ThisRFC |       |
 |---|---|---|---|
 
 --- back
@@ -949,7 +966,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Limit: 100, 100;w=60
+RateLimit-Limit: 100
+RateLimit-Policy: 100;w=60
 Ratelimit-Remaining: 99
 Ratelimit-Reset: 50
 
@@ -985,7 +1003,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Limit: 10, 100;w=60
+RateLimit-Limit: 10
+RateLimit-Policy: 100;w=60
 Ratelimit-Remaining: 9
 Ratelimit-Reset: 50
 
@@ -1017,7 +1036,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
-RateLimit-Limit: 0, 15;w=20
+RateLimit-Limit: 0
+RateLimit-Policy: 15;w=20
 Ratelimit-Remaining: 0
 Ratelimit-Reset: 20
 
@@ -1051,7 +1071,8 @@ Response:
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 Retry-After: 20
-RateLimit-Limit: 15, 100;w=60
+RateLimit-Limit: 15
+RateLimit-Policy: 100;w=60
 Ratelimit-Remaining: 15
 Ratelimit-Reset: 40
 
@@ -1147,7 +1168,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
-RateLimit-Limit: 5000, 1000;w=3600, 5000;w=86400
+RateLimit-Limit: 5000
+RateLimit-Policy: 1000;w=3600, 5000;w=86400
 RateLimit-Remaining: 100
 RateLimit-Reset: 36000
 
@@ -1246,7 +1268,8 @@ RateLimit-Reset: 60
    So for the following field:
 
 ~~~ example
-RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;burst=0;comment="fixed window"
+RateLimit-Limit: 100
+RateLimit-Policy: 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;burst=0;comment="fixed window"
 ~~~
 
    the key value is the one referencing the lowest limit: `100`
@@ -1340,7 +1363,8 @@ value related to the ratio between the current and the maximum throughput.
 e.g.
 
 ~~~ example
-RateLimit-Limit: 12, 12;w=1
+RateLimit-Limit: 12
+RateLimit-Policy: 12;w=1
 RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
 RateLimit-Reset: 1
 ~~~
@@ -1348,7 +1372,8 @@ RateLimit-Reset: 1
 If this is the case, the optimal solution is to achieve
 
 ~~~ example
-RateLimit-Limit: 12, 12;w=1
+RateLimit-Limit: 12
+RateLimit-Policy: 12;w=1
 RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
 RateLimit-Reset: 1
 ~~~
