@@ -88,7 +88,7 @@ The behavior of `RateLimit-Reset` is compatible with the `delay-seconds` notatio
 The fields definition allows to describe complex policies, including the ones
 using multiple and variable time windows and dynamic quotas, or implementing concurrency limits.
 
-## Goals
+## Goals {#goals}
 
 The goals of the RateLimit fields are:
 
@@ -117,7 +117,7 @@ The following features are out of the scope of this document:
   : This specification does not cover the throttling scope,
     that may be the given resource-target, its parent path or the whole
     Origin (see Section 7 of {{!RFC6454}}).
-    This can be addressed in the future using extensibility mechanisms
+    This can be addressed using extensibility mechanisms
     such as the parameter registry {{iana-ratelimit-parameters}}.
 
   Response status code:
@@ -243,9 +243,9 @@ Two policy examples containing further details via custom parameters
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
 
-To avoid clashes, implementers can prefix unregistered parameters
-with an identifier, e.g. `acme-policy`, `acme-burst`.
-While it is useful to define a clear syntax and semantic for
+To avoid clashes, implementers SHOULD prefix unregistered parameters
+with an `x-<vendor>` identifier, e.g. `x-acme-policy`, `x-acme-burst`.
+While it is useful to define a clear syntax and semantics
 even for custom parameters, it is important to note that
 user agents are not required to process quota policy information.
 
@@ -1191,8 +1191,8 @@ _RFC Editor: Please remove this section before publication._
 
    The word "scope" can have different meanings:
    for example it can be an URL, or an authorization scope.
-   Since authorization is out of the scope of this document (see {{Goals}}),
-   and that we rely only on {{SEMANTICS}}, in {{Goals}} we defined "scope" in terms of
+   Since authorization is out of the scope of this document (see {{goals}}),
+   and that we rely only on {{SEMANTICS}}, in {{goals}} we defined "scope" in terms of
    URL.
 
    Since clients are not required to process quota policies (see {{receiving-fields}}),
