@@ -117,6 +117,8 @@ The following features are out of the scope of this document:
   : This specification does not cover the throttling scope,
     that may be the given resource-target, its parent path or the whole
     Origin (see Section 7 of {{!RFC6454}}).
+    This can be addressed in the future using extensibility mechanisms
+    such as the parameter registry {{iana-ratelimit-parameters}}.
 
   Response status code:
   : RateLimit fields may be returned in both
