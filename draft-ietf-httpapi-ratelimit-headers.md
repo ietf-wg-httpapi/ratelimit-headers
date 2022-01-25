@@ -88,7 +88,7 @@ The behavior of `RateLimit-Reset` is compatible with the `delay-seconds` notatio
 The fields definition allows to describe complex policies, including the ones
 using multiple and variable time windows and dynamic quotas, or implementing concurrency limits.
 
-## Goals
+## Goals {#goals}
 
 The goals of the RateLimit fields are:
 
@@ -117,6 +117,8 @@ The following features are out of the scope of this document:
   : This specification does not cover the throttling scope,
     that may be the given resource-target, its parent path or the whole
     Origin (see Section 7 of {{!RFC6454}}).
+    This can be addressed using extensibility mechanisms
+    such as the parameter registry {{iana-ratelimit-parameters}}.
 
   Response status code:
   : RateLimit fields may be returned in both
@@ -224,7 +226,6 @@ Other parameters are allowed and can be regarded as comments.
 They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
 as described in {{iana-ratelimit-parameters}}.
 
-
 An example policy of 100 quota-units per minute.
 
 ~~~ example
@@ -241,6 +242,12 @@ Two policy examples containing further details via custom parameters
    100;w=60;comment="fixed window"
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
+
+To avoid clashes, implementers SHOULD prefix unregistered parameters
+with an `x-<vendor>` identifier, e.g. `x-acme-policy`, `x-acme-burst`.
+While it is useful to define a clear syntax and semantics
+even for custom parameters, it is important to note that
+user agents are not required to process quota policy information.
 
 # Providing RateLimit fields {#providing-ratelimit-fields}
 
@@ -331,7 +338,7 @@ their ratio with respect to the payload data, or use header-compression
 http features such as {{?HPACK=RFC7541}}.
 
 
-# Receiving RateLimit fields
+# Receiving RateLimit fields {#receiving-fields}
 
 A client MUST process the received `RateLimit` fields.
 
@@ -1182,10 +1189,21 @@ _RFC Editor: Please remove this section before publication._
 
 4. Why don't pass the throttling scope as a parameter?
 
-   After a discussion on a [similar thread](https://github.com/httpwg/http-core/pull/317#issuecomment-585868767)
-   we will probably add a new "RateLimit-Scope" field to this spec.
+   The word "scope" can have different meanings:
+   for example it can be an URL, or an authorization scope.
+   Since authorization is out of the scope of this document (see {{goals}}),
+   and that we rely only on {{SEMANTICS}}, in {{goals}} we defined "scope" in terms of
+   URL.
 
-   I'm open to suggestions: comment on [this issue](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/70)
+   Since clients are not required to process quota policies (see {{receiving-fields}}),
+   we could add a new "RateLimit-Scope" field to this spec.
+   See this discussion on a [similar thread](https://github.com/httpwg/http-core/pull/317#issuecomment-585868767)
+
+   Specific ecosystems can still bake their own prefixed parameters,
+   such as `acme-auth-scope` or `acme-url-scope` and ensure that clients process them.
+   This behavior cannot be relied upon when communicating between different ecosystems.
+
+   We are open to suggestions: comment on [this issue](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/70)
 
 5. Why using delay-seconds instead of a UNIX Timestamp?
    Why not using subsecond precision?
