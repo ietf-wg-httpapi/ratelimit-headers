@@ -308,6 +308,10 @@ moment.
 Nonetheless servers MAY decide to send the `RateLimit` fields
 in a trailer section.
 
+To ease the migration from existing rate limit headers,
+a server SHOULD be able to provide the `RateLimit-Limit` field
+even without the optional `quota-policy` section.  
+
 ## Performance considerations
 
 Servers are not required to return `RateLimit` fields
@@ -618,6 +622,19 @@ or an high `RateLimit-Reset` value could inhibit clients to contact
 the server.
 
 Clients MUST validate the received values to mitigate those risks.
+
+
+## Privacy
+
+RateLimit fields can be used to implement client tracking techniques:
+for example a server can affect the timing of client requests
+in such a way as to make the client identifiable.
+
+Clients that prefer being throttled than being identified
+can just ignore RateLimit fields.
+
+Privacy enhancing infrastructures can define specific techniques
+to mitigate web tracking based on the usage of RateLimit fields.
 
 
 # IANA Considerations
