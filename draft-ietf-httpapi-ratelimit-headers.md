@@ -308,7 +308,6 @@ moment.
 Nonetheless servers MAY decide to send the `RateLimit` fields
 in a trailer section.
 
-
 ## Performance considerations
 
 Servers are not required to return `RateLimit` fields
