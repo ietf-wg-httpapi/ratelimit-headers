@@ -308,9 +308,6 @@ moment.
 Nonetheless servers MAY decide to send the `RateLimit` fields
 in a trailer section.
 
-To ease the migration from existing rate limit headers,
-a server SHOULD be able to provide the `RateLimit-Limit` field
-even without the optional `quota-policy` section.  
 
 ## Performance considerations
 
