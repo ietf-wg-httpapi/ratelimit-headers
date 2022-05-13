@@ -623,7 +623,7 @@ Clients MUST validate the received values to mitigate those risks.
 # Privacy Considerations
 
 Clients that act upon a request to rate limit
-are potentially re-identifiable (see {{Section 2.6 of RFC7626}})
+are potentially re-identifiable (see {{Section 7.1 of RFC9076}})
 because they react to information that might only be given to them.
 Note that this might apply to other fields too (e.g. Retry-After).
 
