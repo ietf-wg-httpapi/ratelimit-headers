@@ -622,9 +622,9 @@ Clients MUST validate the received values to mitigate those risks.
 
 # Privacy Considerations
 
-RateLimit fields can be used to implement client tracking techniques:
-for example a server can affect the timing of client requests
-in such a way as to make the client identifiable.
+Clients that act upon a request to rate limit
+are potentially re-identifiable (see {{Section 2.6 of RFC7626}})
+because they react to information that might only be given to them.
 Note that this might apply to other fields too (e.g. Retry-After).
 
 Since rate limiting is usually implemented in contexts where
@@ -632,14 +632,8 @@ clients are either identified or profiled
 (e.g. assigning different quota units to different users),
 this is rarely a concern.
 
-Clients might chose to mitigate web tracking risk
-ignoring RateLimit fields (and being throttled),
-or using some jitter.
-
-Privacy enhancing infrastructures can define specific techniques
-to mitigate web tracking based on response fields which
-can affect the timing of client requests, such as RateLimit fields
-and Retry-After.
+Privacy enhancing infrastructures using RateLimit fields
+can define specific techniques to mitigate the risks of re-identification.
 
 # IANA Considerations
 
