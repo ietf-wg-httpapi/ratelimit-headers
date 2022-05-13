@@ -29,6 +29,7 @@ normative:
   IANA: RFC8126
 
 informative:
+  DNS-PRIVACY: RFC9076
   UNIX:
     title: The Single UNIX Specification, Version 2 - 6 Vol Set for UNIX 98
     author:
@@ -635,6 +636,21 @@ the server.
 
 Clients MUST validate the received values to mitigate those risks.
 
+
+# Privacy Considerations
+
+Clients that act upon a request to rate limit
+are potentially re-identifiable (see {{Section 7.1 of DNS-PRIVACY}})
+because they react to information that might only be given to them.
+Note that this might apply to other fields too (e.g. Retry-After).
+
+Since rate limiting is usually implemented in contexts where
+clients are either identified or profiled
+(e.g. assigning different quota units to different users),
+this is rarely a concern.
+
+Privacy enhancing infrastructures using RateLimit fields
+can define specific techniques to mitigate the risks of re-identification.
 
 # IANA Considerations
 
