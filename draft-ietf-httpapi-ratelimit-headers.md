@@ -23,7 +23,7 @@ author:
     ins: A. Martinez
     name: Alejandro Martinez Ruiz
     org: Red Hat
-    email: amr@redhat.com
+    email: alex@flawedcode.org
 
 normative:
   IANA: RFC8126
