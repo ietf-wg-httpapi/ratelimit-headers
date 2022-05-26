@@ -23,12 +23,13 @@ author:
     ins: A. Martinez
     name: Alejandro Martinez Ruiz
     org: Red Hat
-    email: amr@redhat.com
+    email: alex@flawedcode.org
 
 normative:
   IANA: RFC8126
 
 informative:
+  DNS-PRIVACY: RFC9076
   UNIX:
     title: The Single UNIX Specification, Version 2 - 6 Vol Set for UNIX 98
     author:
@@ -89,7 +90,7 @@ The behavior of `RateLimit-Reset` is compatible with the `delay-seconds` notatio
 The fields definition allows to describe complex policies, including the ones
 using multiple and variable time windows and dynamic quotas, or implementing concurrency limits.
 
-## Goals
+## Goals {#goals}
 
 The goals of the RateLimit fields are:
 
@@ -118,6 +119,8 @@ The following features are out of the scope of this document:
   : This specification does not cover the throttling scope,
     that may be the given resource-target, its parent path or the whole
     Origin (see Section 7 of {{!RFC6454}}).
+    This can be addressed using extensibility mechanisms
+    such as the parameter registry {{iana-ratelimit-parameters}}.
 
   Response status code:
   : RateLimit fields may be returned in both
@@ -225,7 +228,6 @@ Other parameters are allowed and can be regarded as comments.
 They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
 as described in {{iana-ratelimit-parameters}}.
 
-
 An example policy of 100 quota-units per minute.
 
 ~~~ example
@@ -243,10 +245,21 @@ Two policy examples containing further details via custom parameters
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
 
+To avoid clashes, implementers SHOULD prefix unregistered parameters
+with an `x-<vendor>` identifier, e.g. `x-acme-policy`, `x-acme-burst`.
+While it is useful to define a clear syntax and semantics
+even for custom parameters, it is important to note that
+user agents are not required to process quota policy information.
+
 # Providing RateLimit fields {#providing-ratelimit-fields}
 
-A server MAY use one or more `RateLimit` response fields
-defined in this document to communicate its quota policies.
+A server uses the `RateLimit` response fields
+defined in this document to communicate its quota policies
+according to the following rules:
+
+- `RateLimit-Limit` and `RateLimit-Reset` are REQUIRED;
+- `RateLimit-Remaining` is RECOMMENDED.
+
 
 The returned values refers to the metrics used to evaluate if the current request
 respects the quota policy and MAY not apply to subsequent requests.
@@ -309,7 +322,6 @@ moment.
 Nonetheless servers MAY decide to send the `RateLimit` fields
 in a trailer section.
 
-
 ## Performance considerations
 
 Servers are not required to return `RateLimit` fields
@@ -324,7 +336,7 @@ their ratio with respect to the payload data, or use header-compression
 http features such as {{?HPACK=RFC7541}}.
 
 
-# Receiving RateLimit fields
+# Receiving RateLimit fields {#receiving-fields}
 
 A client MUST process the received `RateLimit` fields.
 
@@ -639,6 +651,21 @@ the server.
 
 Clients MUST validate the received values to mitigate those risks.
 
+
+# Privacy Considerations
+
+Clients that act upon a request to rate limit
+are potentially re-identifiable (see {{Section 7.1 of DNS-PRIVACY}})
+because they react to information that might only be given to them.
+Note that this might apply to other fields too (e.g. Retry-After).
+
+Since rate limiting is usually implemented in contexts where
+clients are either identified or profiled
+(e.g. assigning different quota units to different users),
+this is rarely a concern.
+
+Privacy enhancing infrastructures using RateLimit fields
+can define specific techniques to mitigate the risks of re-identification.
 
 # IANA Considerations
 
@@ -1177,9 +1204,7 @@ RateLimit-Reset: 36000
 ~~~
 
 # FAQ
-{:numbered="false"}
-
-_RFC Editor: Please remove this section before publication._
+{:numbered="false" removeinrfc="true"}
 
 1. Why defining standard fields for throttling?
 
@@ -1199,10 +1224,21 @@ _RFC Editor: Please remove this section before publication._
 
 4. Why don't pass the throttling scope as a parameter?
 
-   After a discussion on a [similar thread](https://github.com/httpwg/http-core/pull/317#issuecomment-585868767)
-   we will probably add a new "RateLimit-Scope" field to this spec.
+   The word "scope" can have different meanings:
+   for example it can be an URL, or an authorization scope.
+   Since authorization is out of the scope of this document (see {{goals}}),
+   and that we rely only on {{SEMANTICS}}, in {{goals}} we defined "scope" in terms of
+   URL.
 
-   I'm open to suggestions: comment on [this issue](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/70)
+   Since clients are not required to process quota policies (see {{receiving-fields}}),
+   we could add a new "RateLimit-Scope" field to this spec.
+   See this discussion on a [similar thread](https://github.com/httpwg/http-core/pull/317#issuecomment-585868767)
+
+   Specific ecosystems can still bake their own prefixed parameters,
+   such as `acme-auth-scope` or `acme-url-scope` and ensure that clients process them.
+   This behavior cannot be relied upon when communicating between different ecosystems.
+
+   We are open to suggestions: comment on [this issue](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/70)
 
 5. Why using delay-seconds instead of a UNIX Timestamp?
    Why not using subsecond precision?
@@ -1322,9 +1358,7 @@ RateLimit-Policy: 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;burs
     behavior.
 
 # RateLimit fields currently used on the web
-{:numbered="false"}
-
-_RFC Editor: Please remove this section before publication._
+{:numbered="false" removeinrfc="true"}
 
 Commonly used header field names are:
 
@@ -1400,19 +1434,17 @@ Darrel Miller
 and Julian Reschke.
 
 # Changes
-{:numbered="false"}
-
-_RFC Editor: Please remove this section before publication._
+{:numbered="false" removeinrfc="true"}
 
 ## Since draft-ietf-httpapi-ratelimit-headers-01
-{:numbered="false"}
+{:numbered="false" removeinrfc="true"}
 
 * Update IANA considerations #60
 * Use Structured fields #58
 * Reorganize document #67
 
 ## Since draft-ietf-httpapi-ratelimit-headers-00
-{:numbered="false"}
+{:numbered="false" removeinrfc="true"}
 
 * Use I-D.httpbis-semantics, which includes referencing `delay-seconds`
   instead of `delta-seconds`. #5
