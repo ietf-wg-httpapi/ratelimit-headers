@@ -1183,9 +1183,7 @@ RateLimit-Reset: 36000
 ~~~
 
 # FAQ
-{:numbered="false"}
-
-_RFC Editor: Please remove this section before publication._
+{:numbered="false" removeinrfc="true"}
 
 1. Why defining standard fields for throttling?
 
@@ -1338,9 +1336,7 @@ RateLimit-Limit: 100, 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;
     behavior.
 
 # RateLimit fields currently used on the web
-{:numbered="false"}
-
-_RFC Editor: Please remove this section before publication._
+{:numbered="false" removeinrfc="true"}
 
 Commonly used header field names are:
 
@@ -1414,19 +1410,17 @@ Darrel Miller
 and Julian Reschke.
 
 # Changes
-{:numbered="false"}
-
-_RFC Editor: Please remove this section before publication._
+{:numbered="false" removeinrfc="true"}
 
 ## Since draft-ietf-httpapi-ratelimit-headers-01
-{:numbered="false"}
+{:numbered="false" removeinrfc="true"}
 
 * Update IANA considerations #60
 * Use Structured fields #58
 * Reorganize document #67
 
 ## Since draft-ietf-httpapi-ratelimit-headers-00
-{:numbered="false"}
+{:numbered="false" removeinrfc="true"}
 
 * Use I-D.httpbis-semantics, which includes referencing `delay-seconds`
   instead of `delta-seconds`. #5
