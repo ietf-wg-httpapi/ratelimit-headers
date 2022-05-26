@@ -67,8 +67,8 @@ usage quotas.
 
 This was partially addressed by the `Retry-After` header field
 defined in {{!SEMANTICS=I-D.ietf-httpbis-semantics}} to be returned in
-`429 Too Many Requests` (see {{?STATUS429=RFC6525}})
-or `503 Service Unavailable` responses.
+429 (Too Many Request) (see {{?STATUS429=RFC6525}})
+or 503 (Service Unavailable) responses.
 
 Widely deployed quota mechanisms limit the number of acceptable
 requests in a given time window, e.g. 10 requests per second;
@@ -149,10 +149,9 @@ defined in Section 5.6.1 of {{SEMANTICS}}.
 
 The term Origin is to be interpreted as described in Section 7 of {{!RFC6454}}.
 
-This specification uses Structured Fields {{!SF=RFC8941}} to specify syntax.
-
-The terms sf-list, sf-item, sf-string, sf-token, sf-integer,
-bare-item and key refer to the structured types defined therein.
+This document uses the following terminology from {{Section 3 of !SF=RFC8941}}
+to specify syntax and parsing: List, Item, String, Token and Integer
+together with the concept of bare item.
 
 # Expressing rate-limit policies
 
@@ -165,7 +164,7 @@ A time window is expressed in seconds, using the following syntax:
     time-window = delay-seconds
     delay-seconds = sf-integer
 
-Where `delay-seconds` is a non-negative sf-integer
+Where `delay-seconds` is a non-negative Integer
 compatible with the "delay-seconds" rule defined in Section 10.2.3 of {{SEMANTICS}}.
 
 Subsecond precision is not supported.
@@ -185,7 +184,7 @@ The `service-limit` is expressed in `quota-units` and has the following syntax:
    quota-units = sf-integer
 ~~~
 
-where `quota-units` is a non-negative sf-integer.
+where `quota-units` is a non-negative Integer.
 
 The `service-limit` SHOULD match the maximum number of acceptable requests.
 
@@ -332,8 +331,8 @@ provide `RateLimit` fields only when a given quota is going
 to expire.
 
 Implementers concerned with response fields' size, might take into account
-their ratio with respect to the payload data, or use header-compression
-http features such as {{?HPACK=RFC7541}}.
+their ratio with respect to the content length, or use header-compression
+HTTP features such as {{?HPACK=RFC7541}}.
 
 
 # Receiving RateLimit fields {#receiving-fields}
@@ -361,7 +360,7 @@ a client aware of a significant network latency MAY behave accordingly
 and use other information (e.g. the `Date` response header field, or otherwise gathered metrics) to better
 estimate the `RateLimit-Reset` moment intended by the server.
 
-The `quota-policy` values and comments provided in `RateLimit-Policy` are informative
+The details provided in `RateLimit-Policy` are informative
 and MAY be ignored.
 
 If a response contains both the `RateLimit-Reset` and `Retry-After` fields,
@@ -429,8 +428,8 @@ in the current `time-window`.
 
 If the client exceeds that limit, it MAY not be served.
 
-The field is an Integer Structured Field of positive length.
-Its value is named `expiring-limit` and its syntax is `service-limit`
+The field is a non-negative Integer.
+Its value is named `expiring-limit`.
 
 ~~~
    RateLimit-Limit = expiring-limit
@@ -459,8 +458,7 @@ The `RateLimit-Policy` response field indicates
 the `quota` associated to the client
 and its value is informative.
 
-The field is a List Structured Field of positive length
-and its members' syntax is `quota-policy` defined in {{quota-policy}}.
+The field is a non-empty List of quota policies (see {{quota-policy}}).
 
 ~~~ abnf
    RateLimit-Policy = sf-list
@@ -490,7 +488,7 @@ and can be sent in a trailer section.
 The `RateLimit-Remaining` response field indicates the remaining `quota-units` defined in {{service-limit}}
 associated to the client.
 
-The field is an Integer Structured Field and its value is
+The field is a non-negative Integer expressed in `quota-units`.
 
 ~~~
    RateLimit-Remaining = quota-units
@@ -516,11 +514,10 @@ One example of `RateLimit-Remaining` use is below.
 
 ## RateLimit-Reset {#ratelimit-reset-field}
 
-The `RateLimit-Reset` response field indicates either
+The `RateLimit-Reset` response field indicates
+the number of seconds until the quota resets.
 
-- the number of seconds until the quota resets.
-
-The field is an Integer Structured Field and its value is
+The field is a non-negative Integer.
 
 ~~~
    RateLimit-Reset = delay-seconds
@@ -945,7 +942,7 @@ sending `Retry-After`.
 In this example, the values of `Retry-After` and `RateLimit-Reset` reference the same moment,
 but this is not a requirement.
 
-The `429 Too Many Requests` HTTP status code is just used as an example.
+The 429 (Too Many Request) HTTP status code is just used as an example.
 
 Request:
 
