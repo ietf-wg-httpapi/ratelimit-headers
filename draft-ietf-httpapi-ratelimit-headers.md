@@ -678,7 +678,7 @@ Please add the following entries to the
 | RateLimit-Limit     | permanent | {{ratelimit-limit-field}} of ThisRFC       |
 | RateLimit-Remaining | permanent | {{ratelimit-remaining-field}} of ThisRFC   |
 | RateLimit-Reset     | permanent | {{ratelimit-reset-field}} of ThisRFC       |
-| RateLimit-Reset     | permanent | {{ratelimit-policy-field}} of ThisRFC      |
+| RateLimit-Policy    | permanent | {{ratelimit-policy-field}} of ThisRFC      |
 |---------------------|-----------|---------------|
 
 
