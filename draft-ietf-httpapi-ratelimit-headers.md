@@ -1433,10 +1433,16 @@ and Julian Reschke.
 # Changes
 {:numbered="false" removeinrfc="true"}
 
+## Since draft-ietf-httpapi-ratelimit-headers-03
+{:numbered="false" removeinrfc="true"}
+
+* Split policy informatio in RateLimit-Policy #81
+
+
 ## Since draft-ietf-httpapi-ratelimit-headers-02
 {:numbered="false" removeinrfc="true"}
 
-* Split policy informatio in RateLimit-Policy #79
+* Address throttling scope #83
 
 ## Since draft-ietf-httpapi-ratelimit-headers-01
 {:numbered="false" removeinrfc="true"}
