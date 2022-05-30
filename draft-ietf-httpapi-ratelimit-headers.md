@@ -163,7 +163,7 @@ The fields defined in this document are collectively named "RateLimit fields".
 Rate limit policies limit the number of acceptable requests in a given time interval.
 
 The "time-window" is a non-negative Integer value expressing such interval in seconds
-compatibly with the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}.
+compatible with the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}.
 
 Subsecond precision is not supported.
 
@@ -241,8 +241,7 @@ user agents are not required to process quota policy information.
 
 # Providing RateLimit fields {#providing-ratelimit-fields}
 
-A server uses the RateLimit fields
-to communicate its quota policies
+A server uses the RateLimit fields to communicate its quota policies
 according to the following rules:
 
 - RateLimit-Limit and RateLimit-Reset fields are REQUIRED;
