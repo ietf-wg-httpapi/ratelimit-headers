@@ -453,7 +453,7 @@ like shown in the following example.
 
 ~~~ example
    RateLimit-Policy: 100;w=10
-   RateLimit-Limit:  100
+   RateLimit-Limit: 100
 ~~~
 
 Policies using multiple quota limits MAY be returned using multiple
