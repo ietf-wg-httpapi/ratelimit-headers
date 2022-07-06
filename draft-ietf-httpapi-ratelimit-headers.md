@@ -67,7 +67,7 @@ requires an explicit way of communicating service status and
 usage quotas.
 
 This was partially addressed by the "Retry-After" header field
-defined in {{!HTTP=I-D.ietf-httpbis-semantics}} to be returned in
+defined in {{!HTTP=RFC9110}} to be returned in
 429 (Too Many Request) (see {{?STATUS429=RFC6525}})
 or 503 (Service Unavailable) responses.
 
@@ -399,7 +399,7 @@ on intermediaries.
 
 ## Caching
 
-As is the ordinary case for HTTP caching ({{?HTTP-CACHING=I-D.ietf-httpbis-cache}}), a response with
+As is the ordinary case for HTTP caching ({{?HTTP-CACHING=RFC9111}}), a response with
 RateLimit fields might be cached and re-used for subsequent requests.
 A cached response containing RateLimit fields does not modify quota counters but could
 contain stale information.
