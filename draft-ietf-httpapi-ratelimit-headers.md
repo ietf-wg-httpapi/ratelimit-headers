@@ -325,7 +325,6 @@ HTTP features such as {{?HPACK=RFC7541}}.
 
 # Receiving RateLimit fields {#receiving-fields}
 
-A client MUST process the received RateLimit fields.
 
 A client MUST validate the values received in the RateLimit fields before using them
 and check if there are significant discrepancies
