@@ -330,7 +330,9 @@ A client MUST process the received RateLimit fields.
 A client MUST validate the values received in the RateLimit fields before using them
 and check if there are significant discrepancies
 with the expected ones.
-This includes a RateLimit-Reset field moment too far in the future or a service-limit too high.
+This includes a RateLimit-Reset field moment too far in the future
+(e.g. similarly to receiving "Retry-after: 1000000")
+or a service-limit too high.
 
 A client receiving RateLimit fields MUST NOT assume that subsequent
 responses contain the same RateLimit fields, or any RateLimit fields
