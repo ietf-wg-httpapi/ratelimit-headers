@@ -62,34 +62,24 @@ The source code and issues list for this draft can be found at
 
 # Introduction
 
-The widespreading of HTTP as a distributed computation protocol
-requires an explicit way of communicating service status and
-usage quotas.
+Rate limiting HTTP clients has become a widespread practice, especially for HTTP APIs. Typically,
+servers who do so limit the number of acceptable requests in a given time window (e.g. 10 requests
+per second). See {{rate-limiting}} for further information on the current usage of rate limiting in
+HTTP.
 
-This was partially addressed by the "Retry-After" header field
-defined in {{!HTTP=RFC9110}} to be returned in
-429 (Too Many Request) (see {{?STATUS429=RFC6525}})
-or 503 (Service Unavailable) responses.
+Currently, there is no standard way to communicate service quotas so that the client can throttle
+its requests to prevent errors. This document defines a set of standard HTTP fields to enable rate limiting:
 
-Widely deployed quota mechanisms limit the number of acceptable
-requests in a given time window, e.g. 10 requests per second;
-currently, there is no standard way to communicate service quotas
-so that the client can throttle its requests
-and prevent 4xx or 5xx responses.
-See {{rate-limiting}} for further information on
-the current usage of rate limiting in HTTP.
+- RateLimit-Limit: the server's quota for requests by the client in the time window,
+- RateLimit-Remaining: the remaining quota in the current window,
+- RateLimit-Reset: the time remaining in the current window, specified in seconds, and
+- RateLimit-Policy: the quota policy.
 
-This document defines syntax and semantics for the following fields:
-
-- RateLimit-Limit: containing the requests quota in the time window;
-- RateLimit-Remaining: containing the remaining requests quota in the current window;
-- RateLimit-Reset: containing the time remaining in the current window, specified in seconds;
-- RateLimit-Policy: containing the quota policy information.
+These fields allow the establishment of complex rate limiting policies, including
+using multiple and variable time windows and dynamic quotas, and implementing concurrency limits.
 
 The behavior of the RateLimit-Reset field is compatible with the delay-seconds notation of Retry-After.
 
-The fields definition allows to describe complex policies, including the ones
-using multiple and variable time windows and dynamic quotas, or implementing concurrency limits.
 
 ## Goals {#goals}
 
