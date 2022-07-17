@@ -219,7 +219,7 @@ This field MUST NOT occur multiple times and can be sent in a trailer section.
 
 ## RateLimit-Policy {#ratelimit-policy-field}
 
-The "RateLimit-Policy" field response field indicates the quota policies currently associated with the client. Its value is informative.
+The "RateLimit-Policy"  response field indicates the quota policies currently associated with the client. Its value is informative.
 
 The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
 
