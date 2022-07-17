@@ -175,7 +175,8 @@ The service limit is the maximum number of requests that the server is willing t
 
 The service limit is a non-negative Integer expressed in quota units.
 
-The service limit SHOULD match the maximum number of acceptable requests. However, the service limit MAY differ from the total number of acceptable requests when weight mechanisms, bursts, or other server policies are implemented.
+The service limit SHOULD match the maximum number of acceptable requests.
+However, the service limit MAY differ from the total number of acceptable requests when weight mechanisms, bursts, or other server policies are implemented.
 
 If the service limit does not match the maximum number of acceptable requests the relation with that SHOULD be communicated out-of-band.
 
