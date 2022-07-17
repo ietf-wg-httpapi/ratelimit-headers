@@ -42,10 +42,7 @@ informative:
 
 --- abstract
 
-This document defines the RateLimit-Limit, RateLimit-Remaining,
-RateLimit-Reset and RateLimit-Policy fields for HTTP,
-so servers can advertise their current service limits and
-clients can shape their request policies to avoid being throttled.
+This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset and RateLimit-Policy fields for HTTP, so servers can advertise their current service limits and clients can shape their request policies to avoid being throttled.
 
 --- note_Note_to_Readers
 
@@ -62,21 +59,16 @@ The source code and issues list for this draft can be found at
 
 # Introduction
 
-Rate limiting HTTP clients has become a widespread practice, especially for HTTP APIs. Typically,
-servers who do so limit the number of acceptable requests in a given time window (e.g. 10 requests
-per second). See {{rate-limiting}} for further information on the current usage of rate limiting in
-HTTP.
+Rate limiting HTTP clients has become a widespread practice, especially for HTTP APIs. Typically, servers who do so limit the number of acceptable requests in a given time window (e.g. 10 requests per second). See {{rate-limiting}} for further information on the current usage of rate limiting in HTTP.
 
-Currently, there is no standard way to communicate service quotas so that the client can throttle
-its requests to prevent errors. This document defines a set of standard HTTP fields to enable rate limiting:
+Currently, there is no standard way to communicate service quotas so that the client can throttle its requests to prevent errors. This document defines a set of standard HTTP fields to enable rate limiting:
 
 - RateLimit-Limit: the server's quota for requests by the client in the time window,
 - RateLimit-Remaining: the remaining quota in the current window,
 - RateLimit-Reset: the time remaining in the current window, specified in seconds, and
 - RateLimit-Policy: the quota policy.
 
-These fields allow the establishment of complex rate limiting policies, including
-using multiple and variable time windows and dynamic quotas, and implementing concurrency limits.
+These fields allow the establishment of complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits.
 
 The behavior of the RateLimit-Reset field is compatible with the delay-seconds notation of Retry-After.
 
@@ -134,14 +126,11 @@ The following features are out of the scope of this document:
 
 {::boilerplate bcp14}
 
-This document uses the Augmented BNF defined in {{!RFC5234}} and updated
-by {{!RFC7405}} along with the "#rule" extension
-defined in {{Section 5.6.1 of HTTP}}.
+This document uses the Augmented BNF defined in {{!RFC5234}} and updated by {{!RFC7405}} along with the "#rule" extension defined in {{Section 5.6.1 of HTTP}}.
 
 The term Origin is to be interpreted as described in Section 7 of {{WEB-ORIGIN}}.
 
-This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}}
-to specify syntax and parsing, along with the concept of "bare item".
+This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing, along with the concept of "bare item".
 
 The fields defined in this document are collectively named "RateLimit fields".
 
@@ -149,10 +138,7 @@ The fields defined in this document are collectively named "RateLimit fields".
 
 ## Quota Policy {#quota-policy}
 
-A quota policy is described in terms of [quota units](#service-limit)
-and a [time window](#time-window).
-Its value is an Item
-where the associated bare item is a [service limit](#service-limit) and parameters are supported.
+A quota policy is described in terms of [quota units](#service-limit) and a [time window](#time-window). Its value is an Item where the associated bare item is a [service limit](#service-limit) and parameters are supported.
 
 The following parameters are defined:
 
@@ -160,9 +146,7 @@ The following parameters are defined:
   :  The REQUIRED "w" parameter value conveys
      a time window value as defined in {{time-window}}.
 
-Other parameters are allowed and can be regarded as comments.
-They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
-as described in {{iana-ratelimit-parameters}}.
+Other parameters are allowed and can be regarded as comments. They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", as described in {{iana-ratelimit-parameters}}.
 
 An example policy of 100 quota units per minute.
 
@@ -170,9 +154,7 @@ An example policy of 100 quota units per minute.
    100;w=60
 ~~~
 
-The definition of a quota policy does not imply any specific
-distribution of quota units over time.
-Such service specific details can be conveyed as parameters.
+The definition of a quota policy does not imply any specific distribution of quota units over time. Such service specific details can be conveyed as parameters.
 
 Two policy examples containing further details via custom parameters
 
@@ -181,39 +163,27 @@ Two policy examples containing further details via custom parameters
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
 
-To avoid clashes, implementers SHOULD prefix unregistered parameters
-with an `x-<vendor>` identifier, e.g. `x-acme-policy`, `x-acme-burst`.
-While it is useful to define a clear syntax and semantics
-even for custom parameters, it is important to note that
-user agents are not required to process quota policy information.
+To avoid clashes, implementers SHOULD prefix unregistered parameters with an `x-<vendor>` identifier, e.g. `x-acme-policy`, `x-acme-burst`. While it is useful to define a clear syntax and semantics even for custom parameters, it is important to note that user agents are not required to process quota policy information.
 
 ## Time Window {#time-window}
 
 Rate limit policies limit the number of acceptable requests in a given time interval, known as a time window.
 
-The time window is a non-negative Integer value expressing such interval in seconds
-compatible with the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}.
+The time window is a non-negative Integer value expressing such interval in seconds compatible with the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}.
 
 Subsecond precision is not supported.
 
 ## Service Limit and Quota Units {#service-limit}
 
-The service limit is a value associated to the maximum number of requests
-that the server is willing to accept
-from one or more clients
-on a given basis (originating IP, authenticated user, geographical, ..)
-during a [time window](#time-window).
+The service limit is a value associated to the maximum number of requests that the server is willing to accept from one or more clients on a given basis (originating IP, authenticated user, geographical, ..) during a [time window](#time-window).
 
-The service limit is a non-negative Integer
-expressed in quota units.
+The service limit is a non-negative Integer expressed in quota units.
 
 The service limit SHOULD match the maximum number of acceptable requests.
 
-The service limit MAY differ from the total number of acceptable requests
-when weight mechanisms, bursts, or other server policies are implemented.
+The service limit MAY differ from the total number of acceptable requests when weight mechanisms, bursts, or other server policies are implemented.
 
-If the service limit does not match the maximum number of acceptable requests
-the relation with that SHOULD be communicated out-of-band.
+If the service limit does not match the maximum number of acceptable requests the relation with that SHOULD be communicated out-of-band.
 
 Example: A server could
 
@@ -232,14 +202,12 @@ GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
 
 # RateLimit Fields {#providing-ratelimit-fields}
 
-A server uses the RateLimit fields to communicate its quota policies
-according to the following rules:
+A server uses the RateLimit fields to communicate its quota policies according to the following rules:
 
 - RateLimit-Limit and RateLimit-Reset fields are REQUIRED;
 - RateLimit-Remaining field is RECOMMENDED.
 
-The returned values refers to the metrics used to evaluate if the current request
-respects the quota policy and MAY not apply to subsequent requests.
+The returned values refers to the metrics used to evaluate if the current request respects the quota policy and MAY not apply to subsequent requests.
 
 Example: a successful response with the following fields
 
@@ -249,24 +217,13 @@ Example: a successful response with the following fields
    RateLimit-Reset: 7
 ~~~
 
-does not guarantee that the next request will be successful. Server metrics may be subject to other
-conditions like the one shown in the example from {{service-limit}}.
+does not guarantee that the next request will be successful. Server metrics may be subject to other conditions like the one shown in the example from {{service-limit}}.
 
-A server MAY return RateLimit fields independently
-of the response status code.
-This includes throttled responses.
+A server MAY return RateLimit fields independently of the response status code. This includes throttled responses.
 
-This document does not mandate any correlation between the RateLimit
-field values and the returned status code.
+This document does not mandate any correlation between the RateLimit field values and the returned status code.
 
-Servers should be careful in returning RateLimit fields in
-redirection responses (e.g. 3xx status codes) because
-a low RateLimit-Remaining field value could prevent the client
-from issuing requests.
-For example, given the RateLimit fields below,
-a client could decide to wait 10 seconds before following
-the "Location" header field (see {{Section 10.2.2 of HTTP}}),
-because the RateLimit-Remaining field value is 0.
+Servers should be careful in returning RateLimit fields in redirection responses (e.g. 3xx status codes) because a low RateLimit-Remaining field value could prevent the client from issuing requests. For example, given the RateLimit fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the RateLimit-Remaining field value is 0.
 
 ~~~ http-message
 HTTP/1.1 301 Moved Permanently
@@ -277,78 +234,43 @@ RateLimit-Reset: 10
 
 ~~~
 
-If a response contains both the Retry-After and the RateLimit-Reset fields,
-the RateLimit-Reset field value SHOULD reference the same point in time as
-the Retry-After field value.
+If a response contains both the Retry-After and the RateLimit-Reset fields, the RateLimit-Reset field value SHOULD reference the same point in time as the Retry-After field value.
 
-When using a policy involving more than one time window,
-the server MUST reply with the RateLimit fields related to the time window
-with the lower RateLimit-Remaining field values.
+When using a policy involving more than one time window, the server MUST reply with the RateLimit fields related to the time window with the lower RateLimit-Remaining field values.
 
-A service returning RateLimit fields MUST NOT convey values
-exposing an unwanted volume of requests
-and SHOULD implement mechanisms to cap the ratio between RateLimit-Remaining
-and RateLimit-Reset field values (see {{sec-resource-exhaustion}});
-this is especially important when a quota policy uses a large time window.
+A service returning RateLimit fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between RateLimit-Remaining and RateLimit-Reset field values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window.
 
-Under certain conditions, a server MAY artificially lower RateLimit field values between subsequent requests,
-e.g. to respond to Denial of Service attacks or in case of resource saturation.
+Under certain conditions, a server MAY artificially lower RateLimit field values between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
 
-Servers usually establish whether the request is in-quota before creating a
-response, so the RateLimit field values should be already available in that
-moment.
-Nonetheless servers MAY decide to send the RateLimit fields
-in a trailer section.
+Servers usually establish whether the request is in-quota before creating a response, so the RateLimit field values should be already available in that moment. Nonetheless servers MAY decide to send the RateLimit fields in a trailer section.
 
 ## Performance Considerations
 
-Servers are not required to return RateLimit fields
-in every response,
-and clients need to take this into account.
-For example, an implementer concerned with performance might
-provide RateLimit fields only when a given quota is going
-to expire.
+Servers are not required to return RateLimit fields in every response, and clients need to take this into account. For example, an implementer concerned with performance might provide RateLimit fields only when a given quota is going to expire.
 
-Implementers concerned with response fields' size, might take into account
-their ratio with respect to the content length, or use header-compression
-HTTP features such as {{?HPACK=RFC7541}}.
+Implementers concerned with response fields' size, might take into account their ratio with respect to the content length, or use header-compression HTTP features such as {{?HPACK=RFC7541}}.
 
 
 # Processing RateLimit Fields {#receiving-fields}
 
 
-A client MUST validate the values received in the RateLimit fields before using them
-and check if there are significant discrepancies
-with the expected ones.
-This includes a RateLimit-Reset field moment too far in the future
-(e.g. similarly to receiving "Retry-after: 1000000")
-or a service-limit too high.
+A client MUST validate the values received in the RateLimit fields before using them and check if there are significant discrepancies with the expected ones. This includes a RateLimit-Reset field moment too far in the future (e.g. similarly to receiving "Retry-after: 1000000") or a service-limit too high.
 
-A client receiving RateLimit fields MUST NOT assume that subsequent
-responses contain the same RateLimit fields, or any RateLimit fields
-at all.
+A client receiving RateLimit fields MUST NOT assume that subsequent responses contain the same RateLimit fields, or any RateLimit fields at all.
 
 Malformed RateLimit fields MAY be ignored.
 
-A client SHOULD NOT exceed the quota units conveyed by the RateLimit-Remaining field before the time window expressed
-in RateLimit-Reset field.
+A client SHOULD NOT exceed the quota units conveyed by the RateLimit-Remaining field before the time window expressed in RateLimit-Reset field.
 
 A client MAY still probe the server if the RateLimit-Reset field is considered too high.
 
-The value of RateLimit-Reset field is generated at response time:
-a client aware of a significant network latency MAY behave accordingly
-and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to better
-estimate the RateLimit-Reset field moment intended by the server.
+The value of RateLimit-Reset field is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to better estimate the RateLimit-Reset field moment intended by the server.
 
-The details provided in RateLimit-Policy field are informative
-and MAY be ignored.
+The details provided in RateLimit-Policy field are informative and MAY be ignored.
 
-If a response contains both the RateLimit-Reset and Retry-After fields,
-the Retry-After field MUST take precedence and
-the RateLimit-Reset field MAY be ignored.
+If a response contains both the RateLimit-Reset and Retry-After fields, the Retry-After field MUST take precedence and the RateLimit-Reset field MAY be ignored.
 
-This specification does not mandate a specific throttling behavior
-and implementers can adopt their preferred policies, including:
+This specification does not mandate a specific throttling behavior and implementers can adopt their preferred policies, including:
 
 - slowing down or preemptively back-off their request rate when
   approaching quota limits;
@@ -356,47 +278,25 @@ and implementers can adopt their preferred policies, including:
 
 ## Intermediaries {#intermediaries}
 
-This section documents the considerations advised in
-{{Section 16.3.2 of HTTP}}.
+This section documents the considerations advised in {{Section 16.3.2 of HTTP}}.
 
-An intermediary that is not part of the originating service infrastructure
-and is not aware of the quota policy semantic used by the Origin Server
-SHOULD NOT alter the RateLimit fields' values
-in such a way as to communicate a more permissive quota policy;
-this includes removing the RateLimit fields.
+An intermediary that is not part of the originating service infrastructure and is not aware of the quota policy semantic used by the Origin Server SHOULD NOT alter the RateLimit fields' values in such a way as to communicate a more permissive quota policy; this includes removing the RateLimit fields.
 
-An intermediary MAY alter the RateLimit fields
-in such a way as to communicate a more restrictive quota policy when:
+An intermediary MAY alter the RateLimit fields in such a way as to communicate a more restrictive quota policy when:
 
 - it is aware of the quota unit semantic used by the Origin Server;
 - it implements this specification and enforces a quota policy which
   is more restrictive than the one conveyed in the fields.
 
-An intermediary
-SHOULD forward a request even when presuming that it
-might not be serviced;
-the service returning the RateLimit fields is the sole responsible
-of enforcing the communicated quota policy,
-and it is always free to service incoming requests.
+An intermediary SHOULD forward a request even when presuming that it might not be serviced; the service returning the RateLimit fields is the sole responsible of enforcing the communicated quota policy, and it is always free to service incoming requests.
 
-This specification does not mandate any behavior on intermediaries
-respect to retries,
-nor requires that intermediaries have any role in respecting quota policies.
-For example, it is legitimate for a proxy to retransmit a request
-without notifying the client, and thus consuming quota units.
+This specification does not mandate any behavior on intermediaries respect to retries, nor requires that intermediaries have any role in respecting quota policies. For example, it is legitimate for a proxy to retransmit a request without notifying the client, and thus consuming quota units.
 
-[Privacy considerations](#privacy) provide further guidance
-on intermediaries.
+[Privacy considerations](#privacy) provide further guidance on intermediaries.
 
 ## Caching
 
-As is the ordinary case for HTTP caching ({{?HTTP-CACHING=RFC9111}}), a response with
-RateLimit fields might be cached and re-used for subsequent requests.
-A cached response containing RateLimit fields does not modify quota counters but could
-contain stale information.
-Clients interested in determining the freshness of the RateLimit fields
-could rely on fields such as the Date header field
-and on the time window of a quota policy.
+As is the ordinary case for HTTP caching ({{?HTTP-CACHING=RFC9111}}), a response with RateLimit fields might be cached and re-used for subsequent requests. A cached response containing RateLimit fields does not modify quota counters but could contain stale information. Clients interested in determining the freshness of the RateLimit fields could rely on fields such as the Date header field and on the time window of a quota policy.
 
 # Fields Definition
 
@@ -404,82 +304,58 @@ The following RateLimit response fields are defined
 
 ## RateLimit-Limit {#ratelimit-limit-field}
 
-The "RateLimit-Limit" response field indicates
-the [service limit](#service-limit) associated to the client
-in the current [time window](#time-window).
+The "RateLimit-Limit" response field indicates the [service limit](#service-limit) associated to the client in the current [time window](#time-window).
 
 If the client exceeds that limit, it MAY not be served.
 
-The field is an Item
-and its value is a non-negative Integer
-named "expiring-limit".
-Parameters are not allowed.
+The field is an Item and its value is a non-negative Integer named "expiring-limit". Parameters are not allowed.
 
-The expiring-limit MUST be set to the service limit that is closer to reach its limit,
-and the associated time window MUST either be:
+The expiring-limit MUST be set to the service limit that is closer to reach its limit, and the associated time window MUST either be:
 
 - inferred by the value of RateLimit-Reset field at the moment of the reset, or
 - communicated out-of-band (e.g. in the documentation).
 
-The RateLimit-Policy field (see {{ratelimit-policy-field}}),
-might contain information on the associated time window.
+The RateLimit-Policy field (see {{ratelimit-policy-field}}), might contain information on the associated time window.
 
 ~~~ example
    RateLimit-Limit: 100
 ~~~
 
-This field MUST NOT occur multiple times
-and can be sent in a trailer section.
+This field MUST NOT occur multiple times and can be sent in a trailer section.
 
 ## RateLimit-Policy {#ratelimit-policy-field}
 
-The RateLimit-Policy field response field indicates
-the quota associated to the client
-and its value is informative.
+The RateLimit-Policy field response field indicates the quota associated to the client and its value is informative.
 
-The field is a non-empty List of Items.
-Each item is a [quota policy](#quota-policy).
+The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
 
-This field can convey the time window associated to the expiring-limit,
-like shown in the following example.
+This field can convey the time window associated to the expiring-limit, like shown in the following example.
 
 ~~~ example
    RateLimit-Policy: 100;w=10
    RateLimit-Limit: 100
 ~~~
 
-Policies using multiple quota limits MAY be returned using multiple
-quota policy Items, like shown in the following two examples:
+Policies using multiple quota limits MAY be returned using multiple quota policy Items, like shown in the following two examples:
 
 ~~~ example
    RateLimit-Policy: 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
    RateLimit-Policy: 10;w=1;burst=1000, 1000;w=3600
 ~~~
 
-This field MUST NOT occur multiple times
-and can be sent in a trailer section.
+This field MUST NOT occur multiple times and can be sent in a trailer section.
 
 ## RateLimit-Remaining {#ratelimit-remaining-field}
 
-The RateLimit-Remaining field response field indicates the remaining quota units defined in {{service-limit}}
-associated to the client.
+The RateLimit-Remaining field response field indicates the remaining quota units defined in {{service-limit}} associated to the client.
 
-The field is an Item
-and its value is a non-negative Integer
-expressed in [quota units](#service-limit).
-Parameters are not allowed.
+The field is an Item and its value is a non-negative Integer expressed in [quota units](#service-limit). Parameters are not allowed.
 
-This field MUST NOT occur multiple times
-and can be sent in a trailer section.
+This field MUST NOT occur multiple times and can be sent in a trailer section.
 
-Clients MUST NOT assume that a positive RateLimit-Remaining field value is
-a guarantee that further requests will be served.
+Clients MUST NOT assume that a positive RateLimit-Remaining field value is a guarantee that further requests will be served.
 
-A low RateLimit-Remaining field value is like a yellow traffic-light
-for either the number of requests issued in the time window
-or the request throughput:
-the red light may arrive suddenly
-(see {{providing-ratelimit-fields}}).
+A low RateLimit-Remaining field value is like a yellow traffic-light for either the number of requests issued in the time window or the request throughput: the red light may arrive suddenly (see {{providing-ratelimit-fields}}).
 
 One example of RateLimit-Remaining field use is below.
 
@@ -489,18 +365,15 @@ One example of RateLimit-Remaining field use is below.
 
 ## RateLimit-Reset {#ratelimit-reset-field}
 
-The RateLimit-Reset field response field indicates
-the number of seconds until the quota resets.
+The RateLimit-Reset field response field indicates the number of seconds until the quota resets.
 
-The field is a non-negative Integer compatible with
-the delay-seconds rule, because:
+The field is a non-negative Integer compatible with the delay-seconds rule, because:
 
 - it does not rely on clock synchronization and is resilient to clock adjustment
   and clock skew between client and server (see {{Section 5.6.7 of HTTP}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
-This field MUST NOT occur multiple times
-and can be sent in a trailer section.
+This field MUST NOT occur multiple times and can be sent in a trailer section.
 
 An example of RateLimit-Reset field use is below.
 
@@ -508,65 +381,45 @@ An example of RateLimit-Reset field use is below.
    RateLimit-Reset: 50
 ~~~
 
-The client MUST NOT assume that all its service limit will be restored
-after the moment referenced by RateLimit-Reset field.
-The server MAY arbitrarily alter the RateLimit-Reset field value between subsequent requests
-e.g. in case of resource saturation or to implement sliding window policies.
+The client MUST NOT assume that all its service limit will be restored after the moment referenced by RateLimit-Reset field. The server MAY arbitrarily alter the RateLimit-Reset field value between subsequent requests e.g. in case of resource saturation or to implement sliding window policies.
 
 # Security Considerations
 
 ## Throttling does not prevent clients from issuing requests {#sec-throttling-does-not-prevent}
 
-This specification does not prevent clients to
-make over-quota requests.
+This specification does not prevent clients to make over-quota requests.
 
-Servers should always implement mechanisms
-to prevent resource exhaustion.
+Servers should always implement mechanisms to prevent resource exhaustion.
 
 ## Information disclosure {#sec-information-disclosure}
 
-Servers should not disclose to untrusted parties operational capacity information that
-can be used to saturate its infrastructural resources.
+Servers should not disclose to untrusted parties operational capacity information that can be used to saturate its infrastructural resources.
 
-While this specification does not mandate whether non 2xx responses
-consume quota, if 401 and 403 responses count on quota
-a malicious client could probe the endpoint
-to get traffic information of another
-user.
+While this specification does not mandate whether non 2xx responses consume quota, if 401 and 403 responses count on quota a malicious client could probe the endpoint to get traffic information of another user.
 
-As intermediaries might retransmit requests and consume
-quota units without prior knowledge of the user agent,
-RateLimit fields might reveal the existence of an intermediary
-to the user agent.
+As intermediaries might retransmit requests and consume quota units without prior knowledge of the user agent, RateLimit fields might reveal the existence of an intermediary to the user agent.
 
 ## Remaining quota units are not granted requests {#sec-remaining-not-granted}
 
-RateLimit fields convey hints from the server
-to the clients in order to avoid being throttled out.
+RateLimit fields convey hints from the server to the clients in order to avoid being throttled out.
 
-Clients MUST NOT consider the [quota units](#service-limit) returned in RateLimit-Remaining field
-as a service level agreement.
+Clients MUST NOT consider the [quota units](#service-limit) returned in RateLimit-Remaining field as a service level agreement.
 
-In case of resource saturation, the server MAY artificially lower the returned
-values or not serve the request regardless of the advertised quotas.
+In case of resource saturation, the server MAY artificially lower the returned values or not serve the request regardless of the advertised quotas.
 
 ## Reliability of RateLimit-Reset {#sec-reset-reliability}
 
-Consider that service limit might not be restored after the moment referenced by RateLimit-Reset field,
-and the RateLimit-Reset field value do not be considered fixed nor constant.
+Consider that service limit might not be restored after the moment referenced by RateLimit-Reset field, and the RateLimit-Reset field value do not be considered fixed nor constant.
 
-Subsequent requests might return a higher RateLimit-Reset field value to limit
-concurrency or implement dynamic or adaptive throttling policies.
+Subsequent requests might return a higher RateLimit-Reset field value to limit concurrency or implement dynamic or adaptive throttling policies.
 
 ## Resource exhaustion {#sec-resource-exhaustion}
 
-When returning RateLimit-Reset field you must be aware that many throttled
-clients may come back at the very moment specified.
+When returning RateLimit-Reset field you must be aware that many throttled clients may come back at the very moment specified.
 
 This is true for Retry-After too.
 
-For example, if the quota resets every day at `18:00:00`
-and your server returns the RateLimit-Reset field accordingly
+For example, if the quota resets every day at `18:00:00` and your server returns the RateLimit-Reset field accordingly
 
 ~~~ example
    Date: Tue, 15 Nov 1994 08:00:00 GMT
@@ -577,13 +430,9 @@ there's a high probability that all clients will show up at `18:00:00`.
 
 This could be mitigated by adding some jitter to the field-value.
 
-Resource exhaustion issues can be associated with quota policies
-using a large time window, because a user agent by chance or on purpose might
-consume most of its quota units in a significantly shorter interval.
+Resource exhaustion issues can be associated with quota policies using a large time window, because a user agent by chance or on purpose might consume most of its quota units in a significantly shorter interval.
 
-This behavior can be even triggered by the provided RateLimit fields.
-The following example describes a service
-with an unconsumed quota policy of 10000 quota units per 1000 seconds.
+This behavior can be even triggered by the provided RateLimit fields. The following example describes a service with an unconsumed quota policy of 10000 quota units per 1000 seconds.
 
 ~~~ example
 RateLimit-Limit: 10000
@@ -592,55 +441,35 @@ RateLimit-Remaining: 10000
 RateLimit-Reset: 10
 ~~~
 
-A client implementing a simple ratio between RateLimit-Remaining field and
-RateLimit-Reset field could infer an average throughput of
-1000 quota units per second,
-while the RateLimit-Limit field conveys a quota-policy
-with an average of 10 quota units per second.
-If the service cannot handle such load, it should return
-either a lower RateLimit-Remaining field value
-or an higher RateLimit-Reset field value.
-Moreover, complementing large time window quota policies with
-a short time window one mitigates those risks.
+A client implementing a simple ratio between RateLimit-Remaining field and RateLimit-Reset field could infer an average throughput of 1000 quota units per second, while the RateLimit-Limit field conveys a quota-policy with an average of 10 quota units per second. If the service cannot handle such load, it should return either a lower RateLimit-Remaining field value or an higher RateLimit-Reset field value. Moreover, complementing large time window quota policies with a short time window one mitigates those risks.
 
 
 ## Denial of Service
 
-RateLimit fields may assume unexpected values by chance or purpose.
-For example, an excessively high RateLimit-Remaining field value may be:
+RateLimit fields may assume unexpected values by chance or purpose. For example, an excessively high RateLimit-Remaining field value may be:
 
 - used by a malicious intermediary to trigger a Denial of Service attack
   or consume client resources boosting its requests;
 - passed by a misconfigured server;
 
-or an high RateLimit-Reset field value could inhibit clients to contact
-the server.
+or an high RateLimit-Reset field value could inhibit clients to contact the server.
 
 Clients MUST validate the received values to mitigate those risks.
 
 
 # Privacy Considerations {#privacy}
 
-Clients that act upon a request to rate limit
-are potentially re-identifiable (see {{Section 7.1 of DNS-PRIVACY}})
-because they react to information that might only be given to them.
-Note that this might apply to other fields too (e.g. Retry-After).
+Clients that act upon a request to rate limit are potentially re-identifiable (see {{Section 7.1 of DNS-PRIVACY}}) because they react to information that might only be given to them. Note that this might apply to other fields too (e.g. Retry-After).
 
-Since rate limiting is usually implemented in contexts where
-clients are either identified or profiled
-(e.g. assigning different quota units to different users),
-this is rarely a concern.
+Since rate limiting is usually implemented in contexts where clients are either identified or profiled (e.g. assigning different quota units to different users), this is rarely a concern.
 
-Privacy enhancing infrastructures using RateLimit fields
-can define specific techniques to mitigate the risks of re-identification.
+Privacy enhancing infrastructures using RateLimit fields can define specific techniques to mitigate the risks of re-identification.
 
 # IANA Considerations
 
 IANA is requested to update one registry and create one new registry.
 
-Please add the following entries to the
-"Hypertext Transfer Protocol (HTTP) Field Name Registry" registry
-({{HTTP}}):
+Please add the following entries to the "Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{HTTP}}):
 
 |---------------------|-----------|---------------|
 | Field Name          | Status    | Specification |
@@ -654,14 +483,7 @@ Please add the following entries to the
 
 ## RateLimit Parameters Registration {#iana-ratelimit-parameters}
 
-IANA is requested to create a new registry to be called
-"Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
-to be located at
-<https://www.iana.org/assignments/http-ratelimit-parameters>.
-Registration is done on the advice of a Designated Expert, appointed
-by the IESG or their delegate.
-All entries are Specification Required
-({{IANA, Section 4.6}}).
+IANA is requested to create a new registry to be called "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", to be located at <https://www.iana.org/assignments/http-ratelimit-parameters>. Registration is done on the advice of a Designated Expert, appointed by the IESG or their delegate. All entries are Specification Required ({{IANA, Section 4.6}}).
 
 Registration requests consist of the following information:
 
@@ -695,38 +517,25 @@ The initial contents of this registry should be:
 
 # Rate-limiting and quotas {#rate-limiting}
 
-Servers use quota mechanisms to avoid systems overload,
-to ensure an equitable distribution of computational resources
-or to enforce other policies - e.g. monetization.
+Servers use quota mechanisms to avoid systems overload, to ensure an equitable distribution of computational resources or to enforce other policies - e.g. monetization.
 
-A basic quota mechanism limits the number of acceptable
-requests in a given time window, e.g. 10 requests per second.
+A basic quota mechanism limits the number of acceptable requests in a given time window, e.g. 10 requests per second.
 
-When quota is exceeded, servers usually do not serve the request
-replying instead with a 4xx HTTP status code (e.g. 429 or 403)
-or adopt more aggressive policies like dropping connections.
+When quota is exceeded, servers usually do not serve the request replying instead with a 4xx HTTP status code (e.g. 429 or 403) or adopt more aggressive policies like dropping connections.
 
-Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, ..) and
-at different levels. For example, an user may be allowed to issue:
+Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, ..) and at different levels. For example, an user may be allowed to issue:
 
 - 10 requests per second;
 - limited to 60 requests per minute;
 - limited to 1000 requests per hour.
 
-Moreover system metrics, statistics and heuristics can be used
-to implement more complex policies, where
-the number of acceptable requests and the time window
-are computed dynamically.
+Moreover system metrics, statistics and heuristics can be used to implement more complex policies, where the number of acceptable requests and the time window are computed dynamically.
 
-To help clients throttling their requests, servers may expose
-the counters used to evaluate quota policies via HTTP header fields.
+To help clients throttling their requests, servers may expose the counters used to evaluate quota policies via HTTP header fields.
 
-Those response headers may be added by HTTP intermediaries
-such as API gateways and reverse proxies.
+Those response headers may be added by HTTP intermediaries such as API gateways and reverse proxies.
 
-On the web we can find many different rate-limit headers, usually
-containing the number of allowed requests
-in a given time window, and when the window is reset.
+On the web we can find many different rate-limit headers, usually containing the number of allowed requests in a given time window, and when the window is reset.
 
 The common choice is to return three headers containing:
 
@@ -737,17 +546,13 @@ The common choice is to return three headers containing:
 
 ### Interoperability issues
 
-A major interoperability issue in throttling is the lack
-of standard headers, because:
+A major interoperability issue in throttling is the lack of standard headers, because:
 
 - each implementation associates different semantics to the
   same header field names;
 - header field names proliferates.
 
-User agents interfacing with different servers may thus
-need to process different headers,
-or the very same application interface that sits behind different
-reverse proxies may reply with different throttling headers.
+User agents interfacing with different servers may thus need to process different headers, or the very same application interface that sits behind different reverse proxies may reply with different throttling headers.
 
 # Examples
 
@@ -755,8 +560,7 @@ reverse proxies may reply with different throttling headers.
 
 ### Throttling information in responses
 
-The client exhausted its service-limit for the next 50 seconds.
-The time-window is communicated out-of-band or inferred by the field values.
+The client exhausted its service-limit for the next 50 seconds. The time-window is communicated out-of-band or inferred by the field values.
 
 Request:
 
@@ -778,13 +582,7 @@ Ratelimit-Reset: 50
 {"hello": "world"}
 ~~~
 
-Since the field values are not necessarily correlated with
-the response status code,
-a subsequent request is not required to fail.
-The example below shows that the server decided to serve the
-request even if RateLimit-Remaining field value is 0.
-Another server, or the same server under other load conditions,
-could have decided to throttle the request instead.
+Since the field values are not necessarily correlated with the response status code, a subsequent request is not required to fail. The example below shows that the server decided to serve the request even if RateLimit-Remaining field value is 0. Another server, or the same server under other load conditions, could have decided to throttle the request instead.
 
 Request:
 
@@ -808,20 +606,16 @@ Ratelimit-Reset: 48
 
 ### Use in conjunction with custom fields {#use-with-custom-fields}
 
-The server uses two custom fields,
-namely `acme-RateLimit-DayLimit` and `acme-RateLimit-HourLimit`
-to expose the following policy:
+The server uses two custom fields, namely `acme-RateLimit-DayLimit` and `acme-RateLimit-HourLimit` to expose the following policy:
 
 - 5000 daily quota units;
 - 1000 hourly quota units.
 
 The client consumed 4900 quota units in the first 14 hours.
 
-Despite the next hourly limit of 1000 quota units, the closest limit
-to reach is the daily one.
+Despite the next hourly limit of 1000 quota units, the closest limit to reach is the daily one.
 
-The server then exposes the RateLimit fields to
-inform the client that:
+The server then exposes the RateLimit fields to inform the client that:
 
 - it has only 100 quota units left;
 - the window will reset in 10 hours.
@@ -850,14 +644,9 @@ RateLimit-Reset: 36000
 
 ### Use for limiting concurrency {#use-for-limiting-concurrency}
 
-Throttling fields may be used to limit concurrency,
-advertising limits that are lower than the usual ones
-in case of saturation, thus increasing availability.
+Throttling fields may be used to limit concurrency, advertising limits that are lower than the usual ones in case of saturation, thus increasing availability.
 
-The server adopted a basic policy of 100 quota units
-per minute,
-and in case of resource exhaustion adapts the returned values
-reducing both RateLimit-Limit and RateLimit-Remaining field values.
+The server adopted a basic policy of 100 quota units per minute, and in case of resource exhaustion adapts the returned values reducing both RateLimit-Limit and RateLimit-Remaining field values.
 
 After 2 seconds the client consumed 40 quota units
 
@@ -881,8 +670,7 @@ RateLimit-Reset: 58
 {"elapsed": 2, "issued": 40}
 ~~~
 
-At the subsequent request - due to resource exhaustion -
-the server advertises only `RateLimit-Remaining: 20`.
+At the subsequent request - due to resource exhaustion - the server advertises only `RateLimit-Remaining: 20`.
 
 Request:
 
@@ -906,11 +694,9 @@ RateLimit-Reset: 56
 
 ### Use in throttled responses
 
-A client exhausted its quota and the server throttles it
-sending Retry-After.
+A client exhausted its quota and the server throttles it sending Retry-After.
 
-In this example, the values of Retry-After and RateLimit-Reset field reference the same moment,
-but this is not a requirement.
+In this example, the values of Retry-After and RateLimit-Reset field reference the same moment, but this is not a requirement.
 
 The 429 (Too Many Request) HTTP status code is just used as an example.
 
@@ -944,8 +730,7 @@ Ratelimit-Remaining: 0
 
 ### Throttling window specified via parameter
 
-The client has 99 quota units left for the next 50 seconds.
-The time window is communicated by the `w` parameter, so we know the throughput is 100 quota units per minute.
+The client has 99 quota units left for the next 50 seconds. The time window is communicated by the `w` parameter, so we know the throughput is 100 quota units per minute.
 
 Request:
 
@@ -970,19 +755,13 @@ Ratelimit-Reset: 50
 
 ### Dynamic limits with parameterized windows
 
-The policy conveyed by the RateLimit-Limit field states that
-the server accepts 100 quota units per minute.
+The policy conveyed by the RateLimit-Limit field states that the server accepts 100 quota units per minute.
 
-To avoid resource exhaustion, the server artificially lowers
-the actual limits returned in the throttling headers.
+To avoid resource exhaustion, the server artificially lowers the actual limits returned in the throttling headers.
 
-The  RateLimit-Remaining field then advertises
-only 9 quota units for the next 50 seconds to slow down the client.
+The RateLimit-Remaining field then advertises only 9 quota units for the next 50 seconds to slow down the client.
 
-Note that the server could have lowered even the other
-values in the RateLimit-Limit field: this specification
-does not mandate any relation between the field values
-contained in subsequent responses.
+Note that the server could have lowered even the other values in the RateLimit-Limit field: this specification does not mandate any relation between the field values contained in subsequent responses.
 
 Request:
 
@@ -1010,12 +789,9 @@ Ratelimit-Reset: 50
 
 ### Dynamic limits for pushing back and slowing down
 
-Continuing the previous example, let's say the client waits 10 seconds and
-performs a new request which, due to resource exhaustion, the server rejects
-and pushes back, advertising `RateLimit-Remaining: 0` for the next 20 seconds.
+Continuing the previous example, let's say the client waits 10 seconds and performs a new request which, due to resource exhaustion, the server rejects and pushes back, advertising `RateLimit-Remaining: 0` for the next 20 seconds.
 
-The server advertises a smaller window with a lower limit to slow
-down the client for the rest of its original window after the 20 seconds elapse.
+The server advertises a smaller window with a lower limit to slow down the client for the rest of its original window after the 20 seconds elapse.
 
 Request:
 
@@ -1043,13 +819,7 @@ Ratelimit-Reset: 20
 
 ## Dynamic limits for pushing back with Retry-After and slow down
 
-Alternatively, given the same context where the previous example starts, we
-can convey the same information to the client via Retry-After, with
-the advantage that the server can now specify the policy's nominal limit and
-window that will apply after the reset, e.g. assuming the resource exhaustion
-is likely to be gone by then, so the advertised policy does not need to be
-adjusted, yet we managed to stop requests for a while and slow down the rest of
-the current window.
+Alternatively, given the same context where the previous example starts, we can convey the same information to the client via Retry-After, with the advantage that the server can now specify the policy's nominal limit and window that will apply after the reset, e.g. assuming the resource exhaustion is likely to be gone by then, so the advertised policy does not need to be adjusted, yet we managed to stop requests for a while and slow down the rest of the current window.
 
 Request:
 
@@ -1076,20 +846,13 @@ Ratelimit-Reset: 40
 }
 ~~~
 
-Note that in this last response the client is expected to honor
-Retry-After and perform no requests for the specified amount of
-time, whereas the previous example would not force the client to stop
-requests before the reset time is elapsed, as it would still be free to
-query again the server even if it is likely to have the request rejected.
+Note that in this last response the client is expected to honor Retry-After and perform no requests for the specified amount of time, whereas the previous example would not force the client to stop requests before the reset time is elapsed, as it would still be free to query again the server even if it is likely to have the request rejected.
 
 ### Missing Remaining information
 
-The server does not expose RateLimit-Remaining field values
-(for example, because the underlying counters are not available).
-Instead, it resets the limit counter every second.
+The server does not expose RateLimit-Remaining field values (for example, because the underlying counters are not available). Instead, it resets the limit counter every second.
 
-It communicates to the client the limit of 10 quota units per second
-always returning the couple RateLimit-Limit and RateLimit-Reset field.
+It communicates to the client the limit of 10 quota units per second always returning the couple RateLimit-Limit and RateLimit-Reset field.
 
 Request:
 
@@ -1131,19 +894,16 @@ Ratelimit-Reset: 1
 
 ### Use with multiple windows
 
-This is a standardized way of describing the policy
-detailed in {{use-with-custom-fields}}:
+This is a standardized way of describing the policy detailed in {{use-with-custom-fields}}:
 
 - 5000 daily quota units;
 - 1000 hourly quota units.
 
 The client consumed 4900 quota units in the first 14 hours.
 
-Despite the next hourly limit of 1000 quota units, the closest limit
-to reach is the daily one.
+Despite the next hourly limit of 1000 quota units, the closest limit to reach is the daily one.
 
-The server then exposes the RateLimit fields to
-inform the client that:
+The server then exposes the RateLimit fields to inform the client that:
 
 - it has only 100 quota units left;
 - the window will reset in 10 hours;
