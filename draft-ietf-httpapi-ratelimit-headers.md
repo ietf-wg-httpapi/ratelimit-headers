@@ -165,11 +165,9 @@ To avoid clashes, implementers SHOULD prefix unregistered parameters with an `x-
 
 ## Time Window {#time-window}
 
-Rate limit policies limit the number of acceptable requests in a given time interval, known as a time window.
+Rate limit policies limit the number of acceptable requests within a given time interval, known as a time window.
 
-The time window is a non-negative Integer value expressing such interval in seconds compatible with the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}.
-
-Subsecond precision is not supported.
+The time window is a non-negative Integer value expressing that interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Subsecond precision is not supported.
 
 ## Service Limit {#service-limit}
 
