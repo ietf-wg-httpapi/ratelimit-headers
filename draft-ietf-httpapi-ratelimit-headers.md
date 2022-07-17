@@ -280,22 +280,7 @@ The client MUST NOT assume that all its service limit will be reset at the momen
 
 # Server Behavior {#providing-ratelimit-fields}
 
-A server uses the RateLimit fields to communicate its quota policies according to the following rules:
-
-- RateLimit-Limit and RateLimit-Reset fields are REQUIRED;
-- RateLimit-Remaining field is RECOMMENDED.
-
-Their values can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether they will succeed.
-
-For example, a successful response with the following fields:
-
-~~~ example
-   RateLimit-Limit: 10
-   RateLimit-Remaining: 1
-   RateLimit-Reset: 7
-~~~
-
-does not guarantee that the next request will be successful. Server metrics may be subject to other conditions like the one shown in the example from {{service-limit}}.
+A server uses the RateLimit fields to communicate its quota policies. Sending the RateLimit-Limit and RateLimit-Reset fields is REQUIRED; sending RateLimit-Remaining field is RECOMMENDED.
 
 A server MAY return RateLimit fields independently of the response status code. This includes on throttled responses. This document does not mandate any correlation between the RateLimit field values and the returned status code.
 
@@ -328,6 +313,18 @@ Implementers concerned with response fields' size, might take into account their
 
 
 # Client Behavior {#receiving-fields}
+
+The RateLimit fields can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether they will succeed.
+
+For example, a successful response with the following fields:
+
+~~~ example
+   RateLimit-Limit: 10
+   RateLimit-Remaining: 1
+   RateLimit-Reset: 7
+~~~
+
+does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions like the one shown in the example from {{service-limit}}.
 
 A client MUST validate the values received in the RateLimit fields before using them and check if there are significant discrepancies with the expected ones. This includes a RateLimit-Reset field moment too far in the future (e.g. similarly to receiving "Retry-after: 1000000") or a service-limit too high.
 
