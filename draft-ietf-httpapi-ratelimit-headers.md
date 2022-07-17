@@ -132,7 +132,7 @@ This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTU
 
 The fields defined in this document are collectively referred to as "RateLimit fields".
 
-# Rate-Limit Policies
+# Concepts
 
 ## Quota Policy {#quota-policy}
 
