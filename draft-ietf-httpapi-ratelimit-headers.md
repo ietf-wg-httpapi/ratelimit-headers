@@ -25,13 +25,11 @@ author:
     org: Red Hat
     email: alex@flawedcode.org
 
-normative:
-  IANA: RFC8126
-
 entity:
   SELF: "RFC nnnn"
 
 normative:
+  IANA: RFC8126
   HTTP: RFC9110
 
 informative:
