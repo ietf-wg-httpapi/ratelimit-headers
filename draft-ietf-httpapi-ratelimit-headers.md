@@ -59,7 +59,7 @@ The source code and issues list for this draft can be found at <https://github.c
 
 Rate limiting HTTP clients has become a widespread practice, especially for HTTP APIs. Typically, servers who do so limit the number of acceptable requests in a given time window (e.g. 10 requests per second). See {{rate-limiting}} for further information on the current usage of rate limiting in HTTP.
 
-Currently, there is no standard way to communicate service quotas so that the client can throttle its requests to prevent errors. This document defines a set of standard HTTP fields to enable rate limiting:
+Currently, there is no standard way for servers to communicate quotas so that clients can throttle its requests to prevent errors. This document defines a set of standard HTTP fields to enable rate limiting:
 
 - RateLimit-Limit: the server's quota for requests by the client in the time window,
 - RateLimit-Remaining: the remaining quota in the current window,
