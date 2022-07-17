@@ -44,8 +44,8 @@ informative:
 
 This document defines the RateLimit-Limit, RateLimit-Remaining,
 RateLimit-Reset and RateLimit-Policy fields for HTTP,
-thus allowing servers to publish current service limits and
-clients to shape their request policy and avoid being throttled out.
+so servers can advertise their current service limits and
+clients can shape their request policies to avoid being throttled.
 
 --- note_Note_to_Readers
 
