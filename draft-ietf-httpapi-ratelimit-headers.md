@@ -145,9 +145,9 @@ to specify syntax and parsing, along with the concept of "bare item".
 
 The fields defined in this document are collectively named "RateLimit fields".
 
-# Expressing rate-limit policies
+# Rate-Limit Policies
 
-## Quota policy {#quota-policy}
+## Quota Policy {#quota-policy}
 
 A "quota-policy" describes a quota policy in terms of [quota-units](#service-limit)
 and [ time-window](#time-window).
@@ -187,7 +187,7 @@ While it is useful to define a clear syntax and semantics
 even for custom parameters, it is important to note that
 user agents are not required to process quota policy information.
 
-## Time window {#time-window}
+## Time Window {#time-window}
 
 Rate limit policies limit the number of acceptable requests in a given time interval.
 
@@ -196,7 +196,7 @@ compatible with the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}.
 
 Subsecond precision is not supported.
 
-## Service limit and quota units {#service-limit}
+## Service Limit and Quota Units {#service-limit}
 
 The "service-limit" is a value associated to the maximum number of requests
 that the server is willing to accept
@@ -230,7 +230,7 @@ GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
 
 
 
-# Providing RateLimit fields {#providing-ratelimit-fields}
+# RateLimit Fields {#providing-ratelimit-fields}
 
 A server uses the RateLimit fields to communicate its quota policies
 according to the following rules:
@@ -300,7 +300,7 @@ moment.
 Nonetheless servers MAY decide to send the RateLimit fields
 in a trailer section.
 
-## Performance considerations
+## Performance Considerations
 
 Servers are not required to return RateLimit fields
 in every response,
@@ -314,7 +314,7 @@ their ratio with respect to the content length, or use header-compression
 HTTP features such as {{?HPACK=RFC7541}}.
 
 
-# Receiving RateLimit fields {#receiving-fields}
+# Receiving RateLimit Fields {#receiving-fields}
 
 
 A client MUST validate the values received in the RateLimit fields before using them
@@ -398,7 +398,7 @@ Clients interested in determining the freshness of the RateLimit fields
 could rely on fields such as the Date header field
 and on the time-window of a quota-policy.
 
-# Fields definition
+# Fields Definition
 
 The following RateLimit response fields are defined
 
