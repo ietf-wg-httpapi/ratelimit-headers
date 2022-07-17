@@ -136,9 +136,9 @@ The fields defined in this document are collectively referred to as "RateLimit f
 
 ## Quota Policy {#quota-policy}
 
-A quota policy is described in terms of [quota units](#service-limit) and a [time window](#time-window). It is an Item whose bare item is a [service limit](#service-limit), along with associated parameters.
+A quota policy is described in terms of [quota units](#service-limit) and a [time window](#time-window). It is an Item whose bare item is a [service limit](#service-limit), along with associated Parameters.
 
-The following parameters are defined:
+The following parameters are defined in this specification:
 
   w:
   :  The REQUIRED "w" parameter value conveys
@@ -152,9 +152,9 @@ For example, a quota policy of 100 quota units per minute:
    100;w=60
 ~~~
 
-The definition of a quota policy does not imply any specific distribution of quota units over time. Such service specific details can be conveyed as parameters.
+The definition of a quota policy does not imply any specific distribution of quota units within the time window. If applicable, these details can be conveyed as extension parameters.
 
-Two example quota policies containing further details via custom parameters:
+For example, two quota policies containing further details via extension parameters:
 
 ~~~ example
    100;w=60;comment="fixed window"
