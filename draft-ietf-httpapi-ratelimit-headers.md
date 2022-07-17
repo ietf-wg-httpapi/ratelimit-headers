@@ -140,9 +140,8 @@ defined in {{Section 5.6.1 of HTTP}}.
 
 The term Origin is to be interpreted as described in Section 7 of {{WEB-ORIGIN}}.
 
-This document uses the following terminology from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}}
-to specify syntax and parsing: List, Item and Integer
-together with the concept of bare item.
+This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}}
+to specify syntax and parsing, along with the concept of "bare item".
 
 The fields defined in this document are collectively named "RateLimit fields".
 
