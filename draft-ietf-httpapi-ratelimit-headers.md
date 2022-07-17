@@ -314,7 +314,7 @@ their ratio with respect to the content length, or use header-compression
 HTTP features such as {{?HPACK=RFC7541}}.
 
 
-# Receiving RateLimit Fields {#receiving-fields}
+# Processing RateLimit Fields {#receiving-fields}
 
 
 A client MUST validate the values received in the RateLimit fields before using them
