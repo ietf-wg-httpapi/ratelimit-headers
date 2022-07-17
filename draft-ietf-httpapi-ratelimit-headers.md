@@ -49,7 +49,7 @@ This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset 
 
 *RFC EDITOR: please remove this section before publication*
 
-Discussion of this draft takes place on the HTTP working group mailing list (httpapi@ietf.org), which is archived at <https://mailarchive.ietf.org/arch/browse/httpapi/>.
+Discussion of this draft takes place on the HTTPAPI working group mailing list (httpapi@ietf.org), which is archived at <https://mailarchive.ietf.org/arch/browse/httpapi/>.
 
 The source code and issues list for this draft can be found at <https://github.com/ietf-wg-httpapi/ratelimit-headers>.
 
