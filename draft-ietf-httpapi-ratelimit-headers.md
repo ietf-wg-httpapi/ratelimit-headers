@@ -48,12 +48,9 @@ This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset 
 
 *RFC EDITOR: please remove this section before publication*
 
-Discussion of this draft takes place on the HTTP working group mailing list
-(httpapi@ietf.org), which is archived at
-<https://mailarchive.ietf.org/arch/browse/httpapi/>.
+Discussion of this draft takes place on the HTTP working group mailing list (httpapi@ietf.org), which is archived at <https://mailarchive.ietf.org/arch/browse/httpapi/>.
 
-The source code and issues list for this draft can be found at
-<https://github.com/ietf-wg-httpapi/ratelimit-headers>.
+The source code and issues list for this draft can be found at <https://github.com/ietf-wg-httpapi/ratelimit-headers>.
 
 --- middle
 
@@ -132,7 +129,7 @@ The term Origin is to be interpreted as described in Section 7 of {{WEB-ORIGIN}}
 
 This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing, along with the concept of "bare item".
 
-The fields defined in this document are collectively named "RateLimit fields".
+The fields defined in this document are collectively referred to as "RateLimit fields".
 
 # Rate-Limit Policies
 
