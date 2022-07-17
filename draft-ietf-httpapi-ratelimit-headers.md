@@ -31,6 +31,9 @@ normative:
 entity:
   SELF: "RFC nnnn"
 
+normative:
+  HTTP: RFC9110
+
 informative:
   DNS-PRIVACY: RFC9076
   UNIX:
