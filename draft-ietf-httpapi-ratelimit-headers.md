@@ -83,7 +83,7 @@ The behavior of the RateLimit-Reset field is compatible with the delay-seconds n
 
 ## Goals {#goals}
 
-The goals of the RateLimit fields are:
+The goals of this document are:
 
   Interoperability:
   : Standardization of the names and semantics of rate-limit headers
