@@ -200,13 +200,11 @@ The following RateLimit response fields are defined.
 
 ## RateLimit-Limit {#ratelimit-limit-field}
 
-The "RateLimit-Limit" response field indicates the [service limit](#service-limit) associated to the client in the current [time window](#time-window).
+The "RateLimit-Limit" response field indicates the [service limit](#service-limit) associated with the client in the current [time window](#time-window). If the client exceeds that limit, it MAY not be served.
 
-If the client exceeds that limit, it MAY not be served.
+The field is an Item and its value is a non-negative Integer referred to as the "expiring-limit". Parameters are not allowed.
 
-The field is an Item and its value is a non-negative Integer named "expiring-limit". Parameters are not allowed.
-
-The expiring-limit MUST be set to the service limit that is closer to reach its limit, and the associated time window MUST either be:
+The expiring-limit MUST be set to the service limit that is closest to reaching its limit, and the associated time window MUST either be:
 
 - inferred by the value of RateLimit-Reset field at the moment of the reset, or
 - communicated out-of-band (e.g. in the documentation).
@@ -221,18 +219,18 @@ This field MUST NOT occur multiple times and can be sent in a trailer section.
 
 ## RateLimit-Policy {#ratelimit-policy-field}
 
-The RateLimit-Policy field response field indicates the quota associated to the client and its value is informative.
+The "RateLimit-Policy" field response field indicates the quota policies currently associated with the client. Its value is informative.
 
 The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
 
-This field can convey the time window associated to the expiring-limit, like shown in the following example.
+This field can convey the time window associated with the expiring-limit, as shown in this example:
 
 ~~~ example
    RateLimit-Policy: 100;w=10
    RateLimit-Limit: 100
 ~~~
 
-Policies using multiple quota limits MAY be returned using multiple quota policy Items, like shown in the following two examples:
+These examples show multiple policies being returned:
 
 ~~~ example
    RateLimit-Policy: 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
@@ -243,7 +241,7 @@ This field MUST NOT occur multiple times and can be sent in a trailer section.
 
 ## RateLimit-Remaining {#ratelimit-remaining-field}
 
-The RateLimit-Remaining field response field indicates the remaining quota units defined in {{service-limit}} associated to the client.
+The "RateLimit-Remaining" field response field indicates the remaining quota units defined in {{service-limit}} associated with the client.
 
 The field is an Item and its value is a non-negative Integer expressed in [quota units](#service-limit). Parameters are not allowed.
 
@@ -253,7 +251,7 @@ Clients MUST NOT assume that a positive RateLimit-Remaining field value is a gua
 
 A low RateLimit-Remaining field value is like a yellow traffic-light for either the number of requests issued in the time window or the request throughput: the red light may arrive suddenly (see {{providing-ratelimit-fields}}).
 
-One example of RateLimit-Remaining field use is below.
+For example:
 
 ~~~ example
    RateLimit-Remaining: 50
@@ -261,7 +259,7 @@ One example of RateLimit-Remaining field use is below.
 
 ## RateLimit-Reset {#ratelimit-reset-field}
 
-The RateLimit-Reset field response field indicates the number of seconds until the quota resets.
+The "RateLimit-Reset" field response field indicates the number of seconds until the quota resets.
 
 The field is a non-negative Integer compatible with the delay-seconds rule, because:
 
@@ -277,8 +275,7 @@ An example of RateLimit-Reset field use is below.
    RateLimit-Reset: 50
 ~~~
 
-The client MUST NOT assume that all its service limit will be restored after the moment referenced by RateLimit-Reset field. The server MAY arbitrarily alter the RateLimit-Reset field value between subsequent requests e.g. in case of resource saturation or to implement sliding window policies
-
+The client MUST NOT assume that all its service limit will be reset at the moment indicated by the RateLimit-Reset field. The server MAY arbitrarily alter the RateLimit-Reset field value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
 
 
 # Server Behavior {#providing-ratelimit-fields}
