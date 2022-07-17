@@ -135,7 +135,7 @@ The fields defined in this document are collectively referred to as "RateLimit f
 
 ## Quota Policy {#quota-policy}
 
-A quota policy is described in terms of [quota units](#service-limit) and a [time window](#time-window). Its value is an Item where the associated bare item is a [service limit](#service-limit) and parameters are supported.
+A quota policy is described in terms of [quota units](#service-limit) and a [time window](#time-window). It is an Item whose bare item is a [service limit](#service-limit), along with associated parameters.
 
 The following parameters are defined:
 
