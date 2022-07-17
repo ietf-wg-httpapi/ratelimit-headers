@@ -42,7 +42,7 @@ informative:
 
 --- abstract
 
-This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset and RateLimit-Policy fields for HTTP, so servers can advertise their current service limits and clients can shape their request policies to avoid being throttled.
+This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset and RateLimit-Policy HTTP fields for servers to advertise their current service rate limits, thereby allowing clients to avoid being throttled.
 
 --- note_Note_to_Readers
 
@@ -326,9 +326,9 @@ For example, a successful response with the following fields:
 
 does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions like the one shown in the example from {{service-limit}}.
 
-A client MUST validate the values received in the RateLimit fields before using them and check if there are significant discrepancies with the expected ones. This includes a RateLimit-Reset field moment too far in the future (e.g. similarly to receiving "Retry-after: 1000000") or a service-limit too high.
+A client MUST validate the RateLimit fields before using them and check if there are significant discrepancies with the expected ones. This includes a RateLimit-Reset field moment too far in the future (e.g. similarly to receiving "Retry-after: 1000000") or a service-limit too high.
 
-A client receiving RateLimit fields MUST NOT assume that subsequent responses contain the same RateLimit fields, or any RateLimit fields at all.
+A client receiving RateLimit fields MUST NOT assume that future responses will contain the same RateLimit fields, or any RateLimit fields at all.
 
 Malformed RateLimit fields MAY be ignored.
 
@@ -375,21 +375,19 @@ As is the ordinary case for HTTP caching ({{?HTTP-CACHING=RFC9111}}), a response
 
 ## Throttling does not prevent clients from issuing requests {#sec-throttling-does-not-prevent}
 
-This specification does not prevent clients to make over-quota requests.
-
-Servers should always implement mechanisms to prevent resource exhaustion.
+This specification does not prevent clients from making requests. Servers should always implement mechanisms to prevent resource exhaustion.
 
 ## Information disclosure {#sec-information-disclosure}
 
 Servers should not disclose to untrusted parties operational capacity information that can be used to saturate its infrastructural resources.
 
-While this specification does not mandate whether non 2xx responses consume quota, if 401 and 403 responses count on quota a malicious client could probe the endpoint to get traffic information of another user.
+While this specification does not mandate whether non-successful responses consume quota, if error responses (such as 401 (Unauthorized) and 403 (Forbidden)) count against quota, a malicious client could probe the endpoint to get traffic information of another user.
 
 As intermediaries might retransmit requests and consume quota units without prior knowledge of the user agent, RateLimit fields might reveal the existence of an intermediary to the user agent.
 
 ## Remaining quota units are not granted requests {#sec-remaining-not-granted}
 
-RateLimit fields convey hints from the server to the clients in order to avoid being throttled out.
+RateLimit fields convey hints from the server to the clients in order to help them avoid being throttled out.
 
 Clients MUST NOT consider the [quota units](#service-limit) returned in RateLimit-Remaining field as a service level agreement.
 
@@ -432,9 +430,9 @@ RateLimit-Reset: 10
 A client implementing a simple ratio between RateLimit-Remaining field and RateLimit-Reset field could infer an average throughput of 1000 quota units per second, while the RateLimit-Limit field conveys a quota-policy with an average of 10 quota units per second. If the service cannot handle such load, it should return either a lower RateLimit-Remaining field value or an higher RateLimit-Reset field value. Moreover, complementing large time window quota policies with a short time window one mitigates those risks.
 
 
-## Denial of Service
+### Denial of Service
 
-RateLimit fields may assume unexpected values by chance or purpose. For example, an excessively high RateLimit-Remaining field value may be:
+RateLimit fields may contain unexpected values by chance or on purpose. For example, an excessively high RateLimit-Remaining field value may be:
 
 - used by a malicious intermediary to trigger a Denial of Service attack
   or consume client resources boosting its requests;
