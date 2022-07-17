@@ -195,16 +195,16 @@ GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
 
 
 
-# RateLimit Fields {#providing-ratelimit-fields}
+# Server Behavior {#providing-ratelimit-fields}
 
 A server uses the RateLimit fields to communicate its quota policies according to the following rules:
 
 - RateLimit-Limit and RateLimit-Reset fields are REQUIRED;
 - RateLimit-Remaining field is RECOMMENDED.
 
-The returned values refers to the metrics used to evaluate if the current request respects the quota policy and MAY not apply to subsequent requests.
+Their values can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether they will succeed.
 
-Example: a successful response with the following fields
+For example, a successful response with the following fields:
 
 ~~~ example
    RateLimit-Limit: 10
@@ -214,11 +214,9 @@ Example: a successful response with the following fields
 
 does not guarantee that the next request will be successful. Server metrics may be subject to other conditions like the one shown in the example from {{service-limit}}.
 
-A server MAY return RateLimit fields independently of the response status code. This includes throttled responses.
+A server MAY return RateLimit fields independently of the response status code. This includes on throttled responses. This document does not mandate any correlation between the RateLimit field values and the returned status code.
 
-This document does not mandate any correlation between the RateLimit field values and the returned status code.
-
-Servers should be careful in returning RateLimit fields in redirection responses (e.g. 3xx status codes) because a low RateLimit-Remaining field value could prevent the client from issuing requests. For example, given the RateLimit fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the RateLimit-Remaining field value is 0.
+Servers should be careful when returning RateLimit fields in redirection responses (i.e., responses with 3xx status codes) because a low RateLimit-Remaining field value could prevent the client from issuing requests. For example, given the RateLimit fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the RateLimit-Remaining field value is 0.
 
 ~~~ http-message
 HTTP/1.1 301 Moved Permanently
@@ -233,7 +231,7 @@ If a response contains both the Retry-After and the RateLimit-Reset fields, the 
 
 When using a policy involving more than one time window, the server MUST reply with the RateLimit fields related to the time window with the lower RateLimit-Remaining field values.
 
-A service returning RateLimit fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between RateLimit-Remaining and RateLimit-Reset field values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window.
+A service using RateLimit fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between RateLimit-Remaining and RateLimit-Reset field values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window.
 
 Under certain conditions, a server MAY artificially lower RateLimit field values between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
 
@@ -246,8 +244,7 @@ Servers are not required to return RateLimit fields in every response, and clien
 Implementers concerned with response fields' size, might take into account their ratio with respect to the content length, or use header-compression HTTP features such as {{?HPACK=RFC7541}}.
 
 
-# Processing RateLimit Fields {#receiving-fields}
-
+# Client Behavior {#receiving-fields}
 
 A client MUST validate the values received in the RateLimit fields before using them and check if there are significant discrepancies with the expected ones. This includes a RateLimit-Reset field moment too far in the future (e.g. similarly to receiving "Retry-after: 1000000") or a service-limit too high.
 
