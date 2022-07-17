@@ -147,6 +147,46 @@ The fields defined in this document are collectively named "RateLimit fields".
 
 # Expressing rate-limit policies
 
+## Quota policy {#quota-policy}
+
+A "quota-policy" describes a quota policy in terms of [quota-units](#service-limit)
+and [ time-window](#time-window).
+Its value is an Item
+where the associated bare item is a [ service-limit](#service-limit) and parameters are supported.
+
+The following parameters are defined:
+
+  w:
+  :  The REQUIRED "w" parameter value conveys
+     a "time-window" value as defined in {{time-window}}.
+
+Other parameters are allowed and can be regarded as comments.
+They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
+as described in {{iana-ratelimit-parameters}}.
+
+An example policy of 100 quota-units per minute.
+
+~~~ example
+   100;w=60
+~~~
+
+The definition of a quota-policy does not imply any specific
+distribution of quota-units over time.
+Such service specific details can be conveyed as parameters.
+
+Two policy examples containing further details via custom parameters
+
+~~~ example
+   100;w=60;comment="fixed window"
+   12;w=1;burst=1000;policy="leaky bucket"
+~~~
+
+To avoid clashes, implementers SHOULD prefix unregistered parameters
+with an `x-<vendor>` identifier, e.g. `x-acme-policy`, `x-acme-burst`.
+While it is useful to define a clear syntax and semantics
+even for custom parameters, it is important to note that
+user agents are not required to process quota policy information.
+
 ## Time window {#time-window}
 
 Rate limit policies limit the number of acceptable requests in a given time interval.
@@ -188,45 +228,7 @@ GET /books?author=WuMing ; service-limit=4, remaining: 1, status=200
 GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
 ~~~
 
-## Quota policy {#quota-policy}
 
-A "quota-policy" describes a quota policy in terms of [quota-units](#service-limit)
-and [ time-window](#time-window).
-Its value is an Item
-where the associated bare item is a [ service-limit](#service-limit) and parameters are supported.
-
-The following parameters are defined:
-
-  w:
-  :  The REQUIRED "w" parameter value conveys
-     a "time-window" value as defined in {{time-window}}.
-
-Other parameters are allowed and can be regarded as comments.
-They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry",
-as described in {{iana-ratelimit-parameters}}.
-
-An example policy of 100 quota-units per minute.
-
-~~~ example
-   100;w=60
-~~~
-
-The definition of a quota-policy does not imply any specific
-distribution of quota-units over time.
-Such service specific details can be conveyed as parameters.
-
-Two policy examples containing further details via custom parameters
-
-~~~ example
-   100;w=60;comment="fixed window"
-   12;w=1;burst=1000;policy="leaky bucket"
-~~~
-
-To avoid clashes, implementers SHOULD prefix unregistered parameters
-with an `x-<vendor>` identifier, e.g. `x-acme-policy`, `x-acme-burst`.
-While it is useful to define a clear syntax and semantics
-even for custom parameters, it is important to note that
-user agents are not required to process quota policy information.
 
 # Providing RateLimit fields {#providing-ratelimit-fields}
 
