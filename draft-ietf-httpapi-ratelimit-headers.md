@@ -145,7 +145,7 @@ The following parameters are defined:
 
 Other parameters are allowed and can be regarded as comments. They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", as described in {{iana-ratelimit-parameters}}.
 
-An example policy of 100 quota units per minute.
+For example, a quota policy of 100 quota units per minute:
 
 ~~~ example
    100;w=60
@@ -153,7 +153,7 @@ An example policy of 100 quota units per minute.
 
 The definition of a quota policy does not imply any specific distribution of quota units over time. Such service specific details can be conveyed as parameters.
 
-Two policy examples containing further details via custom parameters
+Two example quota policies containing further details via custom parameters:
 
 ~~~ example
    100;w=60;comment="fixed window"
