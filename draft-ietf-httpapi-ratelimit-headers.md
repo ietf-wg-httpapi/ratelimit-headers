@@ -330,7 +330,7 @@ A client MUST validate the RateLimit fields before using them and check if there
 
 A client receiving RateLimit fields MUST NOT assume that future responses will contain the same RateLimit fields, or any RateLimit fields at all.
 
-Malformed RateLimit fields MAY be ignored.
+Malformed RateLimit fields MUST be ignored.
 
 A client SHOULD NOT exceed the quota units conveyed by the RateLimit-Remaining field before the time window expressed in RateLimit-Reset field.
 
