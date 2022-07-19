@@ -173,7 +173,7 @@ The time window is a non-negative Integer value expressing that interval in seco
 
 The service limit is associated with the maximum number of requests that the server is willing to accept from one or more clients on a given basis (originating IP, authenticated user, geographical, ..) during a [time window](#time-window).
 
-The service limit is a non-negative Integer expressed in quota units.
+The service limit is a non-negative Integer and its measurement unit is named quota unit.
 
 The service limit SHOULD match the maximum number of acceptable requests.
 However, the service limit MAY differ from the total number of acceptable requests when weight mechanisms, bursts, or other server policies are implemented.
