@@ -245,7 +245,7 @@ The "RateLimit-Remaining" field response field indicates the remaining quota uni
 
 The field is an Item and its value is a non-negative Integer expressed in [quota units](#service-limit). Parameters are not allowed.
 
-This field MUST NOT occur multiple times and can be sent in a trailer section.
+This field can be sent in a trailer section.
 
 Clients MUST NOT assume that a positive RateLimit-Remaining field value is a guarantee that further requests will be served.
 
