@@ -462,7 +462,7 @@ For example, an excessively high RateLimit-Remaining field value may be:
   or consume client resources boosting its requests;
 - passed by a misconfigured server;
 
-or an high RateLimit-Reset field value could inhibit clients to contact the server.
+or a high RateLimit-Reset field value could inhibit clients to contact the server.
 
 Clients MUST validate the received values to mitigate those risks.
 
