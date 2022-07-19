@@ -215,7 +215,7 @@ The RateLimit-Policy field (see {{ratelimit-policy-field}}), might contain infor
    RateLimit-Limit: 100
 ~~~
 
-This field MUST NOT occur multiple times and can be sent in a trailer section.
+This field can be sent in a trailer section.
 
 ## RateLimit-Policy {#ratelimit-policy-field}
 
@@ -237,7 +237,7 @@ These examples show multiple policies being returned:
    RateLimit-Policy: 10;w=1;burst=1000, 1000;w=3600
 ~~~
 
-This field MUST NOT occur multiple times and can be sent in a trailer section.
+This field can be sent in a trailer section.
 
 ## RateLimit-Remaining {#ratelimit-remaining-field}
 
@@ -267,7 +267,7 @@ The field is a non-negative Integer compatible with the delay-seconds rule, beca
   and clock skew between client and server (see {{Section 5.6.7 of HTTP}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
-This field MUST NOT occur multiple times and can be sent in a trailer section.
+This field can be sent in a trailer section.
 
 An example of RateLimit-Reset field use is below.
 
