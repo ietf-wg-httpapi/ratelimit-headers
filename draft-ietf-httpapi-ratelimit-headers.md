@@ -405,7 +405,7 @@ or not serve the request regardless of the advertised quotas.
 ## Reliability of RateLimit-Reset {#sec-reset-reliability}
 
 Consider that service limit might not be restored after the moment referenced by RateLimit-Reset field,
-and the RateLimit-Reset field value do not be considered fixed nor constant.
+and the RateLimit-Reset field value may not be fixed nor constant.
 
 Subsequent requests might return a higher RateLimit-Reset field value
 to limit concurrency or implement dynamic or adaptive throttling policies.
