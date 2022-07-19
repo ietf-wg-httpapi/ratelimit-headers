@@ -368,8 +368,10 @@ This specification does not mandate any behavior on intermediaries respect to re
 
 ## Caching
 
-As is the ordinary case for HTTP caching ({{?HTTP-CACHING=RFC9111}}), a response with RateLimit fields might be cached and re-used for subsequent requests. A cached response containing RateLimit fields does not modify quota counters but could contain stale information. Clients interested in determining the freshness of the RateLimit fields could rely on fields such as the Date header field and on the time window of a quota policy.
-
+{{?HTTP-CACHING=RFC9111}} defines how responses can be stored and reused for subsequent requests,
+including those with RateLimit fields.
+Because the information in RateLimit fields on a cached response may not be current,  they SHOULD be ignored on responses that come from cache
+(i.e., those with a positive current_age; see {{Section 4.2.3 of HTTP-CACHING}}).
 
 # Security Considerations
 
