@@ -161,7 +161,7 @@ For example, two quota policies containing further details via extension paramet
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
 
-To avoid clashes, implementers SHOULD prefix unregistered parameters with a `<vendor>-` identifier, e.g. `acme-policy`, `acme-burst`.
+To avoid clashes, implementers SHOULD prefix unregistered parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 While it is useful to define a clear syntax and semantics even for custom parameters, it is important to note that user agents are not required to process quota policy information.
 
 ## Time Window {#time-window}
