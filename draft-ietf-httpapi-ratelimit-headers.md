@@ -370,7 +370,7 @@ This specification does not mandate any behavior on intermediaries respect to re
 
 {{?HTTP-CACHING=RFC9111}} defines how responses can be stored and reused for subsequent requests,
 including those with RateLimit fields.
-Because the information in RateLimit fields on a cached response may not be current,  they SHOULD be ignored on responses that come from cache
+Because the information in RateLimit fields on a cached response may not be current, they SHOULD be ignored on responses that come from cache
 (i.e., those with a positive current_age; see {{Section 4.2.3 of HTTP-CACHING}}).
 
 # Security Considerations
