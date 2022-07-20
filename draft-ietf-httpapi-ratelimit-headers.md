@@ -203,7 +203,9 @@ The following RateLimit response fields are defined.
 
 The "RateLimit-Limit" response field indicates the [service limit](#service-limit) associated with the client in the current [time window](#time-window). If the client exceeds that limit, it MAY not be served.
 
-The field is an Item and its value is a non-negative Integer referred to as the "expiring-limit". Parameters are not allowed.
+The field is an Item and its value is a non-negative Integer referred to as the "expiring-limit".
+This specification does not define Parameters for this field.
+If they appear, they MUST be ignored.
 
 The expiring-limit MUST be set to the service limit that is closest to reaching its limit, and the associated time window MUST either be:
 
@@ -244,7 +246,9 @@ This field can be sent in a trailer section.
 
 The "RateLimit-Remaining" field response field indicates the remaining quota units defined in {{service-limit}} associated with the client.
 
-The field is an Item and its value is a non-negative Integer expressed in [quota units](#service-limit). Parameters are not allowed.
+The field is an Item and its value is a non-negative Integer expressed in [quota units](#service-limit).
+This specification does not define Parameters for this field.
+If they appear, they MUST be ignored.
 
 This field can be sent in a trailer section.
 
@@ -267,6 +271,9 @@ The field is a non-negative Integer compatible with the delay-seconds rule, beca
 - it does not rely on clock synchronization and is resilient to clock adjustment
   and clock skew between client and server (see {{Section 5.6.7 of HTTP}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
+
+This specification does not define Parameters for this field.
+If they appear, they MUST be ignored.
 
 This field can be sent in a trailer section.
 
