@@ -474,7 +474,10 @@ For example, an excessively high RateLimit-Remaining field value may be:
 
 or a high RateLimit-Reset field value could inhibit clients to contact the server.
 
-Clients MUST validate the received values to mitigate those risks.
+To mitigate this risk, clients can set thresholds that they consider reasonable in terms of
+quota units, time window, concurrent requests or throughput,
+and ignore field values advertising policies
+that exceed those thresholds.
 
 
 # Privacy Considerations {#privacy}
