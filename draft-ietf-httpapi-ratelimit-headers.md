@@ -254,7 +254,7 @@ This field can be sent in a trailer section.
 
 Clients MUST NOT assume that a positive RateLimit-Remaining field value is a guarantee that further requests will be served.
 
-A low RateLimit-Remaining field value is like a yellow traffic-light for either the number of requests issued in the time window or the request throughput: the red light may arrive suddenly (see {{providing-ratelimit-fields}}).
+When the value of RateLimit-Remaining is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
 
 For example:
 
