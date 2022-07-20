@@ -33,7 +33,7 @@ normative:
   HTTP: RFC9110
 
 informative:
-  DNS-PRIVACY: RFC9076
+  PRIVACY: RFC6973
   UNIX:
     title: The Single UNIX Specification, Version 2 - 6 Vol Set for UNIX 98
     author:
@@ -480,7 +480,7 @@ Clients MUST validate the received values to mitigate those risks.
 # Privacy Considerations {#privacy}
 
 Clients that act upon a request to rate limit
-are potentially re-identifiable (see {{Section 7.1 of DNS-PRIVACY}})
+are potentially re-identifiable (see {{Section 5.2.1 of PRIVACY}})
 because they react to information that might only be given to them.
 Note that this might apply to other fields too (e.g. Retry-After).
 
