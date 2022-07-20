@@ -334,7 +334,10 @@ For example, a successful response with the following fields:
 
 does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions like the one shown in the example from {{service-limit}}.
 
-A client MUST validate the RateLimit fields before using them and check if there are significant discrepancies with the expected ones. This includes a RateLimit-Reset field moment too far in the future (e.g. similarly to receiving "Retry-after: 1000000") or a service-limit too high.
+A client needs to verify whether the behavior it implements
+on the basis of the received RateLimit fields is considered acceptable,
+for example in terms of throughput and latency adapt it accordingly
+(see {{sec-resource-exhaustion}} and {{sec-dos}}).
 
 A client receiving RateLimit fields MUST NOT assume that future responses will contain the same RateLimit fields, or any RateLimit fields at all.
 
@@ -463,7 +466,7 @@ or an higher RateLimit-Reset field value.
 Moreover, complementing large time window quota policies with a short time window one mitigates those risks.
 
 
-### Denial of Service
+### Denial of Service {#sec-dos}
 
 RateLimit fields may contain unexpected values by chance or on purpose.
 For example, an excessively high RateLimit-Remaining field value may be:
@@ -472,12 +475,17 @@ For example, an excessively high RateLimit-Remaining field value may be:
   or consume client resources boosting its requests;
 - passed by a misconfigured server;
 
-or a high RateLimit-Reset field value could inhibit clients to contact the server.
+or a high RateLimit-Reset field value could inhibit clients to contact the server (e.g. similarly to receiving "Retry-after: 1000000").
 
 To mitigate this risk, clients can set thresholds that they consider reasonable in terms of
 quota units, time window, concurrent requests or throughput,
-and ignore field values advertising policies
-that exceed those thresholds.
+and define a consistent behavior when the RateLimit exceed those thresholds.
+For example this means capping the maximum number of request per second,
+or implementing retries when the RateLimit-Reset exceeds ten minutes.
+
+The considerations above are not limited to RateLimit fields,
+but apply to all fields affecting how clients behave
+in subsequent requests (e.g. Retry-After).
 
 
 # Privacy Considerations {#privacy}
