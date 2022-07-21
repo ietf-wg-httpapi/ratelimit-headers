@@ -336,7 +336,7 @@ does not guarantee that the next request will be successful. Servers' behavior m
 
 A client needs to verify whether the behavior it implements
 on the basis of the received RateLimit fields is considered acceptable,
-for example in terms of throughput and latency adapt it accordingly
+for example in terms of throughput and latency, and adapt it accordingly
 (see {{sec-resource-exhaustion}} and {{sec-dos}}).
 
 A client receiving RateLimit fields MUST NOT assume that future responses will contain the same RateLimit fields, or any RateLimit fields at all.
