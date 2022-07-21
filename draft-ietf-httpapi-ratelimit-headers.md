@@ -12,6 +12,14 @@ keyword: Internet-Draft
 stand_alone: yes
 pi: [toc, tocindent, sortrefs, symrefs, strict, compact, comments, inline, docmapping]
 
+venue:
+  group: HTTPAPI
+  type: Working Group
+  home: https://datatracker.ietf.org/wg/httpapi/about/
+  mail: httpapi@ietf.org
+  arch: https://mailarchive.ietf.org/arch/browse/httpapi/
+  repo: https://github.com/ietf-wg-httpapi/ratelimit-headers
+
 author:
  -
     ins: R. Polli
@@ -44,14 +52,6 @@ informative:
 --- abstract
 
 This document defines the RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset and RateLimit-Policy HTTP fields for servers to advertise their current service rate limits, thereby allowing clients to avoid being throttled.
-
---- note_Note_to_Readers
-
-*RFC EDITOR: please remove this section before publication*
-
-Discussion of this draft takes place on the HTTPAPI working group mailing list (httpapi@ietf.org), which is archived at <https://mailarchive.ietf.org/arch/browse/httpapi/>.
-
-The source code and issues list for this draft can be found at <https://github.com/ietf-wg-httpapi/ratelimit-headers>.
 
 --- middle
 
