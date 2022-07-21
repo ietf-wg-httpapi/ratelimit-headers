@@ -244,7 +244,7 @@ This field can be sent in a trailer section.
 
 ## RateLimit-Remaining {#ratelimit-remaining-field}
 
-The "RateLimit-Remaining" field response field indicates the remaining quota units defined in {{service-limit}} associated with the client.
+The "RateLimit-Remaining" response field indicates the remaining quota units associated to the expiring-limit.
 
 The field is an Item and its value is a non-negative Integer expressed in [quota units](#service-limit).
 This specification does not define Parameters for this field.
@@ -264,7 +264,7 @@ For example:
 
 ## RateLimit-Reset {#ratelimit-reset-field}
 
-The "RateLimit-Reset" field response field indicates the number of seconds until the quota resets.
+The "RateLimit-Reset" field response field indicates the number of seconds until the quota associated to the expiring-limit resets.
 
 The field is a non-negative Integer compatible with the delay-seconds rule, because:
 
