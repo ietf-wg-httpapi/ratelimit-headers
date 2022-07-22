@@ -334,9 +334,8 @@ For example, a successful response with the following fields:
 
 does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions like the one shown in the example from {{service-limit}}.
 
-A client needs to verify whether the behavior it implements
-on the basis of the received RateLimit fields is considered acceptable,
-for example in terms of throughput and latency, and adapt it accordingly
+A client is responsible for ensuring that RateLimit field values returned
+cause reasonable client behavior with respect to throughput and latency
 (see {{sec-resource-exhaustion}} and {{sec-dos}}).
 
 A client receiving RateLimit fields MUST NOT assume that future responses will contain the same RateLimit fields, or any RateLimit fields at all.
