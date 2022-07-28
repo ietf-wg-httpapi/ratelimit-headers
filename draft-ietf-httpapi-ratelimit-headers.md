@@ -136,7 +136,7 @@ The fields defined in this document are collectively referred to as "RateLimit f
 
 ## Quota Policy {#quota-policy}
 
-A quota policy is maintained by a server to limit the activity (counted in quota units) of a given client over a period of time (known as the [time window](#time-window)) to a specified amount (known as the [service limit](#service-limit)). 
+A quota policy is maintained by a server to limit the activity (counted in quota units) of a given client over a period of time (known as the [time window](#time-window)) to a specified amount (known as the [service limit](#service-limit)).
 
 Quota policies can be advertised by servers (see {{ratelimit-policy-field}}), but they are not required to be, and more than one quota policy can affect a given request from a client to a server.
 
@@ -161,7 +161,7 @@ Implementation- or service-specific parameters SHOULD be prefixed parameters wit
 
 ## Service Limit {#service-limit}
 
-The service limit is a non-negative Integer indicating the maximum amount of activity that the server is willing to accept from what it identifies as the client (e.g., based upon originating IP or user authentication) during a [time window](#time-window). 
+The service limit is a non-negative Integer indicating the maximum amount of activity that the server is willing to accept from what it identifies as the client (e.g., based upon originating IP or user authentication) during a [time window](#time-window).
 
 The activity being limited is usually the HTTP requests made by the client; for example "you can make 100 requests per minute". However, a server might only rate limit some requests (based upon URI, method, user identity, etc.), and it might weigh requests differently. Therefore, quota policies are defined in terms of "quota units". Servers SHOULD document how they count quota units.
 
