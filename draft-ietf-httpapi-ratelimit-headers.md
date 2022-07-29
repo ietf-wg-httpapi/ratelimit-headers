@@ -136,23 +136,53 @@ The fields defined in this document are collectively referred to as "RateLimit f
 
 ## Quota Policy {#quota-policy}
 
-A quota policy is described in terms of [quota units](#service-limit) and a [time window](#time-window). It is an Item whose bare item is a [service limit](#service-limit), along with associated Parameters.
+A quota policy is maintained by a server to limit the activity (counted in quota units) of a given client over a period of time (known as the [time window](#time-window)) to a specified amount (known as the [service limit](#service-limit)).
 
-The following parameters are defined in this specification:
+Quota policies can be advertised by servers (see {{ratelimit-policy-field}}), but they are not required to be, and more than one quota policy can affect a given request from a client to a server.
+
+A quota policy is expressed in Structured Fields {{STRUCTURED-FIELDS}} as an Integer that indicates the service limit with associated parameters.
+
+The following Parameters are defined in this specification:
 
   w:
   :  The REQUIRED "w" parameter value conveys
-     a time window value as defined in {{time-window}}.
+     a time window ({{time-window}}).
 
-Other parameters are allowed and can be regarded as comments. They ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", as described in {{iana-ratelimit-parameters}}.
-
-For example, a quota policy of 100 quota units per minute:
+For example, a quota policy of 100 quota units per minute is expressed as:
 
 ~~~ example
    100;w=60
 ~~~
 
-The definition of a quota policy does not imply any specific distribution of quota units within the time window. If applicable, these details can be conveyed as extension parameters.
+Other parameters are allowed and can be regarded as comments. Parameters for use by more than one implementation or service ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", as described in {{iana-ratelimit-parameters}}.
+
+Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
+
+
+## Service Limit {#service-limit}
+
+The service limit is a non-negative Integer indicating the maximum amount of activity that the server is willing to accept from what it identifies as the client (e.g., based upon originating IP or user authentication) during a [time window](#time-window).
+
+The activity being limited is usually the HTTP requests made by the client; for example "you can make 100 requests per minute". However, a server might only rate limit some requests (based upon URI, method, user identity, etc.), and it might weigh requests differently. Therefore, quota policies are defined in terms of "quota units". Servers SHOULD document how they count quota units.
+
+For example, a server could count requests like `/books/{id}` once, but count search requests like `/books?author=WuMing` twice. This might result in the following counters:
+
+~~~ example
+GET /books/123           ; service-limit=4, remaining: 3, status=200
+GET /books?author=WuMing ; service-limit=4, remaining: 1, status=200
+GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
+~~~
+
+Often, the service limit advertised will match the server's actual limit. However, it MAY differ when weight mechanisms, bursts, or other server policies are implemented. In that case the difference SHOULD be communicated using an extension or documented separately.
+
+
+## Time Window {#time-window}
+
+Quota policies limit the number of acceptable requests within a given time interval, known as a time window.
+
+The time window is a non-negative Integer value expressing that interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Subsecond precision is not supported.
+
+By default, a quota policy does not constrain the distribution of quota units within the time window. If necessary, these details can be conveyed as extension parameters.
 
 For example, two quota policies containing further details via extension parameters:
 
@@ -161,38 +191,7 @@ For example, two quota policies containing further details via extension paramet
    12;w=1;burst=1000;policy="leaky bucket"
 ~~~
 
-To avoid clashes, implementers SHOULD prefix unregistered parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
-While it is useful to define a clear syntax and semantics even for custom parameters, it is important to note that user agents are not required to process quota policy information.
 
-## Time Window {#time-window}
-
-Rate limit policies limit the number of acceptable requests within a given time interval, known as a time window.
-
-The time window is a non-negative Integer value expressing that interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Subsecond precision is not supported.
-
-## Service Limit {#service-limit}
-
-The service limit is associated with the maximum number of requests that the server is willing to accept from one or more clients on a given basis (originating IP, authenticated user, geographical, ..) during a [time window](#time-window).
-
-The service limit is a non-negative Integer expressed in quota units.
-
-The service limit SHOULD match the maximum number of acceptable requests.
-However, the service limit MAY differ from the total number of acceptable requests when weight mechanisms, bursts, or other server policies are implemented.
-
-If the service limit does not match the maximum number of acceptable requests the relation with that SHOULD be communicated out-of-band.
-
-Example: A server could
-
-- count once requests like `/books/{id}`
-- count twice search requests like `/books?author=WuMing`
-
-so that we have the following counters
-
-~~~ example
-GET /books/123           ; service-limit=4, remaining: 3, status=200
-GET /books?author=WuMing ; service-limit=4, remaining: 1, status=200
-GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
-~~~
 
 
 # RateLimit Field Definitions
