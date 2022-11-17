@@ -23,4 +23,4 @@ This requires that you have the necessary software installed.  See
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/ietf-wg-httpapi/draft-ietf-httpapi-ratelimit-headers/blob/master/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/ietf-wg-httpapi/ratelimit-headers/blob/master/CONTRIBUTING.md).
