@@ -226,6 +226,7 @@ This field cannot appear in a trailer section.
 The "RateLimit-Policy" response header field indicates the quota policies currently associated with the client. Its value is informative.
 
 The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
+Two quota policies MUST NOT be associated with the same quota units value.
 
 This field can convey the time window associated with the expiring-limit, as shown in this example:
 
@@ -239,6 +240,12 @@ These examples show multiple policies being returned:
 ~~~ example
    RateLimit-Policy: 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
    RateLimit-Policy: 10;w=1;burst=1000, 1000;w=3600
+~~~
+
+An example of invalid header field value with two policies associated with the same quota units:
+
+~~~ example
+   RateLimit-Policy: 10;w=1, 10;w=60
 ~~~
 
 This field cannot appear in a trailer section.
