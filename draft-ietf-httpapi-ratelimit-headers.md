@@ -295,7 +295,9 @@ This field cannot appear in a trailer section.
 
 # Server Behavior {#providing-ratelimit-fields}
 
-A server uses the RateLimit header fields to communicate its quota policies. Sending the RateLimit-Limit and RateLimit-Reset header fields is REQUIRED; sending RateLimit-Remaining header field is RECOMMENDED.
+A server uses the RateLimit header fields to communicate its quota policies.
+A response that includes the RateLimit-Limit header field MUST also include the RateLimit-Reset.
+It MAY also include a RateLimit-Remaining header field.
 
 A server MAY return RateLimit header fields independently of the response status code. This includes on throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
 
