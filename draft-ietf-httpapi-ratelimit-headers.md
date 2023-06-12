@@ -51,7 +51,7 @@ informative:
 
 --- abstract
 
-This document defines the RateLimit and RateLimit-Policy HTTP header fields for servers to advertise their current service rate limits, thereby allowing clients to avoid being throttled.
+This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their service policy limits and the current limits, thereby allowing clients to avoid being throttled.
 
 --- middle
 
@@ -62,10 +62,10 @@ Rate limiting HTTP clients has become a widespread practice, especially for HTTP
 Currently, there is no standard way for servers to communicate quotas so that clients can throttle its requests to prevent errors. This document defines a set of standard HTTP header fields to enable rate limiting:
 
 - RateLimit: to convey
-  the server's quota for requests by the client in the time window,
-  the remaining quota in the current window,
+  the server's current limit of quota units available to the client in the policy time window,
+  the remaining quota units in the current window,
   and the time remaining in the current window, specified in seconds, and
-- RateLimit-Policy: the quota policy.
+- RateLimit-Policy: the service policy limits.
 
 These fields allow the establishment of complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits.
 
@@ -263,7 +263,7 @@ For example:
 
 ## Reset Keyword {#ratelimit-reset-keyword}
 
-The "reset" keyword indicates the number of seconds until the quota associated with the expiring-limit resets.
+The "reset" keyword indicates the number of seconds until the available quota units associated with the expiring-limit resets.
 
 It is a non-negative Integer compatible with the delay-seconds rule, because:
 
@@ -285,7 +285,7 @@ The client MUST NOT assume that all its service limit will be reset at the momen
 
 ## RateLimit-Policy {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field indicates the quota policies currently associated with the client. Its value is informative.
+The "RateLimit-Policy" response header field indicates a service policy currently associated with the client. Its value is informative.
 
 The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
 Two quota policies MUST NOT be associated with the same quota units value.
