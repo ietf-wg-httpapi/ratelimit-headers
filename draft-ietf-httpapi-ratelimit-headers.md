@@ -260,7 +260,6 @@ For example:
    remaining=50
 ~~~
 
-
 ## Reset Keyword {#ratelimit-reset-keyword}
 
 The "reset" keyword indicates the number of seconds until the available quota units associated with the expiring-limit resets.
@@ -312,8 +311,11 @@ An example of invalid header field value with two policies associated with the s
 
 This field cannot appear in a trailer section.
 
-
 # Server Behavior {#providing-ratelimit-fields}
+
+A server uses the RateLimit header fields to communicate its quota policies.
+A response that includes the RateLimit-Limit header field MUST also include the RateLimit-Reset.
+It MAY also include a RateLimit-Remaining header field.
 
 A server MAY return RateLimit header fields independently of the response status code. This includes on throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
 
