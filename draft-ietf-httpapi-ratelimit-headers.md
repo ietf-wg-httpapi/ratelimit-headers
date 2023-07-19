@@ -290,7 +290,7 @@ This field can convey the time window associated with the expiring-limit, as sho
 
 ~~~ example
    RateLimit-Policy: default;l=100;w=10
-   RateLimit: policy=default, limit=100, remaining=50, reset=5
+   RateLimit: policy=default, remaining=50, reset=5
 ~~~
 
 These examples show multiple policies being returned:
