@@ -208,9 +208,11 @@ The following Keys are defined in this specification:
   limit:
   :  The REQUIRED "limit" key value conveys
      the expiring limit ({{ratelimit-limit-keyword}}).
+  
   remaining:
   :  The OPTIONAL "remaining" key value conveys
      the remaining quota units ({{ratelimit-remaining-keyword}}).
+  
   reset:
   : The REQUIRED "reset" key value conveys
      the time window reset time ({{ratelimit-reset-keyword}}).
