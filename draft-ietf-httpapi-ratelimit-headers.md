@@ -213,7 +213,7 @@ The following parameters are defined in this specification:
 
   r:
   :  This parameter value conveys the remaining quota units for the identified policy ({{ratelimit-remaining-keyword}}).
-     
+
   t:
   : This OPTIONAL parameter value conveys the time window reset time for the identified policy ({{ratelimit-reset-keyword}}).
 
@@ -442,7 +442,7 @@ there's a high probability that all clients will show up at `18:00:00`.
 
 This could be mitigated by adding some jitter to the field-value.
 
-Resource exhaustion issues can be associated with quota policies using a 
+Resource exhaustion issues can be associated with quota policies using a
 large time window, because a user agent by chance or on purpose
 might consume most of its quota units in a significantly shorter interval.
 
@@ -730,7 +730,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: basic;l=100;w=60 
+RateLimit-Policy: basic;l=100;w=60
 RateLimit: basic;r=60;t=58
 
 {"elapsed": 2, "issued": 40}
@@ -753,7 +753,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: basic;l=100;w=60 
+RateLimit-Policy: basic;l=100;w=60
 RateLimit: basic;r=20;t=56
 
 {"elapsed": 4, "issued": 41}
@@ -1072,7 +1072,7 @@ RateLimit: day;r=100;t=36000
      on the [httpwg ml](https://lists.w3.org/Archives/Public/ietf-http-wg/2019JulSep/0202.html)
    - almost all rate-limit headers implementations do not use it.
 
-6. 
+6.
 
 7. Shouldn't I limit concurrency instead of request rate?
 
