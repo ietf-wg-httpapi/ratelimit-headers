@@ -212,10 +212,10 @@ The field is a Dictionary. The allowed keys are defined in the "Hypertext Transf
 The following parameters are defined in this specification:
 
   r:
-  :  This parameter value conveys the remaining quota units for the identified policy ({{ratelimit-remaining-keyword}}).
+  :  This parameter value conveys the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
 
   t:
-  : This OPTIONAL parameter value conveys the time window reset time for the identified policy ({{ratelimit-reset-keyword}}).
+  : This OPTIONAL parameter value conveys the time window reset time for the identified policy ({{ratelimit-reset-parameter}}).
 
 This field cannot appear in a trailer section.
 
@@ -417,7 +417,7 @@ or not serve the request regardless of the advertised quotas.
 
 ## Reliability of the reset keyword {#sec-reset-reliability}
 
-Consider that service limit might not be restored after the moment referenced by the [reset keyword](#ratelimit-reset-keyword),
+Consider that service limit might not be restored after the moment referenced by the [reset keyword](#ratelimit-reset-parameter),
 and the reset keyword value may not be fixed nor constant.
 
 Subsequent requests might return a higher reset keyword value
@@ -550,18 +550,10 @@ The initial contents of this registry should be:
 |---|---|---|---|---|---|
 | Field Name       | Token name     | Token type | Description | Specification | Comments (optional) |
 |---|---|---|---|---|---|
-| RateLimit | limit                 | Dictionary Key |Expiring limit | {{ratelimit-limit-keyword}} of {{&SELF}} |       |
-| RateLimit | remaining             | Dictionary Key |Remaining quota units | {{ratelimit-remaining-keyword}} of {{&SELF}} |       |
-| RateLimit | reset                 | Dictionary Key |Quota reset interval | {{ratelimit-reset-keyword}} of {{&SELF}} |       |
-| RateLimit-Policy | w              | Parameter name |Time window | {{quota-policy}} of {{&SELF}} |       |
-|---|---|---|---|---|---|
-|---|---|---|---|---|---|
-| Field Name       | Token name     | Token type | Description | Specification | Comments (optional) |
-|---|---|---|---|---|---|
-| RateLimit | limit                 | Dictionary Key |Expiring limit | {{ratelimit-limit-keyword}} of {{&SELF}} |       |
-| RateLimit | remaining             | Dictionary Key |Remaining quota units | {{ratelimit-remaining-keyword}} of {{&SELF}} |       |
-| RateLimit | reset                 | Dictionary Key |Quota reset interval | {{ratelimit-reset-keyword}} of {{&SELF}} |       |
-| RateLimit-Policy | w              | Parameter name |Time window | {{quota-policy}} of {{&SELF}} |       |
+| RateLimit | r                   | Dictionary Key |Remaining quota units | {{ratelimit-remaining-parameter}} of {{&SELF}} |       |
+| RateLimit | t                   | Dictionary Key |Quota reset interval | {{ratelimit-reset-parameter}} of {{&SELF}} |       |
+| RateLimit-Policy | l            | Dictionary Key |Expiring limit | {{quota-policy}} of {{&SELF}} |       |
+| RateLimit-Policy | w            | Dictionary Key |Time window | {{quota-policy}} of {{&SELF}} |       |
 |---|---|---|---|---|---|
 
 --- back
@@ -1095,7 +1087,7 @@ RateLimit: day;r=100;t=36000
 8. Do a positive value of remaining keyword imply any service guarantee for my
    future requests to be served?
 
-   No. FAQ integrated in {{ratelimit-remaining-keyword}}.
+   No. FAQ integrated in {{ratelimit-remaining-parameter}}.
 
 9. Is the quota-policy definition {{quota-policy}} too complex?
 
@@ -1175,7 +1167,7 @@ Commonly used header field names are:
 
 - `X-RateLimit-Limit`,
   `X-RateLimit-Remaining`,
-    `X-RateLimit-Reset`;
+  `X-RateLimit-Reset`;
 
 There are variants too, where the window is specified
 in the header field name, eg:
