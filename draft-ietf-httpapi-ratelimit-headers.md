@@ -154,7 +154,7 @@ The following parameters are defined in this specification:
 
 For example, a quota policy named "default" of 100 quota units per minute is expressed as:
 
-~~~ example
+~~~
    default;l=100;w=60
 ~~~
 
@@ -170,7 +170,7 @@ The activity being limited is usually the HTTP requests made by the client; for 
 
 For example, a server could count requests like `/books/{id}` once, but count search requests like `/books?author=WuMing` twice. This might result in the following counters:
 
-~~~ example
+~~~
 GET /books/123           ; service-limit=4, remaining: 3, status=200
 GET /books?author=WuMing ; service-limit=4, remaining: 1, status=200
 GET /books?author=Eco    ; service-limit=4, remaining: 0, status=429
@@ -189,7 +189,7 @@ By default, a quota policy does not constrain the distribution of quota units wi
 
 For example, two quota policies containing further details via extension parameters:
 
-~~~ example
+~~~
    tier1;l=100;w=60;comment="fixed window"
    protect;l=12;w=1;burst=1000
 ~~~
@@ -219,7 +219,7 @@ The following parameters are defined in this specification:
 
 This field cannot appear in a trailer section.
 
-~~~ example
+~~~
    RateLimit: protection;r=50;t=30
 ~~~
 
@@ -238,7 +238,7 @@ When the value of the remaining keyword is low, it indicates that the server may
 
 For example:
 
-~~~ example
+~~~
    r=50
 ~~~
 
@@ -256,7 +256,7 @@ It is a non-negative Integer compatible with the delay-seconds rule, because:
 
 For example:
 
-~~~ example
+~~~
    t=50
 ~~~
 
@@ -272,21 +272,21 @@ Two quota policies MUST NOT be associated with the same quota units value unless
 
 This field can convey the time window associated with the expiring-limit, as shown in this example:
 
-~~~ example
+~~~
    RateLimit-Policy: default;l=100;w=10
    RateLimit: default;r=50;t=5
 ~~~
 
 These examples show multiple policies being returned:
 
-~~~ example
+~~~
    RateLimit-Policy: persec;l=10;w=1, permin;l=50;w=60, perhr;l=1000;w=3600, perday;l=5000;w=86400
    RateLimit-Policy: persec;l=10;w=1;burst=1000, perhr;l=1000;w=3600
 ~~~
 
 An example of invalid header field value with two policies associated with the same quota units without a unique "p" parameter value to differentiate them:
 
-~~~ example
+~~~
    RateLimit-Policy: spike;l=10;w=1, rate;l=10;w=60
 ~~~
 
@@ -327,7 +327,7 @@ The RateLimit header fields can be used by clients to determine whether the asso
 
 For example, a successful response with the following fields:
 
-~~~ example
+~~~
    RateLimit: default;r=1;t=7
 ~~~
 
@@ -433,7 +433,7 @@ This is true for Retry-After too.
 For example, if the quota resets every day at `18:00:00`
 and your server returns the reset parameter accordingly
 
-~~~ example
+~~~
    Date: Tue, 15 Nov 1994 08:00:00 GMT
    RateLimit: daily;r=1;t=36000
 ~~~
@@ -450,7 +450,7 @@ This behavior can be even triggered by the provided RateLimit header fields.
 The following example describes a service
 with an unconsumed quota policy of 10000 quota units per 1000 seconds.
 
-~~~ example
+~~~
 RateLimit-Policy: somepolicy;l=10000;w=1000
 RateLimit: somepolicy;r=10000;t=10
 ~~~
@@ -1101,14 +1101,14 @@ RateLimit: day;r=100;t=36000
 
    You can always return the simplest form
 
-~~~ example
+~~~
 RateLimit:default;r=50;t=60
 ~~~
 
    The policy key clearly connects the current usage status of a policy to the defined limits.
    So for the following field:
 
-~~~ example
+~~~
 RateLimit-Policy: sliding;l=100;w=60;burst=1000;comment="sliding window", fixed;l=5000;w=3600;burst=0;comment="fixed window"
 RateLimit: sliding;r=50;t=44
 ~~~
@@ -1205,7 +1205,7 @@ remaining keyword
 value related to the ratio between the current and the maximum throughput.
 e.g.
 
-~~~ example
+~~~
 RateLimit-Limit: 12
 RateLimit-Policy: 12;w=1
 RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
@@ -1214,7 +1214,7 @@ RateLimit-Reset: 1
 
 If this is the case, the optimal solution is to achieve
 
-~~~ example
+~~~
 RateLimit-Limit: 12
 RateLimit-Policy: 12;w=1
 RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
