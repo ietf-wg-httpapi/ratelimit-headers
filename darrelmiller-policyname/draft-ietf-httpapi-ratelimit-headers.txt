@@ -5,8 +5,8 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 26 December 2023                                        Red Hat
-                                                            24 June 2023
+Expires: 11 July 2024                                            Red Hat
+                                                          8 January 2024
 
 
                     RateLimit header fields for HTTP
@@ -51,11 +51,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 December 2023.
+   This Internet-Draft will expire on 11 July 2024.
 
 Copyright Notice
 
-   Copyright (c) 2023 IETF Trust and the persons identified as the
+   Copyright (c) 2024 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -78,10 +78,9 @@ Table of Contents
      2.3.  Time Window
    3.  RateLimit header field Definitions
      3.1.  RateLimit
-     3.2.  Limit Keyword
-     3.3.  Remaining Keyword
-     3.4.  Reset Keyword
-     3.5.  RateLimit-Policy
+     3.2.  Remaining Parameter
+     3.3.  Reset Keyword
+     3.4.  RateLimit-Policy
    4.  Server Behavior
      4.1.  Performance Considerations
    5.  Client Behavior
@@ -225,23 +224,27 @@ Table of Contents
    (known as the time window (Section 2.3)) to a specified amount (known
    as the service limit (Section 2.2)).
 
-   Quota policies can be advertised by servers (see Section 3.5), but
+   Quota policies can be advertised by servers (see Section 3.4), but
    they are not required to be, and more than one quota policy can
    affect a given request from a client to a server.
 
    A quota policy is expressed in Structured Fields [STRUCTURED-FIELDS]
-   as an Integer that indicates the service limit with associated
+   as a sf-Item that identifies the policy and its associated
    parameters.
 
-   The following Parameters are defined in this specification:
+   The following parameters are defined in this specification:
 
-   w:  The REQUIRED "w" parameter value conveys a time window
+   l:  The REQUIRED "l" parameter uses a non-negative integer value to
+      limit the activity (counted in quota units) of a given client
+      (Section 2.2).
+
+   w:  The OPTIONAL "w" parameter value conveys a time window
       (Section 2.3).
 
-   For example, a quota policy of 100 quota units per minute is
-   expressed as:
+   For example, a quota policy named "default" of 100 quota units per
+   minute is expressed as:
 
-      100;w=60
+      default;l=100;w=60
 
    Other parameters are allowed and can be regarded as comments.
    Parameters for use by more than one implementation or service ought
@@ -256,7 +259,8 @@ Table of Contents
    The service limit is a non-negative Integer indicating the maximum
    amount of activity that the server is willing to accept from what it
    identifies as the client (e.g., based upon originating IP or user
-   authentication) during a time window (Section 2.3).
+   authentication) that MAY be constrained by a time window
+   (Section 2.3).
 
    The activity being limited is usually the HTTP requests made by the
    client; for example "you can make 100 requests per minute".  However,
@@ -280,8 +284,8 @@ Table of Contents
 
 2.3.  Time Window
 
-   Quota policies limit the number of acceptable requests within a given
-   time interval, known as a time window.
+   Quota policies often limit the number of acceptable requests within a
+   given time interval, known as a time window.
 
    The time window is a non-negative Integer value expressing that
    interval in seconds, similar to the "delay-seconds" rule defined in
@@ -294,8 +298,8 @@ Table of Contents
    For example, two quota policies containing further details via
    extension parameters:
 
-      100;w=60;comment="fixed window"
-      12;w=1;burst=1000;policy="leaky bucket"
+      tier1;l=100;w=60;comment="fixed window"
+      protect;l=12;w=1;burst=1000
 
 3.  RateLimit header field Definitions
 
@@ -304,57 +308,35 @@ Table of Contents
 3.1.  RateLimit
 
    A server uses the "RateLimit" response header field to communicate
-   its quota policies.
+   the client quota consumption state.
+
+   The field is expressed as a Structured Fields [STRUCTURED-FIELDS] sf-
+   Item that identifies the policy and its associated consumption state
+   as parameters.
+
+   An origin server MUST not return a response that contains multiple
+   rate limit fields with the same policy value.
 
    The field is a Dictionary.  The allowed keys are defined in the
    "Hypertext Transfer Protocol (HTTP) RateLimit Keywords and Parameters
    Registry", as described in Section 8.1.
 
-   The following Keys are defined in this specification:
+   The following parameters are defined in this specification:
 
-   limit:  The REQUIRED "limit" key value conveys the expiring limit
-      (Section 3.2).  remaining:
+   r:  This parameter value conveys the remaining quota units for the
+      identified policy (Section 3.2).
 
-      The OPTIONAL "remaining" key value conveys the remaining quota
-      units (Section 3.3).  reset:
-
-      The REQUIRED "reset" key value conveys the time window reset time
-      (Section 3.4).
-
-   This specification does not define Parameters for this field.  If
-   they appear, they MUST be ignored.
+   t:  This OPTIONAL parameter value conveys the time window reset time
+      for the identified policy (Section 3.3).
 
    This field cannot appear in a trailer section.
 
-3.2.  Limit Keyword
+      RateLimit: protection;r=50;t=30
 
-   The "limit" keyword indicates the service limit (Section 2.2)
-   associated with the client in the current time window (Section 2.3).
-   If the client exceeds that limit, it MAY not be served.
+3.2.  Remaining Parameter
 
-   It is an Item and its value is a non-negative Integer referred to as
-   the "expiring limit".  This specification does not define Parameters
-   for it.  If they appear, they MUST be ignored.
-
-   The expiring limit MUST be set to the service limit that is closest
-   to reaching its limit, and the associated time window MUST either be:
-
-   *  inferred by the value of the reset keyword (Section 3.4) at the
-      moment of the reset, or
-
-   *  communicated out-of-band (e.g. in the documentation).
-
-   Example:
-
-      limit=100
-
-   The RateLimit-Policy header field (see Section 3.5), might contain
-   information on the associated time window.
-
-3.3.  Remaining Keyword
-
-   The "remaining" keyword indicates the remaining quota units
-   associated with the expiring-limit.
+   The "r" parameter indicates the remaining quota units associated with
+   the expiring-limit.
 
    It is an Item and its value is a non-negative Integer expressed in
    quota units (Section 2.2).  This specification does not define
@@ -368,12 +350,12 @@ Table of Contents
 
    For example:
 
-      remaining=50
+      r=50
 
-3.4.  Reset Keyword
+3.3.  Reset Keyword
 
-   The "reset" keyword indicates the number of seconds until the
-   available quota units associated with the expiring-limit resets.
+   The "t" parameter indicates the number of seconds until the quota
+   associated with the expiring-limit resets.
 
    It is a non-negative Integer compatible with the delay-seconds rule,
    because:
@@ -385,12 +367,9 @@ Table of Contents
    *  it mitigates the risk related to thundering herd when too many
       clients are serviced with the same timestamp.
 
-   This specification does not define Parameters for it.  If they
-   appear, they MUST be ignored.
-
    For example:
 
-      reset=50
+      t=50
 
    The client MUST NOT assume that all its service limit will be reset
    at the moment indicated by the reset keyword.  The server MAY
@@ -398,40 +377,40 @@ Table of Contents
    requests; for example, in case of resource saturation or to implement
    sliding window policies.
 
-3.5.  RateLimit-Policy
+3.4.  RateLimit-Policy
 
-   The "RateLimit-Policy" response header field indicates a service
-   policy currently associated with the client.  Its value is
-   informative.
+   The "RateLimit-Policy" response header field contains properties of
+   the quota policy of the target resource that are expected to remain
+   consistent over a the lifetime of a connection.  It is this
+   characteristic that differentiates itself from the RateLimit
+   (Section 3.1) that contains values that may change on every request.
+   Its value is informative.
 
    The field is a non-empty List of Items.  Each item is a quota policy
    (Section 2.1).  Two quota policies MUST NOT be associated with the
-   same quota units value.
+   same quota units value unless they are differentiated with a unique p
+   parameter value.
 
    This field can convey the time window associated with the expiring-
    limit, as shown in this example:
 
-      RateLimit-Policy: 100;w=10
-      RateLimit: limit=100, remaining=50, reset=5
+      RateLimit-Policy: default;l=100;w=10
+      RateLimit: default;r=50;t=5
 
    These examples show multiple policies being returned:
 
-      RateLimit-Policy: 10;w=1, 50;w=60, 1000;w=3600, 5000;w=86400
-      RateLimit-Policy: 10;w=1;burst=1000, 1000;w=3600
+   RateLimit-Policy: persec;l=10;w=1, permin;l=50;w=60, perhr;l=1000;w=3600, perday;l=5000;w=86400
+   RateLimit-Policy: persec;l=10;w=1;burst=1000, perhr;l=1000;w=3600
 
    An example of invalid header field value with two policies associated
-   with the same quota units:
+   with the same quota units without a unique "p" parameter value to
+   differentiate them:
 
-      RateLimit-Policy: 10;w=1, 10;w=60
+      RateLimit-Policy: spike;l=10;w=1, rate;l=10;w=60
 
    This field cannot appear in a trailer section.
 
 4.  Server Behavior
-
-   A server uses the RateLimit header fields to communicate its quota
-   policies.  A response that includes the RateLimit-Limit header field
-   MUST also include the RateLimit-Reset.  It MAY also include a
-   RateLimit-Remaining header field.
 
    A server MAY return RateLimit header fields independently of the
    response status code.  This includes on throttled responses.  This
@@ -448,15 +427,15 @@ Table of Contents
 
    HTTP/1.1 301 Moved Permanently
    Location: /foo/123
-   RateLimit: limit=10, remaining=0, reset=10
+   RateLimit: problemPolicy;r=0, t=10
 
    If a response contains both the Retry-After and the RateLimit header
    fields, the reset keyword value SHOULD reference the same point in
    time as the Retry-After field value.
 
    When using a policy involving more than one time window, the server
-   MUST reply with the RateLimit header fields related to the time
-   window with the lower remaining keyword values.
+   MUST reply with the RateLimit header field related to the time window
+   with the lower remaining keyword values.
 
    A service using RateLimit header fields MUST NOT convey values
    exposing an unwanted volume of requests and SHOULD implement
@@ -490,7 +469,7 @@ Table of Contents
 
    For example, a successful response with the following fields:
 
-      RateLimit: limit=10, remaining=1, reset=7
+      RateLimit: default;r=1;t=7
 
    does not guarantee that the next request will be successful.
    Servers' behavior may be subject to other conditions like the one
@@ -516,14 +495,20 @@ Table of Contents
    client aware of a significant network latency MAY behave accordingly
    and use other information (e.g. the "Date" response header field, or
    otherwise gathered metrics) to better estimate the reset keyword
-   moment intended by the server.
+   moment intended by the server.  The value of the reset keyword is
+   generated at response time: a client aware of a significant network
+   latency MAY behave accordingly and use other information (e.g. the
+   "Date" response header field, or otherwise gathered metrics) to
+   better estimate the reset keyword moment intended by the server.
 
    The details provided in the RateLimit-Policy header field are
    informative and MAY be ignored.
 
    If a response contains both the RateLimit and Retry-After fields, the
    Retry-After field MUST take precedence and the reset keyword MAY be
-   ignored.
+   ignored.  If a response contains both the RateLimit and Retry-After
+   fields, the Retry-After field MUST take precedence and the reset
+   keyword MAY be ignored.
 
    This specification does not mandate a specific throttling behavior
    and implementers can adopt their preferred policies, including:
@@ -615,7 +600,7 @@ Table of Contents
 6.4.  Reliability of the reset keyword
 
    Consider that service limit might not be restored after the moment
-   referenced by the reset keyword (Section 3.4), and the reset keyword
+   referenced by the reset keyword (Section 3.3), and the reset keyword
    value may not be fixed nor constant.
 
    Subsequent requests might return a higher reset keyword value to
@@ -630,10 +615,10 @@ Table of Contents
    This is true for Retry-After too.
 
    For example, if the quota resets every day at 18:00:00 and your
-   server returns the reset keyword accordingly
+   server returns the reset parameter accordingly
 
       Date: Tue, 15 Nov 1994 08:00:00 GMT
-      RateLimit: limit=1, remaining=1, reset=36000
+      RateLimit: daily;r=1;t=36000
 
    there's a high probability that all clients will show up at 18:00:00.
 
@@ -648,12 +633,12 @@ Table of Contents
    fields.  The following example describes a service with an unconsumed
    quota policy of 10000 quota units per 1000 seconds.
 
-   RateLimit: limit=10000, remaining=10000, reset=10
-   RateLimit-Policy: 10000;w=1000
+   RateLimit-Policy: somepolicy;l=10000;w=1000
+   RateLimit: somepolicy;r=10000;t=10
 
    A client implementing a simple ratio between remaining keyword and
    reset keyword could infer an average throughput of 1000 quota units
-   per second, while the limit keyword conveys a quota-policy with an
+   per second,while the limit keyword conveys a quota-policy with an
    average of 10 quota units per second.  If the service cannot handle
    such load, it should return either a lower remaining keyword value or
    an higher reset keyword value.  Moreover, complementing large time
@@ -712,7 +697,7 @@ Table of Contents
         +==================+===========+=========================+
         | RateLimit        | permanent | Section 3.1 of RFC nnnn |
         +------------------+-----------+-------------------------+
-        | RateLimit-Policy | permanent | Section 3.5 of RFC nnnn |
+        | RateLimit-Policy | permanent | Section 3.4 of RFC nnnn |
         +------------------+-----------+-------------------------+
 
                                  Table 1
@@ -735,6 +720,12 @@ Table of Contents
    *  Token type: Whether the token is a Dictionary Keyword or a
       Parameter Name.
 
+   *  Token name: The keyword or parameter name, conforming to
+      [STRUCTURED-FIELDS].
+
+   *  Token type: Whether the token is a Dictionary Keyword or a
+      Parameter Name.
+
    *  Field name: The RateLimit header field for which the parameter is
       registered.  If a parameter is intended to be used with multiple
       fields, it has to be registered for each one.
@@ -750,24 +741,24 @@ Table of Contents
 
    The initial contents of this registry should be:
 
-   +==========+=========+==========+===========+=============+==========+
-   |Field Name|Token    |Token type|Description|Specification|Comments  |
-   |          |name     |          |           |             |(optional)|
-   +==========+=========+==========+===========+=============+==========+
-   |RateLimit |limit    |Dictionary|Expiring   |Section 3.2  |          |
-   |          |         |Key       |limit      |of RFC nnnn  |          |
-   +----------+---------+----------+-----------+-------------+----------+
-   |RateLimit |remaining|Dictionary|Remaining  |Section 3.3  |          |
-   |          |         |Key       |quota units|of RFC nnnn  |          |
-   +----------+---------+----------+-----------+-------------+----------+
-   |RateLimit |reset    |Dictionary|Quota reset|Section 3.4  |          |
-   |          |         |Key       |interval   |of RFC nnnn  |          |
-   +----------+---------+----------+-----------+-------------+----------+
-   |RateLimit-|w        |Parameter |Time window|Section 2.1  |          |
-   |Policy    |         |name      |           |of RFC nnnn  |          |
-   +----------+---------+----------+-----------+-------------+----------+
+   +==========+=====+==========+===========+===============+==========+
+   |Field Name|Token|Token type|Description| Specification |Comments  |
+   |          |name |          |           |               |(optional)|
+   +==========+=====+==========+===========+===============+==========+
+   |RateLimit |r    |Dictionary|Remaining  | Section 3.2   |          |
+   |          |     |Key       |quota units| of RFC nnnn   |          |
+   +----------+-----+----------+-----------+---------------+----------+
+   |RateLimit |t    |Dictionary|Quota reset| Section 3.3   |          |
+   |          |     |Key       |interval   | of RFC nnnn   |          |
+   +----------+-----+----------+-----------+---------------+----------+
+   |RateLimit-|l    |Dictionary|Expiring   | Section 2.1   |          |
+   |Policy    |     |Key       |limit      | of RFC nnnn   |          |
+   +----------+-----+----------+-----------+---------------+----------+
+   |RateLimit-|w    |Dictionary|Time window| Section 2.1   |          |
+   |Policy    |     |Key       |           | of RFC nnnn   |          |
+   +----------+-----+----------+-----------+---------------+----------+
 
-                                  Table 2
+                                 Table 2
 
 9.  References
 
@@ -908,8 +899,7 @@ B.1.  Unparameterized responses
 B.1.1.  Throttling information in responses
 
    The client exhausted its service-limit for the next 50 seconds.  The
-   time-window is communicated out-of-band or inferred by the field
-   values.
+   limit and time-window is communicated out-of-band.
 
    Request:
 
@@ -920,16 +910,16 @@ B.1.1.  Throttling information in responses
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=100, remaining=0, reset=50
+   RateLimit: default;r=0;t=50
 
    {"hello": "world"}
 
    Since the field values are not necessarily correlated with the
    response status code, a subsequent request is not required to fail.
    The example below shows that the server decided to serve the request
-   even if remaining keyword value is 0.  Another server, or the same
-   server under other load conditions, could have decided to throttle
-   the request instead.
+   even if remaining keyword value is 0. even if remaining keyword value
+   is 0.  Another server, or the same server under other load
+   conditions, could have decided to throttle the request instead.
 
    Request:
 
@@ -940,7 +930,7 @@ B.1.1.  Throttling information in responses
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=100, remaining=0, reset=48
+   RateLimit: default;r=0;t=48
 
    {"still": "successful"}
 
@@ -976,7 +966,8 @@ B.1.2.  Use in conjunction with custom fields
    Content-Type: application/json
    acme-RateLimit-DayLimit: 5000
    acme-RateLimit-HourLimit: 1000
-   RateLimit: limit=5000, remaining=100, reset=36000
+   RateLimit: dayLimit;r=100;t=36000
+   RateLimit: hourLimit;r=25;t=700
 
    {"hello": "world"}
 
@@ -988,7 +979,8 @@ B.1.3.  Use for limiting concurrency
 
    The server adopted a basic policy of 100 quota units per minute, and
    in case of resource exhaustion adapts the returned values reducing
-   both limit and remaining keyword values.
+   both limit and remaining keyword values. reducing both limit and
+   remaining keyword values.
 
    After 2 seconds the client consumed 40 quota units
 
@@ -1001,12 +993,14 @@ B.1.3.  Use for limiting concurrency
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=100, remaining=60, reset=58
+   RateLimit-Policy: basic;l=100;w=60
+   RateLimit: basic;r=60;t=58
 
    {"elapsed": 2, "issued": 40}
 
    At the subsequent request - due to resource exhaustion - the server
-   advertises only remaining=20.
+   advertises only remaining=20. the server advertises only
+   remaining=20.
 
    Request:
 
@@ -1017,7 +1011,8 @@ B.1.3.  Use for limiting concurrency
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=100, remaining=20, reset=56
+   RateLimit-Policy: basic;l=100;w=60
+   RateLimit: basic;r=20;t=56
 
    {"elapsed": 4, "issued": 41}
 
@@ -1043,7 +1038,7 @@ B.1.4.  Use in throttled responses
    Content-Type: application/json
    Date: Mon, 05 Aug 2019 09:27:00 GMT
    Retry-After: Mon, 05 Aug 2019 09:27:05 GMT
-   RateLimit: limit=100, remaining=0, reset=5
+   RateLimit: default;r=0;t=5
 
    {
    "title": "Too Many Requests",
@@ -1068,8 +1063,8 @@ B.2.1.  Throttling window specified via parameter
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=100, remaining=99, reset=50
-   RateLimit-Policy: 100;w=60
+   RateLimit: fixedwindow;r=99;t=50
+   RateLimit-Policy: fixedwindow;l=100;w=60
    {"hello": "world"}
 
 B.2.2.  Dynamic limits with parameterized windows
@@ -1096,8 +1091,9 @@ B.2.2.  Dynamic limits with parameterized windows
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=10, remaining=9, reset=50
-   RateLimit-Policy: 100;w=60
+   RateLimit-Policy: dynamic;l=100;w=60
+   RateLimit: dynamic;r=9;t=50
+
 
    {
      "status": 200,
@@ -1109,6 +1105,7 @@ B.2.3.  Dynamic limits for pushing back and slowing down
    Continuing the previous example, let's say the client waits 10
    seconds and performs a new request which, due to resource exhaustion,
    the server rejects and pushes back, advertising remaining=0 for the
+   next 20 seconds. and pushes back, advertising remaining=0 for the
    next 20 seconds.
 
    The server advertises a smaller window with a lower limit to slow
@@ -1124,8 +1121,8 @@ B.2.3.  Dynamic limits for pushing back and slowing down
 
    HTTP/1.1 429 Too Many Requests
    Content-Type: application/json
-   RateLimit: limit=0, remaining=0, reset=20
-   RateLimit-Policy: 15;w=20
+   RateLimit-Policy: dynamic;l=15;w=20
+   RateLimit: dynamic;r=0;t=20
 
    {
      "status": 429,
@@ -1153,8 +1150,8 @@ B.3.  Dynamic limits for pushing back with Retry-After and slow down
    HTTP/1.1 429 Too Many Requests
    Content-Type: application/json
    Retry-After: 20
-   RateLimit: limit=15, remaining=15, reset=40
-   RateLimit-Policy: 100;w=60
+   RateLimit-Policy: dynamic;l=100;w=60
+   RateLimit: dynamic;r=15;t=40
 
    {
      "status": 429,
@@ -1186,7 +1183,8 @@ B.3.1.  Missing Remaining information
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=10, reset=1
+   RateLimit-Policy: quota;l=100
+   RateLimit: quota;t=1
 
    {"first": "request"}
 
@@ -1199,7 +1197,8 @@ B.3.1.  Missing Remaining information
 
    HTTP/1.1 200 Ok
    Content-Type: application/json
-   RateLimit: limit=10, reset=1
+   RateLimit-Policy: quota;l=10
+   RateLimit: quota;t=1
 
    {"second": "request"}
 
@@ -1235,8 +1234,8 @@ B.3.2.  Use with multiple windows
 
    HTTP/1.1 200 OK
    Content-Type: application/json
-   RateLimit: limit=5000, remaining=100, reset=36000
-   RateLimit-Policy: 1000;w=3600, 5000;w=86400
+   RateLimit-Policy: hour;l=1000;w=3600, day;l=5000;w=86400
+   RateLimit: day;r=100;t=36000
 
    {"hello": "world"}
 
@@ -1314,14 +1313,9 @@ FAQ
 
        *  almost all rate-limit headers implementations do not use it.
 
-   6.  Why not support multiple quota remaining?
+   6.
 
-       While this might be of some value, my experience suggests that
-       overly-complex quota implementations results in lower
-       effectiveness of this policy.  This spec allows the client to
-       easily focusing on the remaining and reset keywords.
-
-   7.  Shouldn't I limit concurrency instead of request rate?
+   1.  Shouldn't I limit concurrency instead of request rate?
 
        You can use this specification to limit concurrency at the HTTP
        level (see {#use-for-limiting-concurrency}) and help clients to
@@ -1338,25 +1332,24 @@ FAQ
        Saturation conditions can be either dynamic or static: all this
        is out of the scope for the current document.
 
-   8.  Do a positive value of remaining keyword imply any service
+   2.  Do a positive value of remaining keyword imply any service
        guarantee for my future requests to be served?
 
-       No.  FAQ integrated in Section 3.3.
+       No.  FAQ integrated in Section 3.2.
 
-   9.  Is the quota-policy definition Section 2.1 too complex?
+   3.  Is the quota-policy definition Section 2.1 too complex?
 
-       You can always return the simplest form of the 3 fields
+       You can always return the simplest form
 
-   RateLimit: limit=100, remaining=50, reset=60
+   RateLimit:default;r=50;t=60
 
-   The key runtime value is the first element of the list: expiring-
-   limit, the others quota-policy are informative.  So for the following
-   field:
+   The policy key clearly connects the current usage status of a policy
+   to the defined limits.  So for the following field:
 
-   RateLimit: limit=100, remaining=50, reset=44
-   RateLimit-Policy: 100;w=60;burst=1000;comment="sliding window", 5000;w=3600;burst=0;comment="fixed window"
+RateLimit-Policy: sliding;l=100;w=60;burst=1000;comment="sliding window", fixed;l=5000;w=3600;burst=0;comment="fixed window"
+RateLimit: sliding;r=50;t=44
 
-   the key value is the one referencing the lowest limit: 100
+   the value "sliding" identifies the policy being reported.
 
    1.  Can we use shorter names?  Why don't put everything in one field?
 
@@ -1424,8 +1417,6 @@ RateLimit header fields currently used on the web
 
    *  X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset;
 
-   *  X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate-Limit-Reset.
-
    There are variants too, where the window is specified in the header
    field name, eg:
 
@@ -1457,22 +1448,23 @@ RateLimit header fields currently used on the web
 
       -  X-RateLimit-Reset and X-Rate-Limit-Reset
 
-   The semantic of RateLimit depends on the windowing algorithm.  A
-   sliding window policy for example may result in having a remaining
-   keyword value related to the ratio between the current and the
-   maximum throughput. e.g.
+   The semantic of RateLimit depends on the windowing algorithm.  The
+   semantic of RateLimit depends on the windowing algorithm.  A sliding
+   window policy for example may result in having a remaining keyword
+   value related to the ratio between the current and the maximum
+   throughput. e.g.
 
-   RateLimit: limit=12,    \
-              remaining=6, \ ; using 50% of throughput, that is 6 units/s
-              reset=1
-   RateLimit-Policy: 12;w=1
+RateLimit-Limit: 12
+RateLimit-Policy: 12;w=1
+RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
+RateLimit-Reset: 1
 
    If this is the case, the optimal solution is to achieve
 
-   RateLimit: limit=12,   \
-              remaining=1 \  ; using 100% of throughput, that is 12 units/s
-              reset=1
-   RateLimit-Policy: 12;w=1
+RateLimit-Limit: 12
+RateLimit-Policy: 12;w=1
+RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
+RateLimit-Reset: 1
 
    At this point you should stop increasing your request rate.
 
