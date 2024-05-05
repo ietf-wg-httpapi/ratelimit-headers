@@ -455,7 +455,7 @@ RateLimit-Policy: somepolicy;l=10000;w=1000
 RateLimit: somepolicy;r=10000;t=10
 ~~~
 
-A client implementing a simple ratio between remaining keyword and reset keyword could infer an average throughput of 1000 quota units per second,while the limit keyword conveys a quota-policy with an average of 10 quota units per second.
+A client implementing a simple ratio between remaining keyword and reset keyword could infer an average throughput of 1000 quota units per second, while the limit keyword conveys a quota-policy with an average of 10 quota units per second.
 If the service cannot handle such load, it should return either a lower remaining keyword value or an higher reset keyword value.
 Moreover, complementing large time window quota policies with a short time window one mitigates those risks.
 
