@@ -185,7 +185,7 @@ Often, the service limit advertised will match the server's actual limit. Howeve
 
 ## Time Window {#time-window}
 
-Quota policies often limit the number of acceptable requests within a given time interval, known as a time window.
+Quota policies MAY limit the number of acceptable requests within a given time interval, known as a time window.
 
 The time window is a non-negative Integer value expressing that interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Subsecond precision is not supported.
 
