@@ -32,6 +32,10 @@ author:
     name: Alejandro Martinez Ruiz
     org: Red Hat
     email: alex@flawedcode.org
+-   ins: D. Miller
+    name: Darrel Miller
+    org: Microsoft
+    email: darrel@tavis.ca
 
 entity:
   SELF: "RFC nnnn"
@@ -1191,10 +1195,7 @@ Here are some interoperability issues:
   * X-RateLimit-Reset and X-Rate-Limit-Reset
 
 The semantic of RateLimit depends on the windowing algorithm.
-The semantic of RateLimit depends on the windowing algorithm.
-A sliding window policy for example may result in having a
-remaining keyword
-value related to the ratio between the current and the maximum throughput.
+A sliding window policy for example, may result in having a remaining keyword value related to the ratio between the current and the maximum throughput.
 e.g.
 
 ~~~
@@ -1228,8 +1229,7 @@ Aapo Talvensaari,
 Nathan Friedly
 and Sanyam Dogra.
 
-In addition to the people above, this document owes a lot to the extensive discussion
-in the HTTPAPI workgroup, including
+In addition to the people above, this document owes a lot to the extensive discussion in the HTTPAPI workgroup, including
 Rich Salz,
 Darrel Miller
 and Julian Reschke.
