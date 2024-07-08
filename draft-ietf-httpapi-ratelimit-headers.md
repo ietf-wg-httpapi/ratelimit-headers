@@ -1,4 +1,4 @@
-<!-- ---
+---
 title: RateLimit header fields for HTTP
 abbrev:
 docname: draft-ietf-httpapi-ratelimit-headers-latest
@@ -58,7 +58,7 @@ informative:
 
 This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their service policy limits and the current limits, thereby allowing clients to avoid being throttled.
 
---- middle -->
+--- middle
 
 # Introduction
 
