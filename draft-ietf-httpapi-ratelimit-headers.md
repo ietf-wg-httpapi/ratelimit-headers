@@ -570,7 +570,7 @@ The common choice is to return three headers containing:
 - the time remaining in the current window expressed in seconds or
   as a timestamp;
 
-### Interoperability issues
+## Interoperability issues
 
 A major interoperability issue in throttling is the lack of standard headers, because:
 
