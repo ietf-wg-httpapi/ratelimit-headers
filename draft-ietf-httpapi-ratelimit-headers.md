@@ -1,6 +1,6 @@
 ---
 title: RateLimit header fields for HTTP
-abbrev:
+abbrev: RateLimit Headers
 docname: draft-ietf-httpapi-ratelimit-headers-latest
 category: std
 
