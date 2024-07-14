@@ -1,6 +1,6 @@
 ---
 title: RateLimit header fields for HTTP
-abbrev: 
+abbrev:
 docname: draft-ietf-httpapi-ratelimit-headers-latest
 category: std
 
@@ -32,7 +32,7 @@ author:
     name: Alejandro Martinez Ruiz
     org: Red Hat
     email: alex@flawedcode.org
- -   
+ -
     ins: D. Miller
     name: Darrel Miller
     org: Microsoft
@@ -57,7 +57,7 @@ informative:
 
 This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their service policy limits and the current limits, thereby allowing clients to avoid being throttled.
 
---- middle 
+--- middle
 
 # Introduction
 
@@ -137,7 +137,7 @@ A quota is an allocation of capacity that a server tracks to enable it to limit 
 
 ## Quota Partition {#quota-partition}
 
-A quota partition is a division of a server's capacity across different clients, users and owned resources. 
+A quota partition is a division of a server's capacity across different clients, users and owned resources.
 
 ## Time Window {#time-window}
 
@@ -161,7 +161,7 @@ The following response header fields are defined.
 
 ## RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field contains information about a server's policy for the quota partition associated with the request. Its value is informative. The values of the policy are expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates itself from the [RateLimit](#ratelimit-field) that contains values that may change on every request. 
+The "RateLimit-Policy" response header field contains information about a server's policy for the quota partition associated with the request. Its value is informative. The values of the policy are expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates itself from the [RateLimit](#ratelimit-field) that contains values that may change on every request.
 
 The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
 
@@ -170,7 +170,7 @@ A quota policy is expressed in Structured Fields {{STRUCTURED-FIELDS}} syntax as
 The following parameters are defined in this specification:
 
   q:
-  :  The REQUIRED "q" parameter indicates the quota allocated. ({{ratelimitpolicy-quota}}) 
+  :  The REQUIRED "q" parameter indicates the quota allocated. ({{ratelimitpolicy-quota}})
 
   qu:
   :  The OPTIONAL "qu" parameter value conveys the quota units associated to the "q" parameter. The default quota unit is "request". ({{ratelimitpolicy-quotaunit}})
@@ -179,7 +179,7 @@ The following parameters are defined in this specification:
   :  The OPTIONAL "w" parameter value conveys a time "window" ({{time-window}}). ({{ratelimitpolicy-window}})
 
   pk:
-  :  The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key. 
+  :  The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
 For example, a quota policy named "default" of 100 quota units per minute is expressed as:
 
@@ -205,7 +205,7 @@ The "w" parameter value conveys a time "window" ({{time-window}}).
 
 ### Partition Key Parameter {#ratelimitpolicy-partitionkey}
 
-The "pk" parameter value conveys the partition key associated to the request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key. 
+The "pk" parameter value conveys the partition key associated to the request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
 
 This field MAY convey the time window associated with the expiring-limit, as shown in this example:
@@ -269,7 +269,7 @@ It is a non-negative Integer compatible with the delay-seconds rule, because:
   and clock skew between client and server (see {{Section 5.6.7 of HTTP}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
-The client MUST NOT assume that all its service limit will be reset at the moment indicated by the reset keyword. The server MAY arbitrarily alter the reset paramter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies. 
+The client MUST NOT assume that all its service limit will be reset at the moment indicated by the reset keyword. The server MAY arbitrarily alter the reset paramter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
 
 
 
