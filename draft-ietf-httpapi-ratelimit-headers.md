@@ -1,6 +1,6 @@
 ---
 title: RateLimit header fields for HTTP
-abbrev: RateLimit Headers
+abbrev: 
 docname: draft-ietf-httpapi-ratelimit-headers-latest
 category: std
 
@@ -32,7 +32,7 @@ author:
     name: Alejandro Martinez Ruiz
     org: Red Hat
     email: alex@flawedcode.org
--   
+ -   
     ins: D. Miller
     name: Darrel Miller
     org: Microsoft
@@ -53,7 +53,6 @@ informative:
       name: The Open Group
       ins: The Open Group
     date: 1997-02
-
 --- abstract
 
 This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their service policy limits and the current limits, thereby allowing clients to avoid being throttled.
@@ -124,7 +123,7 @@ The following features are out of the scope of this document:
 
 This document uses the Augmented BNF defined in {{!RFC5234}} and updated by {{!RFC7405}} along with the "#rule" extension defined in {{Section 5.6.1 of HTTP}}.
 
-The term Origin is to be interpreted as described in Section 7 of {{WEB-ORIGIN}}.
+The term Origin is to be interpreted as described in Section 7 of {{!WEB-ORIGIN=RFC6454}}.
 
 This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing, along with the concept of "bare item".
 
