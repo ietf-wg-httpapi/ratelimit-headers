@@ -1,4 +1,4 @@
----
+<!-- ---
 title: RateLimit header fields for HTTP
 abbrev:
 docname: draft-ietf-httpapi-ratelimit-headers-latest
@@ -57,7 +57,7 @@ informative:
 
 This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their service policy limits and the current limits, thereby allowing clients to avoid being throttled.
 
---- middle
+--- middle -->
 
 # Introduction
 
@@ -155,16 +155,13 @@ Quota policies can be advertised by servers (see {{ratelimit-policy-field}}), bu
 
 A service limit is the current limit on the amount of activity that a server will allow based on the remaining quota for a particular quota partition.
 
-# RateLimit header field Definitions
-
-The following response header fields are defined.
-
-## RateLimit-Policy Field {#ratelimit-policy-field}
+# RateLimit-Policy Field {#ratelimit-policy-field}
 
 The "RateLimit-Policy" response header field contains information about a server's policy for the quota partition associated with the request. Its value is informative. The values of the policy are expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates itself from the [RateLimit](#ratelimit-field) that contains values that may change on every request.
 
 The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
 
+## Quota Policy Item {#quotapolicy-item}
 A quota policy is expressed in Structured Fields {{STRUCTURED-FIELDS}} syntax as a sf-Item that identifies the policy and its associated parameters.
 
 The following parameters are defined in this specification:
@@ -207,6 +204,7 @@ The "w" parameter value conveys a time "window" ({{time-window}}).
 
 The "pk" parameter value conveys the partition key associated to the request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
+## RateLimit Policy Field Examples
 
 This field MAY convey the time window associated with the expiring-limit, as shown in this example:
 
@@ -225,13 +223,13 @@ These examples show multiple policies being returned:
 This field cannot appear in a trailer section.
 
 
-## RateLimit Field {#ratelimit-field}
+# RateLimit Field {#ratelimit-field}
 
-A server uses the "RateLimit" response header field to communicate the remaining allocation of quota for a quota partition.
+A server uses the "RateLimit" response header field to communicate the service limit for a quota policy for a particular partition key.
 
-The field is expressed as a Structured Fields {{STRUCTURED-FIELDS}} sf-Item that identifies the policy and its associated consumption state as parameters.
+The field is expressed as List of {{servicelimit-item}} that identifies the policy and the associated service limit.
 
-An origin server MAY return one or more rate limit fields. It MUST not return a response that contains multiple rate limit fields with the same policy value. Rate limit fields SHOULD use policy identifiers that correspond to policy identifiers declared in RateLimit-Policy fields.
+## Service Limit Item {#servicelimit-item}
 
 The allowed parameters are defined in the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", as described in {{iana-ratelimit-parameters}}.
 
@@ -242,6 +240,9 @@ The following parameters are defined in this specification:
 
   t:
   : This OPTIONAL parameter value conveys the time window reset time for the identified policy ({{ratelimit-reset-parameter}}).
+
+  pk:
+  : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request. 
 
 This field cannot appear in a trailer section.
 
@@ -271,6 +272,11 @@ It is a non-negative Integer compatible with the delay-seconds rule, because:
 
 The client MUST NOT assume that all its service limit will be reset at the moment indicated by the reset keyword. The server MAY arbitrarily alter the reset paramter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
 
+### Partition Key Parameter {#ratelimit-partitionkey}
+
+The "pk" parameter value conveys the partition key associated to the request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
+
+## RateLimit Field Examples
 
 
 # Server Behavior {#providing-ratelimit-fields}
