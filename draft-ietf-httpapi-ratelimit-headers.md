@@ -80,7 +80,7 @@ The behavior of the RateLimit header field is compatible with the delay-seconds 
 The goals of this document are:
 
   Interoperability:
-  : Standardization of the names and semantics of rate-limit headers
+  : Standardize the names and semantics of rate-limit headers
     to ease their enforcement and adoption;
 
   Resiliency:
@@ -121,19 +121,19 @@ The following features are out of the scope of this document:
 
 {::boilerplate bcp14}
 
-This document uses the Augmented BNF defined in {{!RFC5234}} and updated by {{!RFC7405}} along with the "#rule" extension defined in {{Section 5.6.1 of HTTP}}.
-
 The term Origin is to be interpreted as described in Section 7 of {{!WEB-ORIGIN=RFC6454}}.
 
 This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing, along with the concept of "bare item".
-
-The header fields defined in this document are collectively referred to as "RateLimit header fields".
 
 # Terminology
 
 ## Quota {#quota}
 
-A quota is an allocation of capacity that a server tracks to enable it to limit client requests. That capacity is counted in quota units and may be reallocated at the end of a time window {#time-window}.
+A quota is an allocation of capacity to enable a server to limit client requests. That capacity is counted in quota units and may be reallocated at the end of a time window {{time-window}}.
+
+## Quota Unit {#quota-unit}
+
+A quota unit is the unit of measure used to count the activity of a client.
 
 ## Quota Partition {#quota-partition}
 
@@ -143,26 +143,28 @@ A quota partition is a division of a server's capacity across different clients,
 
 A time window indicates a period of time associated to the allocated quota.
 
-The time window is a non-negative Integer value expressing that interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Subsecond precision is not supported.
+The time window is a non-negative Integer value expressing an interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Sub-second precision is not supported.
 
 ## Quota Policy {#quota-policy}
 
-A quota policy is maintained by a server to limit the activity (counted in quota units) of a given [quota partition](#quota-partition) over a period of time (known as the [time window](#time-window)) to a specified amount known as the [quota](#quota).
+A quota policy is maintained by a server to limit the activity (counted in [quota units](#quota-units)) of a given [quota partition](#quota-partition) over a period of time (known as the [time window](#time-window)) to a specified amount known as the [quota](#quota).
 
 Quota policies can be advertised by servers (see {{ratelimit-policy-field}}), but they are not required to be, and more than one quota policy can affect a given request from a client to a server.
 
 ## Service Limit {#service-limit}
 
-A service limit is the current limit on the amount of activity that a server will allow based on the remaining quota for a particular quota partition.
+A service limit is the current limit of the amount of activity that a server will allow based on the remaining quota for a particular quota partition within the time-window, if defined.
 
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field contains information about a server's policy for the quota partition associated with the request. Its value is informative. The values of the policy are expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates itself from the [RateLimit](#ratelimit-field) that contains values that may change on every request.
+The "RateLimit-Policy" response header field is a non-empty List of {{quotapolicy-item}}. Its value is informative. The values are expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) that contains values that may change on every request.
 
-The field is a non-empty List of Items. Each item is a [quota policy](#quota-policy).
+~~~
+   RateLimit-Policy: burst;q=100;w=60,daily;q=1000;w=86400
+~~~
 
 ## Quota Policy Item {#quotapolicy-item}
-A quota policy is expressed in Structured Fields {{STRUCTURED-FIELDS}} syntax as a sf-Item that identifies the policy and its associated parameters.
+A quota policy Item contains information about a server's capacity allocation for a quota partition associated with the request.
 
 The following parameters are defined in this specification:
 
@@ -176,21 +178,15 @@ The following parameters are defined in this specification:
   :  The OPTIONAL "w" parameter value conveys a time "window" ({{time-window}}). ({{ratelimitpolicy-window}})
 
   pk:
-  :  The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
+  :  The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request. {{ratelimitpolicy-partitionkey}}
 
-For example, a quota policy named "default" of 100 quota units per minute is expressed as:
-
-~~~
-   default;q=100;w=60
-~~~
-
-Other parameters are allowed and can be regarded as comments. Parameters for use by more than one implementation or service ought to be registered within the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", as described in {{iana-ratelimit-parameters}}.
+Other parameters are allowed and can be regarded as comments.
 
 Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 
 ### Quota Parameter {#ratelimitpolicy-quota}
 
- The "q" parameter uses a non-negative integer value to indicate the quota allocated for client activity (counted in quota units) of a given client ({{service-limit}}).
+ The "q" parameter uses a non-negative integer value to indicate the quota allocated for client activity (counted in quota units) for a given quota partition ({{service-limit}}).
 
 ### Quota Unit Parameter {#ratelimitpolicy-quotaunit}
 
@@ -198,7 +194,7 @@ The "qu" parameter value conveys the quota units associated to the "q" parameter
 
 ### Window Parameter {#ratelimitpolicy-window}
 
-The "w" parameter value conveys a time "window" ({{time-window}}).
+The "w" parameter value conveys a time "window" in seconds. ({{time-window}}).
 
 ### Partition Key Parameter {#ratelimitpolicy-partitionkey}
 
@@ -210,28 +206,41 @@ This field MAY convey the time window associated with the expiring-limit, as sho
 
 ~~~
    RateLimit-Policy: default;l=100;w=10
-   RateLimit: default;r=50;t=5
 ~~~
 
 These examples show multiple policies being returned:
 
 ~~~
    RateLimit-Policy: permin;l=50;w=60, perhr;l=1000;w=3600, perday;l=5000;w=86400
-   RateLimit: permin;r=20;w=23, perhr;r=399;w=2402
+~~~
+
+The following example shows a policy with a partition key:
+
+~~~
+   RateLimit-Policy: peruser;l=100;w=60;pk=user123
+~~~
+
+The following example shows a policy with a partition key and a quota unit:
+
+~~~
+   RateLimit-Policy: peruser;l=65535;w=10;pk=user123;qu=bytes
 ~~~
 
 This field cannot appear in a trailer section.
-
 
 # RateLimit Field {#ratelimit-field}
 
 A server uses the "RateLimit" response header field to communicate the service limit for a quota policy for a particular partition key.
 
-The field is expressed as List of {{servicelimit-item}} that identifies the policy and the associated service limit.
+The field is expressed as List of {{servicelimit-item}}.
+
+~~~
+   RateLimit: default;r=50;t=30
+~~~
 
 ## Service Limit Item {#servicelimit-item}
 
-The allowed parameters are defined in the "Hypertext Transfer Protocol (HTTP) RateLimit Parameters Registry", as described in {{iana-ratelimit-parameters}}.
+Each service limit item in identifies the quota policy associated with the request and 
 
 The following parameters are defined in this specification:
 
@@ -244,25 +253,22 @@ The following parameters are defined in this specification:
   pk:
   : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request. 
 
-This field cannot appear in a trailer section.
+This field cannot appear in a trailer section. Other parameters are allowed and can be regarded as comments.
 
-~~~
-   RateLimit: protection;r=50;t=30
-~~~
+Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 
 
 ### Remaining Parameter {#ratelimit-remaining-parameter}
 
 The "r" parameter indicates the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
 
-It is a non-negative Integer expressed in [quota units](#service-limit).
+It is a non-negative Integer expressed in [quota units](#quota-units).
 Clients MUST NOT assume that a positive remaining value is a guarantee that further requests will be served.
-When the value of the remaining keyword is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
-
+When remaining parameter value is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
 
 ### Reset Parameter {#ratelimit-reset-parameter}
 
-The "t" parameter indicates the number of seconds until the quota associated with the expiring-limit resets.
+The "t" parameter indicates the number of seconds until the quota associated with the quota policy resets.
 
 It is a non-negative Integer compatible with the delay-seconds rule, because:
 
@@ -270,13 +276,32 @@ It is a non-negative Integer compatible with the delay-seconds rule, because:
   and clock skew between client and server (see {{Section 5.6.7 of HTTP}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
-The client MUST NOT assume that all its service limit will be reset at the moment indicated by the reset keyword. The server MAY arbitrarily alter the reset paramter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
+The client MUST NOT assume that all its service limit will be reset at the moment indicated by the reset keyword. The server MAY arbitrarily alter the reset parameter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
 
 ### Partition Key Parameter {#ratelimit-partitionkey}
 
 The "pk" parameter value conveys the partition key associated to the request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
+
 ## RateLimit Field Examples
+
+This example shows a RateLimit field with a remaining quota of 50 units and a time window reset in 30 seconds:
+
+~~~
+   RateLimit: default;r=50;t=30
+~~~
+
+This example shows a remaining quota of 999 requests for a partition key that has no time window reset:
+
+~~~
+   RateLimit: default;r=999;pk=trial-121323
+~~~
+
+This example shows a 300MB remaining quota for an application in the next 60 seconds:
+
+~~~
+   RateLimit: default;r=300000000;pk=App-999;t=60;qu=bytes
+~~~
 
 
 # Server Behavior {#providing-ratelimit-fields}
@@ -294,22 +319,20 @@ RateLimit: problemPolicy;r=0, t=10
 
 If a response contains both the Retry-After and the RateLimit header fields, the reset keyword value SHOULD reference the same point in time as the Retry-After field value.
 
-When using a policy involving more than one time window, the server MUST reply with the RateLimit header field related to the time window with the lower remaining keyword values.
-
 A service using RateLimit header fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between the remaining and the reset keyword values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window.
 
 Under certain conditions, a server MAY artificially lower RateLimit header field values between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
 
 ## Performance Considerations
 
-Servers are not required to return RateLimit header fields in every response, and clients need to take this into account. For example, an implementer concerned with performance might provide RateLimit header fields only when a given quota is going to expire.
+Servers are not required to return RateLimit header fields in every response, and clients need to take this into account. For example, an implementer concerned with performance might provide RateLimit header fields only when a given quota is close to exhaustion.
 
 Implementers concerned with response fields' size, might take into account their ratio with respect to the content length, or use header-compression HTTP features such as {{?HPACK=RFC7541}}.
 
 
 # Client Behavior {#receiving-fields}
 
-The RateLimit header fields can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether they will succeed.
+The RateLimit header fields can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether requests will succeed.
 
 For example, a successful response with the following fields:
 
@@ -317,7 +340,7 @@ For example, a successful response with the following fields:
    RateLimit: default;r=1;t=7
 ~~~
 
-does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions like the one shown in the example from {{service-limit}}.
+does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions.
 
 A client is responsible for ensuring that RateLimit header field values returned
 cause reasonable client behavior with respect to throughput and latency
@@ -329,14 +352,10 @@ Malformed RateLimit header fields MUST be ignored.
 
 A client SHOULD NOT exceed the quota units conveyed by the remaining keyword before the time window expressed in the reset keyword.
 
-A client MAY still probe the server if the reset keyword is considered too high.
-
-The value of the reset keyword is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to better estimate the reset keyword moment intended by the server.
 The value of the reset keyword is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to better estimate the reset keyword moment intended by the server.
 
 The details provided in the RateLimit-Policy header field are informative and MAY be ignored.
 
-If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the reset keyword MAY be ignored.
 If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the reset keyword MAY be ignored.
 
 This specification does not mandate a specific throttling behavior and implementers can adopt their preferred policies, including:
@@ -391,6 +410,8 @@ quota units without prior knowledge of the user agent,
 RateLimit header fields might reveal the existence of an intermediary
 to the user agent.
 
+Where partition keys contain identifying information, either of the client application or the user, servers should be aware of the potential for impersonation and apply the appropriate security mechanisms.
+
 ## Remaining quota units are not granted requests {#sec-remaining-not-granted}
 
 RateLimit header fields convey hints from the server
@@ -403,15 +424,15 @@ or not serve the request regardless of the advertised quotas.
 
 ## Reliability of the reset keyword {#sec-reset-reliability}
 
-Consider that service limit might not be restored after the moment referenced by the [reset keyword](#ratelimit-reset-parameter),
-and the reset keyword value may not be fixed nor constant.
+Consider that quota might not be restored after the moment referenced by the [reset keyword](#ratelimit-reset-parameter),
+and the reset parameter value may not be constant.
 
-Subsequent requests might return a higher reset keyword value
+Subsequent requests might return a higher reset parameter value
 to limit concurrency or implement dynamic or adaptive throttling policies.
 
 ## Resource exhaustion {#sec-resource-exhaustion}
 
-When returning reset keyword you must be aware that
+When returning reset values, servers must be aware that
 many throttled clients may come back at the very moment specified.
 
 This is true for Retry-After too.
@@ -420,13 +441,13 @@ For example, if the quota resets every day at `18:00:00`
 and your server returns the reset parameter accordingly
 
 ~~~
-   Date: Tue, 15 Nov 1994 08:00:00 GMT
-   RateLimit: daily;r=1;t=36000
+   Date: Tue, 15 Nov 1994 18:00:00 GMT
+   RateLimit: daily;r=1;t=36400
 ~~~
 
 there's a high probability that all clients will show up at `18:00:00`.
 
-This could be mitigated by adding some jitter to the field-value.
+This could be mitigated by adding some jitter to the reset value.
 
 Resource exhaustion issues can be associated with quota policies using a
 large time window, because a user agent by chance or on purpose
@@ -492,55 +513,6 @@ Please add the following entries to the
 | RateLimit-Policy    | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
 |---------------------|-----------|---------------|
 
-
-## RateLimit Keywords and Parameters Registration {#iana-ratelimit-parameters}
-
-IANA is requested to create a new registry to be called
-"Hypertext Transfer Protocol (HTTP) RateLimit Keywords and Parameters Registry",
-to be located at
-<https://www.iana.org/assignments/http-ratelimit-parameters>.
-Registration is done on the advice of a Designated Expert,
-appointed by the IESG or their delegate.
-All entries are Specification Required ({{IANA, Section 4.6}}).
-
-Registration requests consist of the following information:
-
-- Token name:
-  The keyword or parameter name, conforming to {{STRUCTURED-FIELDS}}.
-
-- Token type:
-  Whether the token is a Dictionary Keyword or a Parameter Name.
-- Token name:
-  The keyword or parameter name, conforming to {{STRUCTURED-FIELDS}}.
-
-- Token type:
-  Whether the token is a Dictionary Keyword or a Parameter Name.
-
-- Field name:
-  The RateLimit header field for which the parameter is registered. If a parameter is intended to be used
-  with multiple fields, it has to be registered
-  for each one.
-
-- Description:
-  A brief description of the parameter.
-
-- Specification document:
-  A reference to the document that specifies the parameter, preferably
-  including a URI that can be used to retrieve a copy of the document.
-
-- Comments (optional):
-  Any additional information that can be useful.
-
-The initial contents of this registry should be:
-
-|---|---|---|---|---|---|
-| Field Name       | Token name     | Token type | Description | Specification | Comments (optional) |
-|---|---|---|---|---|---|
-| RateLimit | r                   | Dictionary Key |Remaining quota units | {{ratelimit-remaining-parameter}} of {{&SELF}} |       |
-| RateLimit | t                   | Dictionary Key |Quota reset interval | {{ratelimit-reset-parameter}} of {{&SELF}} |       |
-| RateLimit-Policy | l            | Dictionary Key |Expiring limit | {{quota-policy}} of {{&SELF}} |       |
-| RateLimit-Policy | w            | Dictionary Key |Time window | {{quota-policy}} of {{&SELF}} |       |
-|---|---|---|---|---|---|
 
 --- back
 
