@@ -360,7 +360,7 @@ If a response contains both the RateLimit and Retry-After fields, the Retry-Afte
 
 This specification does not mandate a specific throttling behavior and implementers can adopt their preferred policies, including:
 
-- slowing down or preemptively back-off their request rate when
+- slowing down or pre-emptively back-off their request rate when
   approaching quota limits;
 - consuming all the quota according to the exposed limits and then wait.
 
@@ -562,11 +562,13 @@ may reply with different throttling headers.
 
 # Examples
 
-## Unparameterized responses
+## Responses without defining policies
+
+Some servers may not expose the policy limits in the RateLimit-Policy header field. Clients can still use the RateLimit header field to throttle their requests.
 
 ### Throttling information in responses
 
-The client exhausted its service-limit for the next 50 seconds.
+The client exhausted its quota for the next 50 seconds.
 The limit and time-window is communicated out-of-band.
 
 Request:
@@ -592,7 +594,6 @@ the response status code,
 a subsequent request is not required to fail.
 The example below shows that the server decided to serve the request
 even if remaining keyword value is 0.
-even if remaining keyword value is 0.
 Another server, or the same server under other load conditions, could have decided to throttle the request instead.
 
 Request:
@@ -613,11 +614,9 @@ RateLimit: default;r=0;t=48
 {"still": "successful"}
 ~~~
 
-### Use in conjunction with custom fields {#use-with-custom-fields}
+### Multiple policies in response 
 
-The server uses two custom fields,
-namely `acme-RateLimit-DayLimit` and `acme-RateLimit-HourLimit`
-to expose the following policy:
+The server uses two different policies to limit the client's requests:
 
 - 5000 daily quota units;
 - 1000 hourly quota units.
@@ -630,8 +629,9 @@ the closest limit to reach is the daily one.
 The server then exposes the RateLimit header fields to
 inform the client that:
 
-- it has only 100 quota units left;
-- the window will reset in 10 hours.
+- it has only 100 quota units left in the daily quota and the window will reset in 10 hours;
+
+The server MAY choose to omit returning the hourly policy as it uses the same quota units as the daily policy and the daily policy is the one that is closest to being exhausted.
 
 Request:
 
@@ -646,10 +646,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-acme-RateLimit-DayLimit: 5000
-acme-RateLimit-HourLimit: 1000
 RateLimit: dayLimit;r=100;t=36000
-RateLimit: hourLimit;r=25;t=700
 
 {"hello": "world"}
 ~~~
@@ -662,7 +659,6 @@ in case of saturation, thus increasing availability.
 
 The server adopted a basic policy of 100 quota units per minute,
 and in case of resource exhaustion adapts the returned values
-reducing both limit and remaining keyword values.
 reducing both limit and remaining keyword values.
 
 After 2 seconds the client consumed 40 quota units
@@ -687,8 +683,7 @@ RateLimit: basic;r=60;t=58
 ~~~
 
 At the subsequent request - due to resource exhaustion -
-the server advertises only `remaining=20`.
-the server advertises only `remaining=20`.
+the server advertises only `r=20`.
 
 Request:
 
@@ -743,7 +738,7 @@ RateLimit: default;r=0;t=5
 }
 ~~~
 
-## Parameterized responses
+## Responses with defined policies
 
 ### Throttling window specified via parameter
 
@@ -812,8 +807,7 @@ RateLimit: dynamic;r=9;t=50
 
 Continuing the previous example, let's say the client waits 10 seconds and
 performs a new request which, due to resource exhaustion, the server rejects
-and pushes back, advertising `remaining=0` for the next 20 seconds.
-and pushes back, advertising `remaining=0` for the next 20 seconds.
+and pushes back, advertising `r=0` for the next 20 seconds.
 
 The server advertises a smaller window with a lower limit to slow
 down the client for the rest of its original window after the 20 seconds elapse.
@@ -881,7 +875,7 @@ query again the server even if it is likely to have the request rejected.
 
 ### Missing Remaining information
 
-The server does not expose remaining keyword values
+The server does not expose remaining values
 (for example, because the underlying counters are not available).
 Instead, it resets the limit counter every second.
 
@@ -901,7 +895,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: quota;l=100
+RateLimit-Policy: quota;l=100;w=1
 RateLimit: quota;t=1
 
 {"first": "request"}
@@ -969,7 +963,7 @@ RateLimit: day;r=100;t=36000
 
 1. Why defining standard fields for throttling?
 
-   To simplify enforcement of throttling policies.
+   To simplify enforcement of throttling policies and enable clients to constraint their requests to avoid being throttled.
 
 2. Can I use RateLimit header fields in throttled responses (eg with status code 429)?
 
@@ -979,27 +973,13 @@ RateLimit: day;r=100;t=36000
 
    No. {{?RFC6585}} defines the `429` status code and we use it just as an example of a throttled request,
    that could instead use even `403` or whatever status code.
-   The goal of this specification is to standardize the name and semantic of three RateLimit header fields
-   widely used on the internet. Stricter relations with status codes or error response payloads
-   would impose behaviors to all the existing implementations making the adoption more complex.
+   
+4. Why is the partition key necessary?
 
-4. Why don't pass the throttling scope as a parameter?
-
-   The word "scope" can have different meanings:
-   for example it can be an URL, or an authorization scope.
-   Since authorization is out of the scope of this document (see {{goals}}),
-   and that we rely only on {{HTTP}}, in {{goals}} we defined "scope" in terms of
-   URL.
-
-   Since clients are not required to process quota policies (see {{receiving-fields}}),
-   we could add a new "RateLimit-Scope" field to this spec.
-   See this discussion on a [similar thread](https://github.com/httpwg/http-core/pull/317#issuecomment-585868767)
-
-   Specific ecosystems can still bake their own prefixed parameters,
-   such as `acme-auth-scope` or `acme-url-scope` and ensure that clients process them.
-   This behavior cannot be relied upon when communicating between different ecosystems.
-
-   We are open to suggestions: comment on [this issue](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/70)
+   Without a partition key, a server can only effectively only have one scope (aka partition), which is impractical for most services, or it needs to communicate the scopes out-of-band.
+   This prevents the development of generic connector code that can be used to prevent requests from being throttled.
+   Many APIs rely on API keys, user identity or client identity to allocate quota.
+   As soon as a single client processes requests for more than one partition, the client needs to know the corresponding partition key to properly track requests against allocated quota.
 
 5. Why using delay-seconds instead of a UNIX Timestamp?
    Why not using subsecond precision?
@@ -1022,14 +1002,11 @@ RateLimit: day;r=100;t=36000
      on the [httpwg ml](https://lists.w3.org/Archives/Public/ietf-http-wg/2019JulSep/0202.html)
    - almost all rate-limit headers implementations do not use it.
 
-6.
-
-7. Shouldn't I limit concurrency instead of request rate?
+6. Shouldn't I limit concurrency instead of request rate?
 
    You can use this specification to limit concurrency
    at the HTTP level (see {#use-for-limiting-concurrency})
-   and help clients to
-   shape their requests avoiding being throttled out.
+   and help clients to shape their requests avoiding being throttled out.
 
    A problematic way to limit concurrency is connection dropping,
    especially when connections are multiplexed (e.g. HTTP/2)
@@ -1042,12 +1019,12 @@ RateLimit: day;r=100;t=36000
    Saturation conditions can be either dynamic or static: all this is out of
    the scope for the current document.
 
-8. Do a positive value of remaining keyword imply any service guarantee for my
+7. Do a positive value of remaining paramter imply any service guarantee for my
    future requests to be served?
 
    No. FAQ integrated in {{ratelimit-remaining-parameter}}.
 
-9. Is the quota-policy definition {{quota-policy}} too complex?
+8. Is the quota-policy definition {{quota-policy}} too complex?
 
    You can always return the simplest form
 
@@ -1065,35 +1042,7 @@ RateLimit: sliding;r=50;t=44
 
    the value "sliding" identifies the policy being reported.
 
-11. Can we use shorter names? Why don't put everything in one field?
-
-   The most common syntax we found on the web is `X-RateLimit-*` and
-   when starting this I-D [we opted for it](https://github.com/ioggstream/draft-polli-ratelimit-headers/issues/34#issuecomment-519366481)
-
-   The basic form of those fields is easily parseable, even by
-   implementers processing responses using technologies like
-   dynamic interpreter with limited syntax.
-
-   Using a single field complicates parsing and takes
-   a significantly different approach from the existing
-   ones: this can limit adoption.
-
-12. Why don't mention connections?
-
-    Beware of the term "connection":
-￼
-￼   - it is just *one* possible saturation cause. Once you go that path
-￼     you will expose other infrastructural details (bandwidth, CPU, .. see {{sec-information-disclosure}})
-￼     and complicate client compliance;
-￼   - it is an infrastructural detail defined in terms of server and network
-￼     rather than the consumed service.
-      This specification protects the services first,
-      and then the infrastructures through client cooperation (see {{sec-throttling-does-not-prevent}}).
-￼
-￼   RateLimit header fields enable sending *on the same connection* different limit values
-￼   on each response, depending on the policy scope (e.g. per-user, per-custom-key, ..)
-￼
-13. Can intermediaries alter RateLimit header fields?
+9. Can intermediaries alter RateLimit header fields?
 
     Generally, they should not because it might result in unserviced requests.
     There are reasonable use cases for intermediaries mangling RateLimit header fields though,
@@ -1101,7 +1050,7 @@ RateLimit: sliding;r=50;t=44
     or when they are an active component of the service.
     In those case we will consider them as part of the originating infrastructure.
 
-14. Why the `w` parameter is just informative?
+10. Why the `w` parameter is just informative?
     Could it be used by a client to determine the request rate?
 
     A non-informative `w` parameter might be fine in an environment
@@ -1112,7 +1061,7 @@ RateLimit: sliding;r=50;t=44
     for defining the throttling
     behavior.
 
-15. Can I use RateLimit fields in trailers?
+11. Can I use RateLimit fields in trailers?
     Servers usually establish whether the request is in-quota before creating a response, so the RateLimit field values should be already available in that moment.
     Supporting trailers has the only advantage that allows to provide more up-to-date information to the client in case of slow responses.
     However, this complicates client implementations with respect to combining fields from headers and accounting for intermediaries that drop trailers.
@@ -1153,19 +1102,16 @@ A sliding window policy for example, may result in having a remaining keyword va
 e.g.
 
 ~~~
-RateLimit-Limit: 12
-RateLimit-Policy: 12;w=1
-RateLimit-Remaining: 6          ; using 50% of throughput, that is 6 units/s
-RateLimit-Reset: 1
+RateLimit-Policy: sliding;l=12;w=1
+RateLimit: sliding;l=12;r=6;t=1          ; using 50% of throughput, that is 6 units/s
+
 ~~~
 
 If this is the case, the optimal solution is to achieve
 
 ~~~
-RateLimit-Limit: 12
-RateLimit-Policy: 12;w=1
-RateLimit-Remaining: 1          ; using 100% of throughput, that is 12 units/s
-RateLimit-Reset: 1
+RateLimit-Policy: sliding;l=12;w=1
+RateLimit: sliding;l=12;r=1;t=1          ; using 100% of throughput, that is 12 units/s
 ~~~
 
 At this point you should stop increasing your request rate.
@@ -1191,10 +1137,18 @@ and Julian Reschke.
 # Changes
 {:numbered="false" removeinrfc="true"}
 
+## Since draft-ietf-httpapi-ratelimit-headers-07
+{:numbered="false" removeinrfc="true"}
+
+* Refactored both fields to lists of Items that identify policy and use parameters
+* Added quota unit parameter
+* Added partition key parameter
+
+
 ## Since draft-ietf-httpapi-ratelimit-headers-03
 {:numbered="false" removeinrfc="true"}
 
-* Split policy informatio in RateLimit-Policy #81
+* Split policy informatiom in RateLimit-Policy #81
 
 
 ## Since draft-ietf-httpapi-ratelimit-headers-02
