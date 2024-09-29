@@ -147,7 +147,7 @@ The time window is a non-negative Integer value expressing an interval in second
 
 ## Quota Policy {#quota-policy}
 
-A quota policy is maintained by a server to limit the activity (counted in [quota units](#quota-unit)) of a given [quota partition](#quota-partition) over a period of time (known as the [time window](#time-window)) to a specified amount known as the [quota](#quota).
+A quota policy is maintained by a server to limit the activity (counted in [quota units](#quota-units)) of a given [quota partition](#quota-partition) over a period of time (known as the [time window](#time-window)) to a specified amount known as the [quota](#quota).
 
 Quota policies can be advertised by servers (see {{ratelimit-policy-field}}), but they are not required to be, and more than one quota policy can affect a given request from a client to a server.
 
@@ -211,7 +211,7 @@ This field MAY convey the time window associated with the expiring-limit, as sho
 These examples show multiple policies being returned:
 
 ~~~
-   RateLimit-Policy: permin;l=50;w=60,perhr;l=1000;w=3600,perday;l=5000;w=86400
+   RateLimit-Policy: permin;l=50;w=60, perhr;l=1000;w=3600, perday;l=5000;w=86400
 ~~~
 
 The following example shows a policy with a partition key:
@@ -240,7 +240,7 @@ The field is expressed as List of {{servicelimit-item}}.
 
 ## Service Limit Item {#servicelimit-item}
 
-Each service limit item in identifies the quota policy associated with the request and
+Each service limit item in identifies the quota policy associated with the request and 
 
 The following parameters are defined in this specification:
 
@@ -251,7 +251,7 @@ The following parameters are defined in this specification:
   : This OPTIONAL parameter value conveys the time window reset time for the identified policy ({{ratelimit-reset-parameter}}).
 
   pk:
-  : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request.
+  : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request. 
 
 This field cannot appear in a trailer section. Other parameters are allowed and can be regarded as comments.
 
@@ -262,7 +262,7 @@ Implementation- or service-specific parameters SHOULD be prefixed parameters wit
 
 The "r" parameter indicates the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
 
-It is a non-negative Integer expressed in [quota units](#quota-unit).
+It is a non-negative Integer expressed in [quota units](#quota-units).
 Clients MUST NOT assume that a positive remaining value is a guarantee that further requests will be served.
 When remaining parameter value is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
 
@@ -328,6 +328,7 @@ Under certain conditions, a server MAY artificially lower RateLimit header field
 Servers are not required to return RateLimit header fields in every response, and clients need to take this into account. For example, an implementer concerned with performance might provide RateLimit header fields only when a given quota is close to exhaustion.
 
 Implementers concerned with response fields' size, might take into account their ratio with respect to the content length, or use header-compression HTTP features such as {{?HPACK=RFC7541}}.
+
 
 # Client Behavior {#receiving-fields}
 
@@ -613,7 +614,7 @@ RateLimit: default;r=0;t=48
 {"still": "successful"}
 ~~~
 
-### Multiple policies in response {#use-with-multiple-policies}
+### Multiple policies in response 
 
 The server uses two different policies to limit the client's requests:
 
@@ -922,7 +923,7 @@ RateLimit: quota;t=1
 ### Use with multiple windows
 
 This is a standardized way of describing the policy
-detailed in {{use-with-multiple-policies}}:
+detailed in {{use-with-custom-fields}}:
 
 - 5000 daily quota units;
 - 1000 hourly quota units.
@@ -972,7 +973,7 @@ RateLimit: day;r=100;t=36000
 
    No. {{?RFC6585}} defines the `429` status code and we use it just as an example of a throttled request,
    that could instead use even `403` or whatever status code.
-
+   
 4. Why is the partition key necessary?
 
    Without a partition key, a server can only effectively only have one scope (aka partition), which is impractical for most services, or it needs to communicate the scopes out-of-band.
