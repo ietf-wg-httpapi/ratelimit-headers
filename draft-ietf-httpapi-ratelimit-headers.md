@@ -190,11 +190,20 @@ Implementation- or service-specific parameters SHOULD be prefixed parameters wit
 
 ### Quota Unit Parameter {#ratelimitpolicy-quotaunit}
 
-The "qu" parameter value conveys the quota units associated to the "q" parameter.
+The "qu" parameter value conveys the quota units applicable to the {{ratelimitpolicy-quota}}. Allowed values are defined in the [RateLimit Quota Units registry](#ratelimit-quota-unit-registry). This specification defines two quota units: 
+
+  request:
+  : This value indicates the quota is based on the number of requests processed by the resource server. Whether a specific request actually consumes a quota unit is implementation-specific.
+
+  content-bytes:
+  : This value indicates the quota is based on the number of content bytes processed by the resource server. 
+
+  concurrency:
+  : This value indicates the quota is based on the number of concurrent requests processed by the resource server.
 
 ### Window Parameter {#ratelimitpolicy-window}
 
-The "w" parameter value conveys a time "window" in seconds. ({{time-window}}).
+The "w" parameter value conveys a time window in seconds. ({{time-window}}).
 
 ### Partition Key Parameter {#ratelimitpolicy-partitionkey}
 
@@ -205,25 +214,25 @@ The "pk" parameter value conveys the partition key associated to the request. Se
 This field MAY convey the time window associated with the expiring-limit, as shown in this example:
 
 ~~~
-   RateLimit-Policy: default;l=100;w=10
+   RateLimit-Policy: default;q=100;w=10
 ~~~
 
 These examples show multiple policies being returned:
 
 ~~~
-   RateLimit-Policy: permin;l=50;w=60,perhr;l=1000;w=3600,perday;l=5000;w=86400
+   RateLimit-Policy: permin;q=50;w=60,perhr;q=1000;w=3600,perday;q=5000;w=86400
 ~~~
 
 The following example shows a policy with a partition key:
 
 ~~~
-   RateLimit-Policy: peruser;l=100;w=60;pk=user123
+   RateLimit-Policy: peruser;q=100;w=60;pk=user123
 ~~~
 
 The following example shows a policy with a partition key and a quota unit:
 
 ~~~
-   RateLimit-Policy: peruser;l=65535;w=10;pk=user123;qu=bytes
+   RateLimit-Policy: peruser;q=65535;w=10;pk=user123;qu=bytes
 ~~~
 
 This field cannot appear in a trailer section.
@@ -457,7 +466,7 @@ The following example describes a service
 with an unconsumed quota policy of 10000 quota units per 1000 seconds.
 
 ~~~
-RateLimit-Policy: somepolicy;l=10000;w=1000
+RateLimit-Policy: somepolicy;q=10000;w=1000
 RateLimit: somepolicy;r=10000;t=10
 ~~~
 
@@ -511,6 +520,27 @@ Please add the following entries to the
 | RateLimit           | permanent | {{ratelimit-field}} of {{&SELF}}       |
 | RateLimit-Policy    | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
 |---------------------|-----------|---------------|
+
+## RateLimit quota unit registry {#ratelimit-quota-unit-registry}
+
+This specification establishes the registry "Hypertext Transfer Protocol (HTTP) RateLimit Quota Units" registry to be located at https://www.iana.org/assignments/http-ratelimit-quota-units. Registration is done on the advice of a Designated Expert, appointed by the IESG or their delegate. All entries are Specification Required ([IANA], Section 4.6).
+
+The registry has the following initial content:
+
+|---------------------|-----------|---------------|
+| Quota Unit          | Reference | Notes         |
+|---------------------|-----------|---------------|
+| request             | {{&SELF}} |               |
+| content-bytes       | {{&SELF}} |               |
+|---------------------|-----------|---------------|
+
+### Registration Template
+
+The registration template for the RateLimit Quota Units registry is as follows:
+
+- Quota Unit: The name of the quota unit.
+- Reference: A reference to the document that specifies the quota unit.
+- Notes: Any additional notes about the quota unit.
 
 
 --- back
@@ -675,7 +705,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: basic;l=100;w=60
+RateLimit-Policy: basic;q=100;w=60
 RateLimit: basic;r=60;t=58
 
 {"elapsed": 2, "issued": 40}
@@ -697,7 +727,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: basic;l=100;w=60
+RateLimit-Policy: basic;q=100;w=60
 RateLimit: basic;r=20;t=56
 
 {"elapsed": 4, "issued": 41}
@@ -758,7 +788,7 @@ Response:
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit: fixedwindow;r=99;t=50
-RateLimit-Policy: fixedwindow;l=100;w=60
+RateLimit-Policy: fixedwindow;q=100;w=60
 {"hello": "world"}
 ~~~
 
@@ -792,7 +822,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: dynamic;l=100;w=60
+RateLimit-Policy: dynamic;q=100;w=60
 RateLimit: dynamic;r=9;t=50
 
 
@@ -824,7 +854,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
-RateLimit-Policy: dynamic;l=15;w=20
+RateLimit-Policy: dynamic;q=15;w=20
 RateLimit: dynamic;r=0;t=20
 
 {
@@ -857,7 +887,7 @@ Response:
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 Retry-After: 20
-RateLimit-Policy: dynamic;l=100;w=60
+RateLimit-Policy: dynamic;q=100;w=60
 RateLimit: dynamic;r=15;t=40
 
 {
@@ -894,7 +924,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: quota;l=100;w=1
+RateLimit-Policy: quota;q=100;w=1
 RateLimit: quota;t=1
 
 {"first": "request"}
@@ -913,7 +943,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: quota;l=10
+RateLimit-Policy: quota;q=10
 RateLimit: quota;t=1
 
 {"second": "request"}
@@ -951,7 +981,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
-RateLimit-Policy: hour;l=1000;w=3600, day;l=5000;w=86400
+RateLimit-Policy: hour;q=1000;w=3600, day;q=5000;w=86400
 RateLimit: day;r=100;t=36000
 
 {"hello": "world"}
@@ -1035,7 +1065,7 @@ RateLimit:default;r=50;t=60
    So for the following field:
 
 ~~~
-RateLimit-Policy: sliding;l=100;w=60;burst=1000;comment="sliding window", fixed;l=5000;w=3600;burst=0;comment="fixed window"
+RateLimit-Policy: sliding;q=100;w=60;burst=1000;comment="sliding window", fixed;q=5000;w=3600;burst=0;comment="fixed window"
 RateLimit: sliding;r=50;t=44
 ~~~
 
@@ -1101,16 +1131,16 @@ A sliding window policy for example, may result in having a remaining keyword va
 e.g.
 
 ~~~
-RateLimit-Policy: sliding;l=12;w=1
-RateLimit: sliding;l=12;r=6;t=1          ; using 50% of throughput, that is 6 units/s
+RateLimit-Policy: sliding;q=12;w=1
+RateLimit: sliding;q=12;r=6;t=1          ; using 50% of throughput, that is 6 units/s
 
 ~~~
 
 If this is the case, the optimal solution is to achieve
 
 ~~~
-RateLimit-Policy: sliding;l=12;w=1
-RateLimit: sliding;l=12;r=1;t=1          ; using 100% of throughput, that is 12 units/s
+RateLimit-Policy: sliding;q=12;w=1
+RateLimit: sliding;q=12;r=1;t=1          ; using 100% of throughput, that is 12 units/s
 ~~~
 
 At this point you should stop increasing your request rate.
