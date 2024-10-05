@@ -196,7 +196,7 @@ The "qu" parameter value conveys the quota units applicable to the {{ratelimitpo
   : This value indicates the quota is based on the number of requests processed by the resource server. Whether a specific request actually consumes a quota unit is implementation-specific.
 
   content-bytes:
-  : This value indicates the quota is based on the number of content bytes processed by the resource server. 
+  : This value indicates the quota is based on the number of content bytes processed by the resource server.
 
   concurrency:
   : This value indicates the quota is based on the number of concurrent requests processed by the resource server.
