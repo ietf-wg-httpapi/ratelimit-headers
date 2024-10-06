@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 2 April 2025                                            Red Hat
+Expires: 9 April 2025                                            Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                       29 September 2024
+                                                          6 October 2024
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 April 2025.
+   This Internet-Draft will expire on 9 April 2025.
 
 Copyright Notice
 
