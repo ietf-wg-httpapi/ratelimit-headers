@@ -190,7 +190,7 @@ Implementation- or service-specific parameters SHOULD be prefixed parameters wit
 
 ### Quota Unit Parameter {#ratelimitpolicy-quotaunit}
 
-The "qu" parameter value conveys the quota units applicable to the {{ratelimitpolicy-quota}}. The value MUST be a String. Allowed values are defined in the [RateLimit Quota Units registry](#ratelimit-quota-unit-registry). This specification defines two quota units: 
+The "qu" parameter value conveys the quota units applicable to the {{ratelimitpolicy-quota}}. The value MUST be a String. Allowed values are defined in the [RateLimit Quota Units registry](#ratelimit-quota-unit-registry). This specification defines two quota units:
 
   request:
   : This value indicates the quota is based on the number of requests processed by the resource server. Whether a specific request actually consumes a quota unit is implementation-specific.
@@ -277,7 +277,7 @@ When remaining parameter value is low, it indicates that the server may soon thr
 
 ### Reset Parameter {#ratelimit-reset-parameter}
 
-The "t" parameter indicates the number of seconds until the quota associated with the quota policy resets. 
+The "t" parameter indicates the number of seconds until the quota associated with the quota policy resets.
 
 It is a non-negative Integer compatible with the delay-seconds rule, because:
 
@@ -376,11 +376,11 @@ This specification does not mandate a specific throttling behavior and implement
   approaching quota limits;
 - consuming all the quota according to the exposed limits and then wait.
 
-## Consuming Partition Keys 
+## Consuming Partition Keys
 
 Partition keys are useful for a client if it is likely that single client will make requests that consume different quota allocations. E.g. a client making requests on behalf of different users or for different resources that have independent quota allocations.
 
-If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota remaining to execute the request. 
+If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota remaining to execute the request.
 
 For cases where the partition key generation algorithm of a server is unknown, clients MAY use heuristics to guess if a future request will be successful based on its similarity to previous requests.
 
