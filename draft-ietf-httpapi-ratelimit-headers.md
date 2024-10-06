@@ -127,27 +127,20 @@ This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTU
 
 # Terminology
 
-## Quota {#quota}
+  Quota:
+  : A quota is an allocation of capacity used by a resource server to limit client requests. That capacity is measured in quota units and may be reallocated at the end of a time window {{time-window}}.
 
-A quota is an allocation of capacity to enable a server to limit client requests. That capacity is counted in quota units and may be reallocated at the end of a time window {{time-window}}.
+  Quota Unit:
+  : A quota unit is the unit of measure used to measure the activity of a client.
 
-## Quota Unit {#quota-unit}
+  Quota Partition:
+  : A quota partition is a division of a server's capacity across different clients, users and owned resources.
 
-A quota unit is the unit of measure used to count the activity of a client.
+  Time Window:
+  : A time window indicates a period of time associated to the allocated quota.
 
-## Quota Partition {#quota-partition}
-
-A quota partition is a division of a server's capacity across different clients, users and owned resources.
-
-## Time Window {#time-window}
-
-A time window indicates a period of time associated to the allocated quota.
-
-The time window is a non-negative Integer value expressing an interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Sub-second precision is not supported.
-
-## Quota Policy {#quota-policy}
-
-A quota policy is maintained by a server to limit the activity (counted in [quota units](#quota-unit)) of a given [quota partition](#quota-partition) over a period of time (known as the [time window](#time-window)) to a specified amount known as the [quota](#quota).
+  Quota Policy:
+  : A quota policy is maintained by a server to limit the activity (counted in "quota units"of a given "quota partition" over a period of time (known as the "time window") to a specified amount known as the "quota".
 
 Quota policies can be advertised by servers (see {{ratelimit-policy-field}}), but they are not required to be, and more than one quota policy can affect a given request from a client to a server.
 
@@ -186,7 +179,7 @@ Implementation- or service-specific parameters SHOULD be prefixed parameters wit
 
 ### Quota Parameter {#ratelimitpolicy-quota}
 
- The "q" parameter value MUST be a non-negative Integer. The value indicates the quota allocated for client activity (counted in quota units) for a given quota partition ({{quota}}).
+ The "q" parameter value MUST be a non-negative Integer. The value indicates the quota allocated for client activity (counted in quota units) for a given quota partition.
 
 ### Quota Unit Parameter {#ratelimitpolicy-quotaunit}
 
@@ -203,7 +196,7 @@ The "qu" parameter value conveys the quota units applicable to the {{ratelimitpo
 
 ### Window Parameter {#ratelimitpolicy-window}
 
-The "w" parameter value conveys a time window in seconds. The value MUST be a non-negative Integer. ({{time-window}}).
+The "w" parameter value conveys a time window applicable to the {{ratelimitpolicy-quota}}. The time window MUST be a non-negative Integer value expressing an interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Sub-second precision is not supported. ({{time-window}})
 
 ### Partition Key Parameter {#ratelimitpolicy-partitionkey}
 
@@ -1065,7 +1058,7 @@ RateLimit: "day";r=100;t=36000
 
    No. FAQ integrated in {{ratelimit-remaining-parameter}}.
 
-8. Is the quota-policy definition {{quota-policy}} too complex?
+8. Is the quota-policy definition too complex?
 
    You can always return the simplest form
 
