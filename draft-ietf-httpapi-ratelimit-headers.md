@@ -157,10 +157,10 @@ A service limit is the current limit of the amount of activity that a server wil
 
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field is a non-empty List of {{quotapolicy-item}}. Its value is informative. The values are expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) that contains values that may change on every request.
+The "RateLimit-Policy" response header field is a non-empty List of {{quotapolicy-item}}. The value MUST be a String. Its value is informative. The field value is expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) that contains information that may change on every request.
 
 ~~~
-   RateLimit-Policy: burst;q=100;w=60,daily;q=1000;w=86400
+   RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
 ~~~
 
 ## Quota Policy Item {#quotapolicy-item}
@@ -186,44 +186,53 @@ Implementation- or service-specific parameters SHOULD be prefixed parameters wit
 
 ### Quota Parameter {#ratelimitpolicy-quota}
 
- The "q" parameter uses a non-negative integer value to indicate the quota allocated for client activity (counted in quota units) for a given quota partition ({{service-limit}}).
+ The "q" parameter value MUST be a non-negative Integer. The value indicates the quota allocated for client activity (counted in quota units) for a given quota partition ({{quota}}).
 
 ### Quota Unit Parameter {#ratelimitpolicy-quotaunit}
 
-The "qu" parameter value conveys the quota units associated to the "q" parameter.
+The "qu" parameter value conveys the quota units applicable to the {{ratelimitpolicy-quota}}. The value MUST be a String. Allowed values are defined in the [RateLimit Quota Units registry](#ratelimit-quota-unit-registry). This specification defines two quota units:
+
+  request:
+  : This value indicates the quota is based on the number of requests processed by the resource server. Whether a specific request actually consumes a quota unit is implementation-specific.
+
+  content-bytes:
+  : This value indicates the quota is based on the number of content bytes processed by the resource server.
+
+  concurrency:
+  : This value indicates the quota is based on the number of concurrent requests processed by the resource server.
 
 ### Window Parameter {#ratelimitpolicy-window}
 
-The "w" parameter value conveys a time "window" in seconds. ({{time-window}}).
+The "w" parameter value conveys a time window in seconds. The value MUST be a non-negative Integer. ({{time-window}}).
 
 ### Partition Key Parameter {#ratelimitpolicy-partitionkey}
 
-The "pk" parameter value conveys the partition key associated to the request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
+The "pk" parameter value conveys the partition key associated to the request. The value MUST be a Byte Sequence. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
 ## RateLimit Policy Field Examples
 
 This field MAY convey the time window associated with the expiring-limit, as shown in this example:
 
 ~~~
-   RateLimit-Policy: default;l=100;w=10
+   RateLimit-Policy: "default";q=100;w=10
 ~~~
 
 These examples show multiple policies being returned:
 
 ~~~
-   RateLimit-Policy: permin;l=50;w=60,perhr;l=1000;w=3600,perday;l=5000;w=86400
+   RateLimit-Policy: "permin";q=50;w=60,"perhr";q=1000;w=3600,"perday";q=5000;w=86400
 ~~~
 
 The following example shows a policy with a partition key:
 
 ~~~
-   RateLimit-Policy: peruser;l=100;w=60;pk=user123
+   RateLimit-Policy: "peruser";q=100;w=60;pk=:cHsdsRa894==:
 ~~~
 
 The following example shows a policy with a partition key and a quota unit:
 
 ~~~
-   RateLimit-Policy: peruser;l=65535;w=10;pk=user123;qu=bytes
+   RateLimit-Policy: "peruser";q=65535;qu="bytes";w=10;pk=:sdfjKLJUOUH==:
 ~~~
 
 This field cannot appear in a trailer section.
@@ -235,7 +244,7 @@ A server uses the "RateLimit" response header field to communicate the service l
 The field is expressed as List of {{servicelimit-item}}.
 
 ~~~
-   RateLimit: default;r=50;t=30
+   RateLimit: "default";r=50;t=30
 ~~~
 
 ## Service Limit Item {#servicelimit-item}
@@ -280,7 +289,7 @@ The client MUST NOT assume that all its service limit will be reset at the momen
 
 ### Partition Key Parameter {#ratelimit-partitionkey}
 
-The "pk" parameter value conveys the partition key associated to the request. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
+The "pk" parameter value conveys the partition key associated to the request. The value MUST be a Byte Sequence. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
 
 ## RateLimit Field Examples
@@ -288,19 +297,19 @@ The "pk" parameter value conveys the partition key associated to the request. Se
 This example shows a RateLimit field with a remaining quota of 50 units and a time window reset in 30 seconds:
 
 ~~~
-   RateLimit: default;r=50;t=30
+   RateLimit: "default";r=50;t=30
 ~~~
 
 This example shows a remaining quota of 999 requests for a partition key that has no time window reset:
 
 ~~~
-   RateLimit: default;r=999;pk=trial-121323
+   RateLimit: "default";r=999;pk=:dHJpYWwxMjEzMjM=:
 ~~~
 
 This example shows a 300MB remaining quota for an application in the next 60 seconds:
 
 ~~~
-   RateLimit: default;r=300000000;pk=App-999;t=60;qu=bytes
+   RateLimit: "default";r=300000000;t=60;pk=:QXBwLTk5OQ==:
 ~~~
 
 
@@ -313,7 +322,7 @@ Servers should be careful when returning RateLimit header fields in redirection 
 ~~~ http-message
 HTTP/1.1 301 Moved Permanently
 Location: /foo/123
-RateLimit: problemPolicy;r=0, t=10
+RateLimit: "problemPolicy";r=0;t=10
 
 ~~~
 
@@ -322,6 +331,10 @@ If a response contains both the Retry-After and the RateLimit header fields, the
 A service using RateLimit header fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between the remaining and the reset keyword values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window.
 
 Under certain conditions, a server MAY artificially lower RateLimit header field values between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
+
+## Generating Partition Keys
+
+Servers MAY choose to return partition keys that distinguish between quota allocated to different consumers or different resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values. The server SHOULD document how the partition key is generated so that clients can predict the key value for a future request and determine if there is sufficient quota remaining to execute the request. Servers should avoid returning partition keys that contain sensitive information. Servers SHOULD only use information that is present in the request to generate the partition key.
 
 ## Performance Considerations
 
@@ -336,7 +349,7 @@ The RateLimit header fields can be used by clients to determine whether the asso
 For example, a successful response with the following fields:
 
 ~~~
-   RateLimit: default;r=1;t=7
+   RateLimit: "default";r=1;t=7
 ~~~
 
 does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions.
@@ -362,6 +375,14 @@ This specification does not mandate a specific throttling behavior and implement
 - slowing down or pre-emptively back-off their request rate when
   approaching quota limits;
 - consuming all the quota according to the exposed limits and then wait.
+
+## Consuming Partition Keys
+
+Partition keys are useful for a client if it is likely that single client will make requests that consume different quota allocations. E.g. a client making requests on behalf of different users or for different resources that have independent quota allocations.
+
+If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota remaining to execute the request.
+
+For cases where the partition key generation algorithm of a server is unknown, clients MAY use heuristics to guess if a future request will be successful based on its similarity to previous requests.
 
 ## Intermediaries {#intermediaries}
 
@@ -441,7 +462,7 @@ and your server returns the reset parameter accordingly
 
 ~~~
    Date: Tue, 15 Nov 1994 18:00:00 GMT
-   RateLimit: daily;r=1;t=36400
+   RateLimit: "daily";r=1;t=36400
 ~~~
 
 there's a high probability that all clients will show up at `18:00:00`.
@@ -457,8 +478,8 @@ The following example describes a service
 with an unconsumed quota policy of 10000 quota units per 1000 seconds.
 
 ~~~
-RateLimit-Policy: somepolicy;l=10000;w=1000
-RateLimit: somepolicy;r=10000;t=10
+RateLimit-Policy: "somepolicy";q=10000;w=1000
+RateLimit: "somepolicy";r=10000;t=10
 ~~~
 
 A client implementing a simple ratio between remaining keyword and reset keyword could infer an average throughput of 1000 quota units per second, while the limit keyword conveys a quota-policy with an average of 10 quota units per second.
@@ -511,6 +532,27 @@ Please add the following entries to the
 | RateLimit           | permanent | {{ratelimit-field}} of {{&SELF}}       |
 | RateLimit-Policy    | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
 |---------------------|-----------|---------------|
+
+## RateLimit quota unit registry {#ratelimit-quota-unit-registry}
+
+This specification establishes the registry "Hypertext Transfer Protocol (HTTP) RateLimit Quota Units" registry to be located at https://www.iana.org/assignments/http-ratelimit-quota-units. Registration is done on the advice of a Designated Expert, appointed by the IESG or their delegate. All entries are Specification Required ([IANA], Section 4.6).
+
+The registry has the following initial content:
+
+|---------------------|-----------|---------------|
+| Quota Unit          | Reference | Notes         |
+|---------------------|-----------|---------------|
+| request             | {{&SELF}} |               |
+| content-bytes       | {{&SELF}} |               |
+|---------------------|-----------|---------------|
+
+### Registration Template
+
+The registration template for the RateLimit Quota Units registry is as follows:
+
+- Quota Unit: The name of the quota unit.
+- Reference: A reference to the document that specifies the quota unit.
+- Notes: Any additional notes about the quota unit.
 
 
 --- back
@@ -583,7 +625,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: default;r=0;t=50
+RateLimit: "default";r=0;t=50
 
 {"hello": "world"}
 ~~~
@@ -608,7 +650,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: default;r=0;t=48
+RateLimit: "default";r=0;t=48
 
 {"still": "successful"}
 ~~~
@@ -645,7 +687,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: dayLimit;r=100;t=36000
+RateLimit: "dayLimit";r=100;t=36000
 
 {"hello": "world"}
 ~~~
@@ -675,8 +717,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: basic;l=100;w=60
-RateLimit: basic;r=60;t=58
+RateLimit-Policy: "basic";q=100;w=60
+RateLimit: "basic";r=60;t=58
 
 {"elapsed": 2, "issued": 40}
 ~~~
@@ -697,8 +739,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: basic;l=100;w=60
-RateLimit: basic;r=20;t=56
+RateLimit-Policy: "basic";q=100;w=60
+RateLimit: "basic";r=20;t=56
 
 {"elapsed": 4, "issued": 41}
 ~~~
@@ -728,7 +770,7 @@ HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 Date: Mon, 05 Aug 2019 09:27:00 GMT
 Retry-After: Mon, 05 Aug 2019 09:27:05 GMT
-RateLimit: default;r=0;t=5
+RateLimit: "default";r=0;t=5
 
 {
 "title": "Too Many Requests",
@@ -757,8 +799,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: fixedwindow;r=99;t=50
-RateLimit-Policy: fixedwindow;l=100;w=60
+RateLimit: "fixedwindow";r=99;t=50
+RateLimit-Policy: "fixedwindow";q=100;w=60
 {"hello": "world"}
 ~~~
 
@@ -792,8 +834,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: dynamic;l=100;w=60
-RateLimit: dynamic;r=9;t=50
+RateLimit-Policy: "dynamic";q=100;w=60
+RateLimit: "dynamic";r=9;t=50
 
 
 {
@@ -824,8 +866,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
-RateLimit-Policy: dynamic;l=15;w=20
-RateLimit: dynamic;r=0;t=20
+RateLimit-Policy: "dynamic";q=15;w=20
+RateLimit: "dynamic";r=0;t=20
 
 {
   "status": 429,
@@ -857,8 +899,8 @@ Response:
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 Retry-After: 20
-RateLimit-Policy: dynamic;l=100;w=60
-RateLimit: dynamic;r=15;t=40
+RateLimit-Policy: "dynamic";q=100;w=60
+RateLimit: "dynamic";r=15;t=40
 
 {
   "status": 429,
@@ -894,8 +936,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: quota;l=100;w=1
-RateLimit: quota;t=1
+RateLimit-Policy: "quota";q=100;w=1
+RateLimit: "quota";t=1
 
 {"first": "request"}
 ~~~
@@ -913,8 +955,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit-Policy: quota;l=10
-RateLimit: quota;t=1
+RateLimit-Policy: "quota";q=10
+RateLimit: "quota";t=1
 
 {"second": "request"}
 ~~~
@@ -951,8 +993,8 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
-RateLimit-Policy: hour;l=1000;w=3600, day;l=5000;w=86400
-RateLimit: day;r=100;t=36000
+RateLimit-Policy: "hour";q=1000;w=3600, "day";q=5000;w=86400
+RateLimit: "day";r=100;t=36000
 
 {"hello": "world"}
 ~~~
@@ -1028,15 +1070,15 @@ RateLimit: day;r=100;t=36000
    You can always return the simplest form
 
 ~~~
-RateLimit:default;r=50;t=60
+RateLimit:"default";r=50;t=60
 ~~~
 
    The policy key clearly connects the current usage status of a policy to the defined limits.
    So for the following field:
 
 ~~~
-RateLimit-Policy: sliding;l=100;w=60;burst=1000;comment="sliding window", fixed;l=5000;w=3600;burst=0;comment="fixed window"
-RateLimit: sliding;r=50;t=44
+RateLimit-Policy: "sliding";q=100;w=60;burst=1000;comment="sliding window", "fixed";q=5000;w=3600;burst=0;comment="fixed window"
+RateLimit: "sliding";r=50;t=44
 ~~~
 
    the value "sliding" identifies the policy being reported.
@@ -1101,16 +1143,16 @@ A sliding window policy for example, may result in having a remaining keyword va
 e.g.
 
 ~~~
-RateLimit-Policy: sliding;l=12;w=1
-RateLimit: sliding;l=12;r=6;t=1          ; using 50% of throughput, that is 6 units/s
+RateLimit-Policy: "sliding";q=12;w=1
+RateLimit: "sliding";q=12;r=6;t=1          ; using 50% of throughput, that is 6 units/s
 
 ~~~
 
 If this is the case, the optimal solution is to achieve
 
 ~~~
-RateLimit-Policy: sliding;l=12;w=1
-RateLimit: sliding;l=12;r=1;t=1          ; using 100% of throughput, that is 12 units/s
+RateLimit-Policy: "sliding";q=12;w=1
+RateLimit: "sliding";q=12;r=1;t=1          ; using 100% of throughput, that is 12 units/s
 ~~~
 
 At this point you should stop increasing your request rate.
@@ -1130,7 +1172,6 @@ and Sanyam Dogra.
 
 In addition to the people above, this document owes a lot to the extensive discussion in the HTTPAPI workgroup, including
 Rich Salz,
-Darrel Miller
 and Julian Reschke.
 
 # Changes
