@@ -514,6 +514,7 @@ The registry has the following initial content:
 |---------------------|-----------|---------------|
 | request             | {{&SELF}} |               |
 | content-bytes       | {{&SELF}} |               |
+| concurrent-requests | {{&SELF}} |               |
 |---------------------|-----------|---------------|
 
 ### Registration Template
