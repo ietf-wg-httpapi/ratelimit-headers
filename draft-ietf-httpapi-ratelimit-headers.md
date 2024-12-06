@@ -111,7 +111,7 @@ This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTU
   : A quota is an allocation of capacity used by a resource server to limit client requests. That capacity is measured in quota units and may be reallocated at the end of a time window.
 
   Quota Unit:
-  : A quota unit is the unit of measure used to measure the activity of a client.
+  : A quota unit is the unit of measurement used to measure the activity of a client.
 
   Quota Partition:
   : A quota partition is a division of a server's capacity across different clients, users and owned resources.
@@ -127,7 +127,7 @@ This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTU
 
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field is a non-empty List of Quota Policy Items ({{quotapolicy-item}}). The Item value MUST be a String. Its value is informative. The field value is expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that may change on every request.
+The "RateLimit-Policy" response header field is a non-empty List of Quota Policy Items ({{quotapolicy-item}}). The Item value MUST be a String. Its value is informative. The field value is expected to remain consistent over the lifetime of a connection. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that may change on every request.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -211,7 +211,7 @@ This field cannot appear in a trailer section.
 
 A server uses the "RateLimit" response header field to communicate the service limit for a quota policy for a particular partition key.
 
-The field is expressed as List of Service Limit Items ({{servicelimit-item}}).
+The field is expressed as a List of Service Limit Items ({{servicelimit-item}}).
 
 ~~~
    RateLimit: "default";r=50;t=30
@@ -243,7 +243,7 @@ The "r" parameter indicates the remaining quota units for the identified policy 
 
 It is a non-negative Integer expressed in quota units.
 Clients MUST NOT assume that a positive remaining value is a guarantee that further requests will be served.
-When remaining parameter value is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
+When the remaining parameter value is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
 
 ### Reset Parameter {#ratelimit-reset-parameter}
 
@@ -285,7 +285,7 @@ This example shows a 300MB remaining quota for an application in the next 60 sec
 
 # Server Behavior {#providing-ratelimit-fields}
 
-A server MAY return RateLimit header fields independently of the response status code. This includes on throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
+A server MAY return RateLimit header fields independently of the response status code. This includes throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
 
 Servers should be careful when returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low remaining parameter value could prevent the client from issuing requests. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the remaining parameter value is 0.
 
@@ -453,7 +453,7 @@ RateLimit: "somepolicy";r=10000;t=10
 ~~~
 
 A client implementing a simple ratio between remaining parameter and reset parameter could infer an average throughput of 1000 quota units per second, while the quota parameter conveys a quota-policy with an average of 10 quota units per second.
-If the service cannot handle such load, it should return either a lower remaining parameter value or an higher reset parameter value.
+If the service cannot handle such load, it should return either a lower remaining parameter value or a higher reset parameter value.
 Moreover, complementing large time window quota policies with a short time window one mitigates those risks.
 
 
@@ -987,7 +987,7 @@ RateLimit: "day";r=100;t=36000
 
 4. Why is the partition key necessary?
 
-   Without a partition key, a server can only effectively only have one scope (aka partition), which is impractical for most services, or it needs to communicate the scopes out-of-band.
+   Without a partition key, a server can effectively only have one scope (aka partition), which is impractical for most services, or it needs to communicate the scopes out-of-band.
    This prevents the development of generic connector code that can be used to prevent requests from being throttled.
    Many APIs rely on API keys, user identity or client identity to allocate quota.
    As soon as a single client processes requests for more than one partition, the client needs to know the corresponding partition key to properly track requests against allocated quota.
@@ -1030,7 +1030,7 @@ RateLimit: "day";r=100;t=36000
    Saturation conditions can be either dynamic or static: all this is out of
    the scope for the current document.
 
-7. Do a positive value of remaining paramter imply any service guarantee for my
+7. Do a positive value of remaining parameter imply any service guarantee for my
    future requests to be served?
 
    No. FAQ integrated in {{ratelimit-remaining-parameter}}.
@@ -1068,14 +1068,14 @@ RateLimit: "sliding";r=50;t=44
     A non-informative `w` parameter might be fine in an environment
     where clients and servers are tightly coupled. Conveying policies
     with this detail on a large scale would be very complex and implementations
-    would be likely not interoperable. We thus decided to leave `w` as
+    would likely be not interoperable. We thus decided to leave `w` as
     an informational parameter and only rely on the limit, remaining and reset parameters
     for defining the throttling
     behavior.
 
 11. Can I use RateLimit fields in trailers?
     Servers usually establish whether the request is in-quota before creating a response, so the RateLimit field values should be already available in that moment.
-    Supporting trailers has the only advantage that allows to provide more up-to-date information to the client in case of slow responses.
+    Supporting trailers has the only advantage that it allows to provide more up-to-date information to the client in case of slow responses.
     However, this complicates client implementations with respect to combining fields from headers and accounting for intermediaries that drop trailers.
     Since there are no current implementations that use trailers, we decided to leave this as a future-work.
 
