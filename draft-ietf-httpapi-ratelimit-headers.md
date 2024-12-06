@@ -535,7 +535,7 @@ A basic quota mechanism limits the number of acceptable requests in a given time
 
 When quota is exceeded, servers usually do not serve the request replying instead with a 4xx HTTP status code (e.g. 429 or 403) or adopt more aggressive policies like dropping connections.
 
-Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, ..) and at different levels. For example, an user may be allowed to issue:
+Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, etc.) and at different levels. For example, an user may be allowed to issue:
 
 - 10 requests per second;
 - limited to 60 requests per minute;
@@ -1001,7 +1001,7 @@ RateLimit: "day";r=100;t=36000
    Timestamps require a clock synchronization protocol
    (see {{Section 5.6.7 of HTTP}}).
    This may be problematic (e.g. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
-   IoT devices, ..).
+   IoT devices, etc.).
    Moreover timestamps may not be monotonically increasing due to clock adjustment.
    See [Another NTP client failure story](https://community.ntppool.org/t/another-ntp-client-failure-story/1014/)
 
@@ -1026,7 +1026,7 @@ RateLimit: "day";r=100;t=36000
 
    A semantic way to limit concurrency is to return 503 + Retry-After
    in case of resource saturation (e.g. thrashing, connection queues too long,
-   Service Level Objectives not meet, ..).
+   Service Level Objectives not meet, etc.).
    Saturation conditions can be either dynamic or static: all this is out of
    the scope for the current document.
 
