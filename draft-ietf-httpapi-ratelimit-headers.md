@@ -976,7 +976,7 @@ RateLimit: "day";r=100;t=36000
 
    To simplify enforcement of throttling policies and enable clients to constraint their requests to avoid being throttled.
 
-2. Can I use RateLimit header fields in throttled responses (eg with status code 429)?
+2. Can I use RateLimit header fields in throttled responses (e.g. with status code 429)?
 
    Yes, you can.
 
@@ -996,7 +996,7 @@ RateLimit: "day";r=100;t=36000
    Why not using subsecond precision?
 
    Using delay-seconds aligns with Retry-After, which is returned in similar contexts,
-   eg on 429 responses.
+   e.g. on 429 responses.
 
    Timestamps require a clock synchronization protocol
    (see {{Section 5.6.7 of HTTP}}).
@@ -1089,7 +1089,7 @@ Commonly used header field names are:
   `X-RateLimit-Reset`;
 
 There are variants too, where the window is specified
-in the header field name, eg:
+in the header field name, e.g.:
 
 - `x-ratelimit-limit-minute`, `x-ratelimit-limit-hour`, `x-ratelimit-limit-day`
 - `x-ratelimit-remaining-minute`, `x-ratelimit-remaining-hour`, `x-ratelimit-remaining-day`
