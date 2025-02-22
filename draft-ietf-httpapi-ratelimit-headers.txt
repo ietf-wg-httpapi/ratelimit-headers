@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 10 April 2025                                           Red Hat
+Expires: 26 August 2025                                          Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                          7 October 2024
+                                                        22 February 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,11 +53,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 April 2025.
+   This Internet-Draft will expire on 26 August 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -350,8 +350,8 @@ Table of Contents
 
    The following parameters are defined in this specification:
 
-   r:  This parameter value conveys the remaining quota units for the
-      identified policy (Section 4.1.1).
+   r:  This REQUIRED parameter value conveys the remaining quota units
+      for the identified policy (Section 4.1.1).
 
    t:  This OPTIONAL parameter value conveys the time window reset time
       for the identified policy (Section 4.1.2).
@@ -701,14 +701,14 @@ Table of Contents
 
    The considerations above are not limited to RateLimit header fields,
    but apply to all fields affecting how clients behave in subsequent
-   requests (e.g.  Retry-After).
+   requests (e.g. Retry-After).
 
 8.  Privacy Considerations
 
    Clients that act upon a request to rate limit are potentially re-
    identifiable (see Section 5.2.1 of [PRIVACY]) because they react to
    information that might only be given to them.  Note that this might
-   apply to other fields too (e.g.  Retry-After).
+   apply to other fields too (e.g. Retry-After).
 
    Since rate limiting is usually implemented in contexts where clients
    are either identified or profiled (e.g. assigning different quota
@@ -1305,9 +1305,9 @@ FAQ
        shape their requests avoiding being throttled out.
 
        A problematic way to limit concurrency is connection dropping,
-       especially when connections are multiplexed (e.g.  HTTP/2)
-       because this results in unserviced client requests, which is
-       something we want to avoid.
+       especially when connections are multiplexed (e.g. HTTP/2) because
+       this results in unserviced client requests, which is something we
+       want to avoid.
 
        A semantic way to limit concurrency is to return 503 + Retry-
        After in case of resource saturation (e.g. thrashing, connection
