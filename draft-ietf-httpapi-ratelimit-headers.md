@@ -154,6 +154,8 @@ Other parameters are allowed and can be regarded as comments.
 
 Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 
+This field cannot appear in a trailer section.
+
 ### Quota Parameter {#ratelimitpolicy-quota}
 
  The "q" parameter value MUST be a non-negative Integer. The value indicates the quota allocated for client activity (measured in quota units) for a given quota partition.
@@ -204,8 +206,6 @@ The following example shows a policy with a partition key and a quota unit:
 ~~~
    RateLimit-Policy: "peruser";q=65535;qu="bytes";w=10;pk=:sdfjLJUOUH==:
 ~~~
-
-This field cannot appear in a trailer section.
 
 # RateLimit Field {#ratelimit-field}
 
