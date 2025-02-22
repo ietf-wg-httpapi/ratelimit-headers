@@ -1477,7 +1477,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
         <dd class="break"></dd>
 <dt id="section-2-1.3">Quota Unit:</dt>
         <dd style="margin-left: 1.5em" id="section-2-1.4">
-          <p id="section-2-1.4.1">A quota unit is the unit of measure used to measure the activity of a client.<a href="#section-2-1.4.1" class="pilcrow">¶</a></p>
+          <p id="section-2-1.4.1">A quota unit is the unit of measurement used to measure the activity of a client.<a href="#section-2-1.4.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-1.5">Quota Partition:</dt>
@@ -1508,7 +1508,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
       <h2 id="name-ratelimit-policy-field">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-ratelimit-policy-field" class="section-name selfRef">RateLimit-Policy Field</a>
       </h2>
-<p id="section-3-1">The "RateLimit-Policy" response header field is a non-empty List of Quota Policy Items (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>). The Item value MUST be a String. Its value is informative. The field value is expected to remain consistent over a the lifetime of a connection. It is this characteristic that differentiates it from the <span><a href="#ratelimit-field" class="internal xref">RateLimit</a> (<a href="#ratelimit-field" class="auto internal xref">Section 4</a>)</span> field that contains information that may change on every request.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">The "RateLimit-Policy" response header field is a non-empty List of Quota Policy Items (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>). The Item value MUST be a String. Its value is informative. The field value is expected to remain consistent over the lifetime of a connection. It is this characteristic that differentiates it from the <span><a href="#ratelimit-field" class="internal xref">RateLimit</a> (<a href="#ratelimit-field" class="auto internal xref">Section 4</a>)</span> field that contains information that may change on every request.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3-2">
 <pre>
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -1636,7 +1636,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-ratelimit-field" class="section-name selfRef">RateLimit Field</a>
       </h2>
 <p id="section-4-1">A server uses the "RateLimit" response header field to communicate the service limit for a quota policy for a particular partition key.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">The field is expressed as List of Service Limit Items (<a href="#servicelimit-item" class="auto internal xref">Section 4.1</a>).<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-2">The field is expressed as a List of Service Limit Items (<a href="#servicelimit-item" class="auto internal xref">Section 4.1</a>).<a href="#section-4-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4-3">
 <pre>
    RateLimit: "default";r=50;t=30
@@ -1676,7 +1676,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
 <p id="section-4.1.1-1">The "r" parameter indicates the remaining quota units for the identified policy (<a href="#ratelimit-remaining-parameter" class="auto internal xref">Section 4.1.1</a>).<a href="#section-4.1.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.1.1-2">It is a non-negative Integer expressed in quota units.
 Clients MUST NOT assume that a positive remaining value is a guarantee that further requests will be served.
-When remaining parameter value is low, it indicates that the server may soon throttle the client (see <a href="#providing-ratelimit-fields" class="auto internal xref">Section 5</a>).<a href="#section-4.1.1-2" class="pilcrow">¶</a></p>
+When the remaining parameter value is low, it indicates that the server may soon throttle the client (see <a href="#providing-ratelimit-fields" class="auto internal xref">Section 5</a>).<a href="#section-4.1.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ratelimit-reset-parameter">
@@ -1740,7 +1740,7 @@ and clock skew between client and server (see <span><a href="https://rfc-editor.
       <h2 id="name-server-behavior">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-server-behavior" class="section-name selfRef">Server Behavior</a>
       </h2>
-<p id="section-5-1">A server MAY return RateLimit header fields independently of the response status code. This includes on throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-1">A server MAY return RateLimit header fields independently of the response status code. This includes throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">Servers should be careful when returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low remaining parameter value could prevent the client from issuing requests. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-10.2.2" class="relref">Section 10.2.2</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>), because the remaining parameter value is 0.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="section-5-3">
 <pre>
@@ -1934,7 +1934,7 @@ RateLimit: "somepolicy";r=10000;t=10
 </pre><a href="#section-7.5-9" class="pilcrow">¶</a>
 </div>
 <p id="section-7.5-10">A client implementing a simple ratio between remaining parameter and reset parameter could infer an average throughput of 1000 quota units per second, while the quota parameter conveys a quota-policy with an average of 10 quota units per second.
-If the service cannot handle such load, it should return either a lower remaining parameter value or an higher reset parameter value.
+If the service cannot handle such load, it should return either a lower remaining parameter value or a higher reset parameter value.
 Moreover, complementing large time window quota policies with a short time window one mitigates those risks.<a href="#section-7.5-10" class="pilcrow">¶</a></p>
 <div id="sec-dos">
 <section id="section-7.5.1">
@@ -2149,7 +2149,7 @@ can define specific techniques to mitigate the risks of re-identification.<a hre
 <p id="appendix-A-1">Servers use quota mechanisms to avoid systems overload, to ensure an equitable distribution of computational resources or to enforce other policies - e.g. monetization.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <p id="appendix-A-2">A basic quota mechanism limits the number of acceptable requests in a given time window, e.g. 10 requests per second.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
 <p id="appendix-A-3">When quota is exceeded, servers usually do not serve the request replying instead with a 4xx HTTP status code (e.g. 429 or 403) or adopt more aggressive policies like dropping connections.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
-<p id="appendix-A-4">Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, ..) and at different levels. For example, an user may be allowed to issue:<a href="#appendix-A-4" class="pilcrow">¶</a></p>
+<p id="appendix-A-4">Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, etc.) and at different levels. For example, an user may be allowed to issue:<a href="#appendix-A-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-A-5.1">
           <p id="appendix-A-5.1.1">10 requests per second;<a href="#appendix-A-5.1.1" class="pilcrow">¶</a></p>
@@ -2668,7 +2668,7 @@ RateLimit: "day";r=100;t=36000
 To simplify enforcement of throttling policies and enable clients to constraint their requests to avoid being throttled.<a href="#appendix-C-2.1.2" class="pilcrow">¶</a></p>
 </li>
         <li id="appendix-C-2.2">
-          <p id="appendix-C-2.2.1">Can I use RateLimit header fields in throttled responses (eg with status code 429)?<a href="#appendix-C-2.2.1" class="pilcrow">¶</a></p>
+          <p id="appendix-C-2.2.1">Can I use RateLimit header fields in throttled responses (e.g. with status code 429)?<a href="#appendix-C-2.2.1" class="pilcrow">¶</a></p>
 <p id="appendix-C-2.2.2">
 Yes, you can.<a href="#appendix-C-2.2.2" class="pilcrow">¶</a></p>
 </li>
@@ -2681,7 +2681,7 @@ that could instead use even <code>403</code> or whatever status code.<a href="#a
         <li id="appendix-C-2.4">
           <p id="appendix-C-2.4.1">Why is the partition key necessary?<a href="#appendix-C-2.4.1" class="pilcrow">¶</a></p>
 <p id="appendix-C-2.4.2">
-Without a partition key, a server can only effectively only have one scope (aka partition), which is impractical for most services, or it needs to communicate the scopes out-of-band.
+Without a partition key, a server can effectively only have one scope (aka partition), which is impractical for most services, or it needs to communicate the scopes out-of-band.
 This prevents the development of generic connector code that can be used to prevent requests from being throttled.
 Many APIs rely on API keys, user identity or client identity to allocate quota.
 As soon as a single client processes requests for more than one partition, the client needs to know the corresponding partition key to properly track requests against allocated quota.<a href="#appendix-C-2.4.2" class="pilcrow">¶</a></p>
@@ -2691,12 +2691,12 @@ As soon as a single client processes requests for more than one partition, the c
 Why not using subsecond precision?<a href="#appendix-C-2.5.1" class="pilcrow">¶</a></p>
 <p id="appendix-C-2.5.2">
 Using delay-seconds aligns with Retry-After, which is returned in similar contexts,
-eg on 429 responses.<a href="#appendix-C-2.5.2" class="pilcrow">¶</a></p>
+e.g. on 429 responses.<a href="#appendix-C-2.5.2" class="pilcrow">¶</a></p>
 <p id="appendix-C-2.5.3">
 Timestamps require a clock synchronization protocol
 (see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-5.6.7" class="relref">Section 5.6.7</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>).
 This may be problematic (e.g. clock adjustment, clock skew, failure of hardcoded clock synchronization servers,
-IoT devices, ..).
+IoT devices, etc.).
 Moreover timestamps may not be monotonically increasing due to clock adjustment.
 See <a href="https://community.ntppool.org/t/another-ntp-client-failure-story/1014/">Another NTP client failure story</a><a href="#appendix-C-2.5.3" class="pilcrow">¶</a></p>
 <p id="appendix-C-2.5.4">
@@ -2729,12 +2729,12 @@ which is something we want to avoid.<a href="#appendix-C-2.6.3" class="pilcrow">
 <p id="appendix-C-2.6.4">
 A semantic way to limit concurrency is to return 503 + Retry-After
 in case of resource saturation (e.g. thrashing, connection queues too long,
-Service Level Objectives not meet, ..).
+Service Level Objectives not meet, etc.).
 Saturation conditions can be either dynamic or static: all this is out of
 the scope for the current document.<a href="#appendix-C-2.6.4" class="pilcrow">¶</a></p>
 </li>
         <li id="appendix-C-2.7">
-          <p id="appendix-C-2.7.1">Do a positive value of remaining paramter imply any service guarantee for my
+          <p id="appendix-C-2.7.1">Do a positive value of remaining parameter imply any service guarantee for my
 future requests to be served?<a href="#appendix-C-2.7.1" class="pilcrow">¶</a></p>
 <p id="appendix-C-2.7.2">
 No. FAQ integrated in <a href="#ratelimit-remaining-parameter" class="auto internal xref">Section 4.1.1</a>.<a href="#appendix-C-2.7.2" class="pilcrow">¶</a></p>
@@ -2777,7 +2777,7 @@ Could it be used by a client to determine the request rate?<a href="#appendix-C-
 A non-informative <code>w</code> parameter might be fine in an environment
 where clients and servers are tightly coupled. Conveying policies
 with this detail on a large scale would be very complex and implementations
-would be likely not interoperable. We thus decided to leave <code>w</code> as
+would likely be not interoperable. We thus decided to leave <code>w</code> as
 an informational parameter and only rely on the limit, remaining and reset parameters
 for defining the throttling
 behavior.<a href="#appendix-C-7.2.2" class="pilcrow">¶</a></p>
@@ -2785,7 +2785,7 @@ behavior.<a href="#appendix-C-7.2.2" class="pilcrow">¶</a></p>
         <li id="appendix-C-7.3">
           <p id="appendix-C-7.3.1">Can I use RateLimit fields in trailers?
 Servers usually establish whether the request is in-quota before creating a response, so the RateLimit field values should be already available in that moment.
-Supporting trailers has the only advantage that allows to provide more up-to-date information to the client in case of slow responses.
+Supporting trailers has the only advantage that it allows to provide more up-to-date information to the client in case of slow responses.
 However, this complicates client implementations with respect to combining fields from headers and accounting for intermediaries that drop trailers.
 Since there are no current implementations that use trailers, we decided to leave this as a future-work.<a href="#appendix-C-7.3.1" class="pilcrow">¶</a></p>
 </li>
@@ -2807,7 +2807,7 @@ Since there are no current implementations that use trailers, we decided to leav
 </li>
       </ul>
 <p id="appendix-D-4">There are variants too, where the window is specified
-in the header field name, eg:<a href="#appendix-D-4" class="pilcrow">¶</a></p>
+in the header field name, e.g.:<a href="#appendix-D-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-D-5.1">
           <p id="appendix-D-5.1.1"><code>x-ratelimit-limit-minute</code>, <code>x-ratelimit-limit-hour</code>, <code>x-ratelimit-limit-day</code><a href="#appendix-D-5.1.1" class="pilcrow">¶</a></p>

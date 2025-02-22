@@ -216,8 +216,8 @@ Table of Contents
       server to limit client requests.  That capacity is measured in
       quota units and may be reallocated at the end of a time window.
 
-   Quota Unit:  A quota unit is the unit of measure used to measure the
-      activity of a client.
+   Quota Unit:  A quota unit is the unit of measurement used to measure
+      the activity of a client.
 
    Quota Partition:  A quota partition is a division of a server's
       capacity across different clients, users and owned resources.
@@ -242,7 +242,7 @@ Table of Contents
    The "RateLimit-Policy" response header field is a non-empty List of
    Quota Policy Items (Section 3.1).  The Item value MUST be a String.
    Its value is informative.  The field value is expected to remain
-   consistent over a the lifetime of a connection.  It is this
+   consistent over the lifetime of a connection.  It is this
    characteristic that differentiates it from the RateLimit (Section 4)
    field that contains information that may change on every request.
 
@@ -338,7 +338,8 @@ Table of Contents
    A server uses the "RateLimit" response header field to communicate
    the service limit for a quota policy for a particular partition key.
 
-   The field is expressed as List of Service Limit Items (Section 4.1).
+   The field is expressed as a List of Service Limit Items
+   (Section 4.1).
 
       RateLimit: "default";r=50;t=30
 
@@ -372,9 +373,9 @@ Table of Contents
 
    It is a non-negative Integer expressed in quota units.  Clients MUST
    NOT assume that a positive remaining value is a guarantee that
-   further requests will be served.  When remaining parameter value is
-   low, it indicates that the server may soon throttle the client (see
-   Section 5).
+   further requests will be served.  When the remaining parameter value
+   is low, it indicates that the server may soon throttle the client
+   (see Section 5).
 
 4.1.2.  Reset Parameter
 
@@ -424,7 +425,7 @@ Table of Contents
 5.  Server Behavior
 
    A server MAY return RateLimit header fields independently of the
-   response status code.  This includes on throttled responses.  This
+   response status code.  This includes throttled responses.  This
    document does not mandate any correlation between the RateLimit
    header field values and the returned status code.
 
@@ -674,7 +675,7 @@ Table of Contents
    per second, while the quota parameter conveys a quota-policy with an
    average of 10 quota units per second.  If the service cannot handle
    such load, it should return either a lower remaining parameter value
-   or an higher reset parameter value.  Moreover, complementing large
+   or a higher reset parameter value.  Moreover, complementing large
    time window quota policies with a short time window one mitigates
    those risks.
 
@@ -846,7 +847,7 @@ Appendix A.  Rate-limiting and quotas
    adopt more aggressive policies like dropping connections.
 
    Quotas may be enforced on different basis (e.g. per user, per IP, per
-   geographic area, ..) and at different levels.  For example, an user
+   geographic area, etc.) and at different levels.  For example, an user
    may be allowed to issue:
 
    *  10 requests per second;
@@ -1250,8 +1251,8 @@ FAQ
        To simplify enforcement of throttling policies and enable clients
        to constraint their requests to avoid being throttled.
 
-   2.  Can I use RateLimit header fields in throttled responses (eg with
-       status code 429)?
+   2.  Can I use RateLimit header fields in throttled responses (e.g.
+       with status code 429)?
 
        Yes, you can.
 
@@ -1263,13 +1264,13 @@ FAQ
 
    4.  Why is the partition key necessary?
 
-       Without a partition key, a server can only effectively only have
-       one scope (aka partition), which is impractical for most
-       services, or it needs to communicate the scopes out-of-band.
-       This prevents the development of generic connector code that can
-       be used to prevent requests from being throttled.  Many APIs rely
-       on API keys, user identity or client identity to allocate quota.
-       As soon as a single client processes requests for more than one
+       Without a partition key, a server can effectively only have one
+       scope (aka partition), which is impractical for most services, or
+       it needs to communicate the scopes out-of-band.  This prevents
+       the development of generic connector code that can be used to
+       prevent requests from being throttled.  Many APIs rely on API
+       keys, user identity or client identity to allocate quota.  As
+       soon as a single client processes requests for more than one
        partition, the client needs to know the corresponding partition
        key to properly track requests against allocated quota.
 
@@ -1277,12 +1278,12 @@ FAQ
        using subsecond precision?
 
        Using delay-seconds aligns with Retry-After, which is returned in
-       similar contexts, eg on 429 responses.
+       similar contexts, e.g. on 429 responses.
 
        Timestamps require a clock synchronization protocol (see
        Section 5.6.7 of [HTTP]).  This may be problematic (e.g. clock
        adjustment, clock skew, failure of hardcoded clock
-       synchronization servers, IoT devices, ..).  Moreover timestamps
+       synchronization servers, IoT devices, etc.).  Moreover timestamps
        may not be monotonically increasing due to clock adjustment.  See
        Another NTP client failure story
        (https://community.ntppool.org/t/another-ntp-client-failure-
@@ -1313,11 +1314,11 @@ FAQ
 
        A semantic way to limit concurrency is to return 503 + Retry-
        After in case of resource saturation (e.g. thrashing, connection
-       queues too long, Service Level Objectives not meet, ..).
+       queues too long, Service Level Objectives not meet, etc.).
        Saturation conditions can be either dynamic or static: all this
        is out of the scope for the current document.
 
-   7.  Do a positive value of remaining paramter imply any service
+   7.  Do a positive value of remaining parameter imply any service
        guarantee for my future requests to be served?
 
        No.  FAQ integrated in Section 4.1.1.
@@ -1352,7 +1353,7 @@ FAQ
        A non-informative w parameter might be fine in an environment
        where clients and servers are tightly coupled.  Conveying
        policies with this detail on a large scale would be very complex
-       and implementations would be likely not interoperable.  We thus
+       and implementations would likely be not interoperable.  We thus
        decided to leave w as an informational parameter and only rely on
        the limit, remaining and reset parameters for defining the
        throttling behavior.
@@ -1361,12 +1362,12 @@ FAQ
        establish whether the request is in-quota before creating a
        response, so the RateLimit field values should be already
        available in that moment.  Supporting trailers has the only
-       advantage that allows to provide more up-to-date information to
-       the client in case of slow responses.  However, this complicates
-       client implementations with respect to combining fields from
-       headers and accounting for intermediaries that drop trailers.
-       Since there are no current implementations that use trailers, we
-       decided to leave this as a future-work.
+       advantage that it allows to provide more up-to-date information
+       to the client in case of slow responses.  However, this
+       complicates client implementations with respect to combining
+       fields from headers and accounting for intermediaries that drop
+       trailers.  Since there are no current implementations that use
+       trailers, we decided to leave this as a future-work.
 
 RateLimit header fields currently used on the web
 
@@ -1377,7 +1378,7 @@ RateLimit header fields currently used on the web
    *  X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset;
 
    There are variants too, where the window is specified in the header
-   field name, eg:
+   field name, e.g.:
 
    *  x-ratelimit-limit-minute, x-ratelimit-limit-hour, x-ratelimit-
       limit-day
