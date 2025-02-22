@@ -224,7 +224,7 @@ Each service limit Item identifies the quota policy ({{quotapolicy-item}}) assoc
 The following parameters are defined in this specification:
 
   r:
-  :  This parameter value conveys the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
+  :  This REQUIRED parameter value conveys the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
 
   t:
   : This OPTIONAL parameter value conveys the time window reset time for the identified policy ({{ratelimit-reset-parameter}}).
