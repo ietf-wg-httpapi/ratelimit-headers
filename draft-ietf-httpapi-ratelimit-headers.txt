@@ -273,6 +273,8 @@ Table of Contents
    Implementation- or service-specific parameters SHOULD be prefixed
    parameters with a vendor identifier, e.g. acme-policy, acme-burst.
 
+   This field cannot appear in a trailer section.
+
 3.1.1.  Quota Parameter
 
    The "q" parameter value MUST be a non-negative Integer.  The value
@@ -330,8 +332,6 @@ Table of Contents
    unit:
 
    RateLimit-Policy: "peruser";q=65535;qu="bytes";w=10;pk=:sdfjLJUOUH==:
-
-   This field cannot appear in a trailer section.
 
 4.  RateLimit Field
 
