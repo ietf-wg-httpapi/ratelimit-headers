@@ -746,13 +746,15 @@ Table of Contents
 
    The registry has the following initial content:
 
-                   +===============+===========+=======+
-                   | Quota Unit    | Reference | Notes |
-                   +===============+===========+=======+
-                   | request       | RFC nnnn  |       |
-                   +---------------+-----------+-------+
-                   | content-bytes | RFC nnnn  |       |
-                   +---------------+-----------+-------+
+                +=====================+===========+=======+
+                | Quota Unit          | Reference | Notes |
+                +=====================+===========+=======+
+                | request             | RFC nnnn  |       |
+                +---------------------+-----------+-------+
+                | content-bytes       | RFC nnnn  |       |
+                +---------------------+-----------+-------+
+                | concurrent-requests | RFC nnnn  |       |
+                +---------------------+-----------+-------+
 
                                   Table 2
 
