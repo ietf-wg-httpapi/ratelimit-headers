@@ -125,9 +125,17 @@ This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTU
   Service Limit:
   : A service limit is the currently remaining quota from a specific quota policy and, if defined, the remaining time before quota is reallocated.
 
+  List:
+  : A {{!STRUCTURED-FIELDS=RFC8941}} list of Items
+
+  Item:
+  : A {{!STRUCTURED-FIELDS=RFC8941}} item with a set of associated parameters
+
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field is a non-empty List of Quota Policy Items ({{quotapolicy-item}}). The Item value MUST be a String. Its value is informative. The field value is expected to remain consistent over the lifetime of a connection. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that may change on every request.
+The "RateLimit-Policy" response header field is a non-empty [List](#!RFC8941) of Quota Policy Items ({{quotapolicy-item}}). The [Item](#!RFC8941) value MUST be a [String](#!RFC8941).
+
+The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the (RateLimit field)[{#ratelimit-field}] that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -175,7 +183,7 @@ The "qu" parameter value conveys the quota units applicable to the quota ({{rate
 
 ### Window Parameter {#ratelimitpolicy-window}
 
-The "w" parameter value conveys a time window applicable to the quota ({{ratelimitpolicy-quota}}). The time window MUST be a non-negative Integer value expressing an interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Sub-second precision is not supported.
+The "w" parameter value conveys a time window applicable to the quota ({{ratelimitpolicy-quota}}). The time window MUST be a non-negative, non-zero, Integer value expressing an interval in seconds, similar to the "delay-seconds" rule defined in {{Section 10.2.3 of HTTP}}. Sub-second precision is not supported.
 
 ### Partition Key Parameter {#ratelimitpolicy-partitionkey}
 
