@@ -244,8 +244,8 @@ Table of Contents
 3.  RateLimit-Policy Field
 
    The "RateLimit-Policy" response header field is a non-empty
-   List([RFC8941]) of Quota Policy Items (Section 3.1).  The
-   Item([RFC8941]) value MUST be a String([RFC8941]).
+   List[RFC8941] of Quota Policy Items (Section 3.1).  The Item[RFC8941]
+   value MUST be a String[RFC8941].
 
    The field value SHOULD remain consistent over a sequence of HTTP
    responses.  It is this characteristic that differentiates it from the
@@ -266,7 +266,7 @@ Table of Contents
 3.1.  Quota Policy Item
 
    A quota policy Item contains an identifier for the policy and a set
-   of Parameters([RFC8941]) that contain information about a server's
+   of Parameters[RFC8941] that contain information about a server's
    capacity allocation for the policy.
 
    The following parameters are defined:
@@ -354,7 +354,7 @@ Table of Contents
    the current service limit for a quota policy for a particular
    partition key.
 
-   The field is expressed as a List([RFC8941]) of Service Limit Items
+   The field is expressed as a List[RFC8941] of Service Limit Items
    (Section 4.1).
 
    Lists of Service Limit Items can be split over multiple "RateLimit"
@@ -364,10 +364,9 @@ Table of Contents
 
 4.1.  Service Limit Item
 
-   Each service limit Item([RFC8941]) identifies the quota policy
+   Each service limit Item[RFC8941] identifies the quota policy
    (Section 3.1) associated with the request and contains
-   Parameters([RFC8941]) with information about the current service
-   limit.
+   Parameters[RFC8941] with information about the current service limit.
 
    The following parameters are defined in this specification:
 
