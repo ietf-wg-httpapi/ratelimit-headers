@@ -346,7 +346,7 @@ Table of Contents
    The following example shows a policy with a partition key and a quota
    unit:
 
-   RateLimit-Policy: "peruser";q=65535;qu="bytes";w=10;pk=:sdfjLJUOUH==:
+   RateLimit-Policy: "peruser";q=65535;qu="content-bytes";w=10;pk=:sdfjLJUOUH==:
 
 4.  RateLimit Field
 
