@@ -300,7 +300,7 @@ This example shows a 300MB remaining quota for an application in the next 60 sec
 
 This section defines the "https://iana.org/assignments/http-problem-types#quota-exceeded" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed one or more Quota Policies. This problem type defines the extension member "violated-policies" as an array of strings.
 
-```http
+~~~ http-message
 HTTP/1.1 429 Bad Request
 Content-Type: application/problem+json
 
@@ -309,13 +309,13 @@ Content-Type: application/problem+json
   "title": "Request cannot be satisifed as assigned quota has been exceeded",
   "violated-policies": ["daily","bandwidth"]
 }
-```
+~~~
 
 ## Temporary Reduced Capacity
 
 This section defines the "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed cannot currently be satisfied due to a temporary reduction in capacity due to service limitations. The server MAY chose to include a RateLimit-Policy field indicating the new temporarily lower quota. This problem type defines the extension member "violated-policies" as an array of strings.
 
-```http
+~~~ http-message
 HTTP/1.1 503 Server Unavailable
 Content-Type: application/problem+json
 
@@ -324,13 +324,13 @@ Content-Type: application/problem+json
   "title": "Request cannot be satisifed due to temporary server capacity constraints",
   "violated-policies": ["hourly"]
 }
-```
+~~~
 
 ## Abnormal Usage Detected
 
 This section defines the "https://iana.org/assignments/http-problem-types#abnormal-usage-detected" problem type. A server MAY use this problem type  to communicate to the client that it has detected a pattern of requests that suggest unintentional or malicous behaviour on the part of the client. This problem type defines the extension member "violated-policies" as an array of strings.
 
-```http
+~~~ http-message
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/problem+json
 
@@ -339,7 +339,7 @@ Content-Type: application/problem+json
   "title": "Request not satisifed due to detection of abnormal request pattern",
   "violated-policies": ["hourly"]
 }
-```
+~~~
 
 
 # Server Behavior {#providing-ratelimit-fields}
