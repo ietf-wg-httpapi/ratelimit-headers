@@ -45,7 +45,7 @@ normative:
   IANA: RFC8126
   HTTP: RFC9110
   PROBLEM: RFC9457
-  
+
 informative:
   PRIVACY: RFC6973
   UNIX:
