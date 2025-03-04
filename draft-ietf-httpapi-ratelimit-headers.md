@@ -44,6 +44,7 @@ entity:
 normative:
   IANA: RFC8126
   HTTP: RFC9110
+  PROBLEM: RFC9457
 
 informative:
   PRIVACY: RFC6973
@@ -104,6 +105,8 @@ The following features are out of the scope of this document:
 The term Origin is to be interpreted as described in Section 7 of{{!WEB-ORIGIN=RFC6454}}.
 
 This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing, along with the concept of "bare item".
+
+The term "problem type" in this document is to be interpreted as described in [PROBLEM].
 
 # Terminology
 
@@ -292,6 +295,53 @@ This example shows a 300MB remaining quota for an application in the next 60 sec
 
 ~~~
    RateLimit: "default";r=300000000;t=60;pk=:QXBwLTk5OQ==:
+~~~
+
+# Problem Types {#problem-types}
+
+## Quota Exceeded
+
+This section defines the "https://iana.org/assignments/http-problem-types#quota-exceeded" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed one or more Quota Policies. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
+
+~~~ http-message
+HTTP/1.1 429 Bad Request
+Content-Type: application/problem+json
+
+{
+  "type": "https://iana.org/assignments/http-problem-types#quota-exceeded",
+  "title": "Request cannot be satisifed as assigned quota has been exceeded",
+  "violated-policies": ["daily","bandwidth"]
+}
+~~~
+
+## Temporary Reduced Capacity
+
+This section defines the "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed cannot currently be satisfied due to a temporary reduction in capacity due to service limitations. The server MAY chose to include a RateLimit-Policy field indicating the new temporarily lower quota. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
+
+~~~ http-message
+HTTP/1.1 503 Server Unavailable
+Content-Type: application/problem+json
+
+{
+  "type": "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity",
+  "title": "Request cannot be satisifed due to temporary server capacity constraints",
+  "violated-policies": ["hourly"]
+}
+~~~
+
+## Abnormal Usage Detected
+
+This section defines the "https://iana.org/assignments/http-problem-types#abnormal-usage-detected" problem type. A server MAY use this problem type  to communicate to the client that it has detected a pattern of requests that suggest unintentional or malicous behaviour on the part of the client. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
+
+~~~ http-message
+HTTP/1.1 429 Too Many Requests
+Content-Type: application/problem+json
+
+{
+  "type": "https://iana.org/assignments/http-problem-types#abnormal-usage-detected",
+  "title": "Request not satisifed due to detection of abnormal request pattern",
+  "violated-policies": ["hourly"]
+}
 ~~~
 
 
@@ -503,7 +553,9 @@ can define specific techniques to mitigate the risks of re-identification.
 
 # IANA Considerations
 
-IANA is requested to update one registry and create one new registry.
+IANA is requested to update two registries and create one new registry.
+
+## Update HTTP Field Name Registry
 
 Please add the following entries to the
 "Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{HTTP}}):
@@ -514,6 +566,42 @@ Please add the following entries to the
 | RateLimit           | permanent | {{ratelimit-field}} of {{&SELF}}       |
 | RateLimit-Policy    | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
 |---------------------|-----------|---------------|
+
+
+## Update HTTP Problem Type registry
+
+IANA is asked to register the following entries in the "HTTP Problem Types" registry at https://www.iana.org/assignments/http-problem-types.
+
+### Registration of "quota-exceeded" Problem Type
+
+Type URI: https://iana.org/assignments/http-problem-types#quota-exceeded
+
+Title: Quota Exceeded
+
+Recommended HTTP status code: 429
+
+Reference: {{quota-exceeded}} of this document
+
+### Registration of "temporary-reduced-capacity" Problem Type
+
+Type URI: https://iana.org/assignments/http-problem-types#temporary-reduced-capacity
+
+Title: Temporary Reduced Capacity
+
+Recommended HTTP status code: 503
+
+Reference: {{temporary-reduced-capacity}} of this document
+
+### Registration of "abnormal-usage-detected" Problem Type
+
+Type URI: https://iana.org/assignments/http-problem-types#abnormal-usage-detected
+
+Title: Abnormal Usage Detected
+
+Recommended HTTP status code: 429
+
+Reference: {{abnormal-usage-detected}} of this document
+
 
 ## RateLimit quota unit registry {#ratelimit-quota-unit-registry}
 
@@ -750,15 +838,16 @@ Response:
 
 ~~~ http-message
 HTTP/1.1 429 Too Many Requests
-Content-Type: application/json
+Content-Type: application/problem+json
 Date: Mon, 05 Aug 2019 09:27:00 GMT
 Retry-After: Mon, 05 Aug 2019 09:27:05 GMT
 RateLimit: "default";r=0;t=5
 
 {
+"type": "https://iana.org/assignments/http-problem-types#quota-exceeded"
 "title": "Too Many Requests",
 "status": 429,
-"detail": "You have exceeded your quota"
+"policy-violations": ["default"]
 }
 ~~~
 
@@ -1162,6 +1251,12 @@ and Julian Reschke.
 
 # Changes
 {:numbered="false" removeinrfc="true"}
+
+## Since draft-ietf-httpapi-ratelimit-headers-08
+{:numbered="false" removeinrfc="true"}
+
+* Added Problem Types
+* Clarified when to use RateLimit-Policy vs RateLimit fields
 
 ## Since draft-ietf-httpapi-ratelimit-headers-07
 {:numbered="false" removeinrfc="true"}
