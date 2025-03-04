@@ -44,7 +44,8 @@ entity:
 normative:
   IANA: RFC8126
   HTTP: RFC9110
-
+  PROBLEM: RFC9457
+  
 informative:
   PRIVACY: RFC6973
   UNIX:
@@ -104,6 +105,8 @@ The following features are out of the scope of this document:
 The term Origin is to be interpreted as described in Section 7 of{{!WEB-ORIGIN=RFC6454}}.
 
 This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing, along with the concept of "bare item".
+
+The term "problem type" in this document is to be interpreted as described in [PROBLEM].
 
 # Terminology
 
@@ -294,7 +297,7 @@ This example shows a 300MB remaining quota for an application in the next 60 sec
    RateLimit: "default";r=300000000;t=60;pk=:QXBwLTk5OQ==:
 ~~~
 
-# Problem Types (#problem-types)
+# Problem Types {#problem-types}
 
 ## Quota Exceeded
 
@@ -835,15 +838,16 @@ Response:
 
 ~~~ http-message
 HTTP/1.1 429 Too Many Requests
-Content-Type: application/json
+Content-Type: application/problem+json
 Date: Mon, 05 Aug 2019 09:27:00 GMT
 Retry-After: Mon, 05 Aug 2019 09:27:05 GMT
 RateLimit: "default";r=0;t=5
 
 {
+"type": "https://iana.org/assignments/http-problem-types#quota-exceeded"
 "title": "Too Many Requests",
 "status": 429,
-"detail": "You have exceeded your quota"
+"policy-violations": ["default"]
 }
 ~~~
 
@@ -1247,6 +1251,12 @@ and Julian Reschke.
 
 # Changes
 {:numbered="false" removeinrfc="true"}
+
+## Since draft-ietf-httpapi-ratelimit-headers-08
+{:numbered="false" removeinrfc="true"}
+
+* Added Problem Types
+* Clarified when to use RateLimit-Policy vs RateLimit fields
 
 ## Since draft-ietf-httpapi-ratelimit-headers-07
 {:numbered="false" removeinrfc="true"}
