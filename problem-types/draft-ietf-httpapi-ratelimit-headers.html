@@ -1790,15 +1790,18 @@ and clock skew between client and server (see <span><a href="https://rfc-editor.
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-quota-exceeded" class="section-name selfRef">Quota Exceeded</a>
         </h3>
 <p id="section-5.1-1">This section defines the "https://iana.org/assignments/http-problem-types#quota-exceeded" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed one or more Quota Policies. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of the exceeded quotas.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">```http
+<div class="lang-http-message sourcecode" id="section-5.1-2">
+<pre>
 HTTP/1.1 429 Bad Request
-Content-Type: application/problem+json<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3">{
+Content-Type: application/problem+json
+
+{
   "type": "https://iana.org/assignments/http-problem-types#quota-exceeded",
   "title": "Request cannot be satisifed as assigned quota has been exceeded",
   "violated-policies": ["daily","bandwidth"]
 }
-```<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-5.1-2" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 <div id="temporary-reduced-capacity">
@@ -1807,15 +1810,18 @@ Content-Type: application/problem+json<a href="#section-5.1-2" class="pilcrow">�
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-temporary-reduced-capacity" class="section-name selfRef">Temporary Reduced Capacity</a>
         </h3>
 <p id="section-5.2-1">This section defines the "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed cannot currently be satisfied due to a temporary reduction in capacity due to service limitations. The server MAY chose to include a RateLimit-Policy field indicating the new temporarily lower quota. This problem type defines the extension member "violated-policies" as an array of strings.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">```http
+<div class="lang-http-message sourcecode" id="section-5.2-2">
+<pre>
 HTTP/1.1 503 Server Unavailable
-Content-Type: application/problem+json<a href="#section-5.2-2" class="pilcrow">¶</a></p>
-<p id="section-5.2-3">{
+Content-Type: application/problem+json
+
+{
   "type": "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity",
   "title": "Request cannot be satisifed due to temporary server capacity constraints",
   "violated-policies": ["hourly"]
 }
-```<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-5.2-2" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 <div id="abnormal-usage-detected">
@@ -1824,15 +1830,18 @@ Content-Type: application/problem+json<a href="#section-5.2-2" class="pilcrow">�
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-abnormal-usage-detected" class="section-name selfRef">Abnormal Usage Detected</a>
         </h3>
 <p id="section-5.3-1">This section defines the "https://iana.org/assignments/http-problem-types#abnormal-usage-detected" problem type. A server MAY use this problem type  to communicate to the client that it has detected a pattern of requests that suggest unintentional or malicous behaviour on the part of the client. This problem type defines the extension member "violated-policies" as an array of strings.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3-2">```http
+<div class="lang-http-message sourcecode" id="section-5.3-2">
+<pre>
 HTTP/1.1 429 Too Many Requests
-Content-Type: application/problem+json<a href="#section-5.3-2" class="pilcrow">¶</a></p>
-<p id="section-5.3-3">{
+Content-Type: application/problem+json
+
+{
   "type": "https://iana.org/assignments/http-problem-types#abnormal-usage-detected",
   "title": "Request not satisifed due to detection of abnormal request pattern",
   "violated-policies": ["hourly"]
 }
-```<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+</pre><a href="#section-5.3-2" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
 </section>

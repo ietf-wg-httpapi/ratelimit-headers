@@ -462,12 +462,14 @@ Table of Contents
    defines the extension member "violated-policies" as an array of
    strings, whose value is the names of the exceeded quotas.
 
-   ```http HTTP/1.1 429 Bad Request Content-Type: application/
-   problem+json
+   HTTP/1.1 429 Bad Request
+   Content-Type: application/problem+json
 
-   { "type": "https://iana.org/assignments/http-problem-types#quota-
-   exceeded", "title": "Request cannot be satisifed as assigned quota
-   has been exceeded", "violated-policies": ["daily","bandwidth"] } ```
+   {
+     "type": "https://iana.org/assignments/http-problem-types#quota-exceeded",
+     "title": "Request cannot be satisifed as assigned quota has been exceeded",
+     "violated-policies": ["daily","bandwidth"]
+   }
 
 5.2.  Temporary Reduced Capacity
 
@@ -480,13 +482,14 @@ Table of Contents
    new temporarily lower quota.  This problem type defines the extension
    member "violated-policies" as an array of strings.
 
-   ```http HTTP/1.1 503 Server Unavailable Content-Type: application/
-   problem+json
+   HTTP/1.1 503 Server Unavailable
+   Content-Type: application/problem+json
 
-   { "type": "https://iana.org/assignments/http-problem-types#temporary-
-   reduced-capacity", "title": "Request cannot be satisifed due to
-   temporary server capacity constraints", "violated-policies":
-   ["hourly"] } ```
+   {
+     "type": "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity",
+     "title": "Request cannot be satisifed due to temporary server capacity constraints",
+     "violated-policies": ["hourly"]
+   }
 
 5.3.  Abnormal Usage Detected
 
@@ -497,12 +500,14 @@ Table of Contents
    on the part of the client.  This problem type defines the extension
    member "violated-policies" as an array of strings.
 
-   ```http HTTP/1.1 429 Too Many Requests Content-Type: application/
-   problem+json
+   HTTP/1.1 429 Too Many Requests
+   Content-Type: application/problem+json
 
-   { "type": "https://iana.org/assignments/http-problem-types#abnormal-
-   usage-detected", "title": "Request not satisifed due to detection of
-   abnormal request pattern", "violated-policies": ["hourly"] } ```
+   {
+     "type": "https://iana.org/assignments/http-problem-types#abnormal-usage-detected",
+     "title": "Request not satisifed due to detection of abnormal request pattern",
+     "violated-policies": ["hourly"]
+   }
 
 6.  Server Behavior
 
