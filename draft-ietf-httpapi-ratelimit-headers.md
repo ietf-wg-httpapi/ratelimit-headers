@@ -298,7 +298,7 @@ This example shows a 300MB remaining quota for an application in the next 60 sec
 
 ## Quota Exceeded
 
-This section defines the "https://iana.org/assignments/http-problem-types#quota-exceeded" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed one or more Quota Policies. This problem type defines the extension member "violated-policies" as an array of strings.
+This section defines the "https://iana.org/assignments/http-problem-types#quota-exceeded" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed one or more Quota Policies. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of the exceeded quotas.
 
 ```http
 HTTP/1.1 429 Bad Request
