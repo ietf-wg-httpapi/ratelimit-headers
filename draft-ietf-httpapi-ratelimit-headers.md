@@ -137,7 +137,7 @@ The "RateLimit-Policy" response header field is a non-empty List{{!RFC8941}} of 
 
 The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the (RateLimit field)[{#ratelimit-field}] that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
-Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response.
+Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in {{section 3.1 of RFC8941}}.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -223,7 +223,7 @@ A server uses the "RateLimit" response header field to communicate the current s
 
 The field is expressed as a List{{!RFC8941}} of Service Limit Items ({{servicelimit-item}}).
 
-Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response.
+Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in {{section 3.1 of RFC8941}}.
 
 ~~~
    RateLimit: "default";r=50;t=30
