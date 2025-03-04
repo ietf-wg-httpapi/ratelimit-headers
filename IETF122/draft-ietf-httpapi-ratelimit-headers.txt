@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 3 September 2025                                        Red Hat
+Expires: 5 September 2025                                        Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                            2 March 2025
+                                                            4 March 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2025.
+   This Internet-Draft will expire on 5 September 2025.
 
 Copyright Notice
 
@@ -259,7 +259,8 @@ Table of Contents
    by the server when appropriate.
 
    Lists of Quota Policy Items (Section 3.1) can be split over multiple
-   "RateLimit-Policy" fields in the same HTTP response.
+   "RateLimit-Policy" fields in the same HTTP response as described in
+   Section 3.1 of [STRUCTURED-FIELDS].
 
       RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
 
@@ -358,7 +359,8 @@ Table of Contents
    (Section 4.1).
 
    Lists of Service Limit Items can be split over multiple "RateLimit"
-   fields in the same HTTP response.
+   fields in the same HTTP response as described in Section 3.1 of
+   [STRUCTURED-FIELDS].
 
       RateLimit: "default";r=50;t=30
 
