@@ -460,7 +460,8 @@ Table of Contents
    type if it wants to communicate to the client that the requests sent
    by the client exceed one or more Quota Policies.  This problem type
    defines the extension member "violated-policies" as an array of
-   strings, whose value is the names of the exceeded quotas.
+   strings, whose value is the names of policies where the quota was
+   exceeded.
 
    HTTP/1.1 429 Bad Request
    Content-Type: application/problem+json
@@ -480,7 +481,8 @@ Table of Contents
    to a temporary reduction in capacity due to service limitations.  The
    server MAY chose to include a RateLimit-Policy field indicating the
    new temporarily lower quota.  This problem type defines the extension
-   member "violated-policies" as an array of strings.
+   member "violated-policies" as an array of strings, whose value is the
+   names of policies where the quota was exceeded.
 
    HTTP/1.1 503 Server Unavailable
    Content-Type: application/problem+json
@@ -498,7 +500,8 @@ Table of Contents
    problem type to communicate to the client that it has detected a
    pattern of requests that suggest unintentional or malicous behaviour
    on the part of the client.  This problem type defines the extension
-   member "violated-policies" as an array of strings.
+   member "violated-policies" as an array of strings, whose value is the
+   names of policies where the quota was exceeded.
 
    HTTP/1.1 429 Too Many Requests
    Content-Type: application/problem+json
