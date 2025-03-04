@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 3 September 2025                                        Red Hat
+Expires: 5 September 2025                                        Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                            2 March 2025
+                                                            4 March 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2025.
+   This Internet-Draft will expire on 5 September 2025.
 
 Copyright Notice
 
@@ -460,7 +460,7 @@ Table of Contents
    type if it wants to communicate to the client that the requests sent
    by the client exceed one or more Quota Policies.  This problem type
    defines the extension member "violated-policies" as an array of
-   strings.
+   strings, whose value is the names of the exceeded quotas.
 
    ```http HTTP/1.1 429 Bad Request Content-Type: application/
    problem+json
