@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 26 August 2025                                          Red Hat
+Expires: 5 September 2025                                        Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                        22 February 2025
+                                                            4 March 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 August 2025.
+   This Internet-Draft will expire on 5 September 2025.
 
 Copyright Notice
 
@@ -237,22 +237,38 @@ Table of Contents
       a specific quota policy and, if defined, the remaining time before
       quota is reallocated.
 
+   List:  A [STRUCTURED-FIELDS] list of Items
+
+   Item:  A [STRUCTURED-FIELDS] item with a set of associated parameters
+
 3.  RateLimit-Policy Field
 
-   The "RateLimit-Policy" response header field is a non-empty List of
-   Quota Policy Items (Section 3.1).  The Item value MUST be a String.
-   Its value is informative.  The field value is expected to remain
-   consistent over the lifetime of a connection.  It is this
-   characteristic that differentiates it from the RateLimit (Section 4)
-   field that contains information that may change on every request.
+   The "RateLimit-Policy" response header field is a non-empty
+   List[RFC8941] of Quota Policy Items (Section 3.1).  The Item[RFC8941]
+   value MUST be a String[RFC8941].
+
+   The field value SHOULD remain consistent over a sequence of HTTP
+   responses.  It is this characteristic that differentiates it from the
+   RateLimit (Section 4) field that contains information that MAY change
+   on every request.  The "RateLimit-Policy" field enables clients to
+   control their own flow of requests based on policy information
+   provided by the server.  Situations where throttling constraints are
+   highly dynamic are better served using the (RateLimit
+   field)[{#ratelimit-field}] that communicates the latest service
+   information a client can react to.  Both fields can be communicated
+   by the server when appropriate.
+
+   Lists of Quota Policy Items (Section 3.1) can be split over multiple
+   "RateLimit-Policy" fields in the same HTTP response as described in
+   Section 3.1 of [STRUCTURED-FIELDS].
 
       RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
 
 3.1.  Quota Policy Item
 
    A quota policy Item contains an identifier for the policy and a set
-   of parameters that contain information about a server's capacity
-   allocation for the policy.
+   of Parameters[RFC8941] that contain information about a server's
+   capacity allocation for the policy.
 
    The following parameters are defined:
 
@@ -273,7 +289,7 @@ Table of Contents
    Implementation- or service-specific parameters SHOULD be prefixed
    parameters with a vendor identifier, e.g. acme-policy, acme-burst.
 
-   This field cannot appear in a trailer section.
+   This field MUST NOT appear in a trailer section.
 
 3.1.1.  Quota Parameter
 
@@ -301,9 +317,9 @@ Table of Contents
 3.1.3.  Window Parameter
 
    The "w" parameter value conveys a time window applicable to the quota
-   (Section 3.1.1).  The time window MUST be a non-negative Integer
-   value expressing an interval in seconds, similar to the "delay-
-   seconds" rule defined in Section 10.2.3 of [HTTP].  Sub-second
+   (Section 3.1.1).  The time window MUST be a non-negative, non-zero,
+   Integer value expressing an interval in seconds, similar to the
+   "delay-seconds" rule defined in Section 10.2.3 of [HTTP].  Sub-second
    precision is not supported.
 
 3.1.4.  Partition Key Parameter
@@ -331,23 +347,28 @@ Table of Contents
    The following example shows a policy with a partition key and a quota
    unit:
 
-   RateLimit-Policy: "peruser";q=65535;qu="bytes";w=10;pk=:sdfjLJUOUH==:
+   RateLimit-Policy: "peruser";q=65535;qu="content-bytes";w=10;pk=:sdfjLJUOUH==:
 
 4.  RateLimit Field
 
    A server uses the "RateLimit" response header field to communicate
-   the service limit for a quota policy for a particular partition key.
+   the current service limit for a quota policy for a particular
+   partition key.
 
-   The field is expressed as a List of Service Limit Items
+   The field is expressed as a List[RFC8941] of Service Limit Items
    (Section 4.1).
+
+   Lists of Service Limit Items can be split over multiple "RateLimit"
+   fields in the same HTTP response as described in Section 3.1 of
+   [STRUCTURED-FIELDS].
 
       RateLimit: "default";r=50;t=30
 
 4.1.  Service Limit Item
 
-   Each service limit Item identifies the quota policy (Section 3.1)
-   associated with the request and contains parameters with information
-   about the current service limit.
+   Each service limit Item[RFC8941] identifies the quota policy
+   (Section 3.1) associated with the request and contains
+   Parameters[RFC8941] with information about the current service limit.
 
    The following parameters are defined in this specification:
 
@@ -793,6 +814,10 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8941]  Nottingham, M. and P. Kamp, "Structured Field Values for
+              HTTP", RFC 8941, DOI 10.17487/RFC8941, February 2021,
+              <https://www.rfc-editor.org/rfc/rfc8941>.
 
    [STRUCTURED-FIELDS]
               Nottingham, M. and P. Kamp, "Structured Field Values for
