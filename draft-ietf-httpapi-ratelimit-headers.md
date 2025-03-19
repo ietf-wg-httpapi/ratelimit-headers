@@ -104,7 +104,7 @@ The following features are out of the scope of this document:
 
 The term Origin is to be interpreted as described in Section 7 of{{!WEB-ORIGIN=RFC6454}}.
 
-This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC8941}} to specify syntax and parsing, along with the concept of "bare item".
+This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC9651}} to specify syntax and parsing, along with the concept of "bare item".
 
 The term "problem type" in this document is to be interpreted as described in [PROBLEM].
 
@@ -129,25 +129,25 @@ The term "problem type" in this document is to be interpreted as described in [P
   : A service limit is the currently remaining quota from a specific quota policy and, if defined, the remaining time before quota is reallocated.
 
   List:
-  : A {{!STRUCTURED-FIELDS=RFC8941}} list of Items
+  : A {{!STRUCTURED-FIELDS=RFC9651}} list of Items
 
   Item:
-  : A {{!STRUCTURED-FIELDS=RFC8941}} item with a set of associated parameters
+  : A {{!STRUCTURED-FIELDS=RFC9651}} item with a set of associated parameters
 
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field is a non-empty List{{!RFC8941}} of Quota Policy Items ({{quotapolicy-item}}). The Item{{!RFC8941}} value MUST be a String{{!RFC8941}}.
+The "RateLimit-Policy" response header field is a non-empty List{{!RFC9651}} of Quota Policy Items ({{quotapolicy-item}}). The Item{{!RFC9651}} value MUST be a String{{!RFC9651}}.
 
 The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the (RateLimit field)[{#ratelimit-field}] that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
-Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in {{Section 3.1 of !STRUCTURED-FIELDS=RFC8941}}.
+Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in {{Section 3.1 of !STRUCTURED-FIELDS=RFC9651}}.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
 ~~~
 
 ## Quota Policy Item {#quotapolicy-item}
-A quota policy Item contains an identifier for the policy and a set of Parameters{{!RFC8941}} that contain information about a server's capacity allocation for the policy.
+A quota policy Item contains an identifier for the policy and a set of Parameters{{!RFC9651}} that contain information about a server's capacity allocation for the policy.
 
 The following parameters are defined:
 
@@ -224,9 +224,9 @@ The following example shows a policy with a partition key and a quota unit:
 
 A server uses the "RateLimit" response header field to communicate the current service limit for a quota policy for a particular partition key.
 
-The field is expressed as a List{{!RFC8941}} of Service Limit Items ({{servicelimit-item}}).
+The field is expressed as a List{{!RFC9651}} of Service Limit Items ({{servicelimit-item}}).
 
-Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in {{Section 3.1 of !STRUCTURED-FIELDS=RFC8941}}.
+Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in {{Section 3.1 of !STRUCTURED-FIELDS=RFC9651}}.
 
 ~~~
    RateLimit: "default";r=50;t=30
@@ -234,7 +234,7 @@ Lists of Service Limit Items can be split over multiple "RateLimit" fields in th
 
 ## Service Limit Item {#servicelimit-item}
 
-Each service limit Item{{!RFC8941}} identifies the quota policy ({{quotapolicy-item}}) associated with the request and contains Parameters{{!RFC8941}} with information about the current service limit.
+Each service limit Item{{!RFC9651}} identifies the quota policy ({{quotapolicy-item}}) associated with the request and contains Parameters{{!RFC9651}} with information about the current service limit.
 
 The following parameters are defined in this specification:
 
@@ -560,12 +560,12 @@ IANA is requested to update two registries and create one new registry.
 Please add the following entries to the
 "Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{HTTP}}):
 
-|---------------------|-----------|---------------|
-| Field Name          | Status    | Specification |
-|---------------------|-----------|---------------|
-| RateLimit           | permanent | {{ratelimit-field}} of {{&SELF}}       |
-| RateLimit-Policy    | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
-|---------------------|-----------|---------------|
+|---------------------|-----------------|-----------|---------------|
+| Field Name          | Structured Type | Status    | Specification |
+|---------------------|-----------------|-----------|---------------|
+| RateLimit           | List            | permanent | {{ratelimit-field}} of {{&SELF}}       |
+| RateLimit-Policy    | List            | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
+|---------------------|-----------------|-----------|---------------|
 
 
 ## Update HTTP Problem Type registry
