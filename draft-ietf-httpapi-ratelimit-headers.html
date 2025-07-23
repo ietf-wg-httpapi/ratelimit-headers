@@ -11,22 +11,22 @@
 <meta content="
        This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their quota policies and the current service limits, thereby allowing clients to avoid being throttled. 
     " name="description">
-<meta content="xml2rfc 3.28.0" name="generator">
+<meta content="xml2rfc 3.30.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-httpapi-ratelimit-headers-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.28.0
-    Python 3.12.9
+  xml2rfc 3.30.0
+    Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
-    Jinja2 3.1.5
-    lxml 5.3.0
-    platformdirs 4.3.6
+    Jinja2 3.1.6
+    lxml 5.3.1
+    platformdirs 4.3.8
     pycountry 24.6.1
     PyYAML 6.0.2
-    requests 2.32.3
-    setuptools 70.3.0
+    requests 2.32.4
+    setuptools 80.9.0
     wcwidth 0.2.13
 -->
 <link href="draft-ietf-httpapi-ratelimit-headers.xml" rel="alternate" type="application/rfc+xml">
@@ -1046,11 +1046,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">RateLimit header fields for HTTP</td>
-<td class="right">March 2025</td>
+<td class="right">July 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Polli, et al.</td>
-<td class="center">Expires 5 September 2025</td>
+<td class="center">Expires 24 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1063,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-httpapi-ratelimit-headers-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-04" class="published">4 March 2025</time>
+<time datetime="2025-07-23" class="published">23 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-05">5 September 2025</time></dd>
+<dd class="expires"><time datetime="2026-01-24">24 January 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1126,7 +1126,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 5 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1493,7 +1493,7 @@ NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
 described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
 appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <p id="section-1.2-2">The term Origin is to be interpreted as described in Section 7 of<span>[<a href="#WEB-ORIGIN" class="cite xref">WEB-ORIGIN</a>]</span>.<a href="#section-1.2-2" class="pilcrow">¶</a></p>
-<p id="section-1.2-3">This document uses the terms List, Item and Integer from <span><a href="https://rfc-editor.org/rfc/rfc8941#section-3" class="relref">Section 3</a> of [<a href="#STRUCTURED-FIELDS" class="cite xref">STRUCTURED-FIELDS</a>]</span> to specify syntax and parsing, along with the concept of "bare item".<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-3">This document uses the terms List, Item and Integer from <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3" class="relref">Section 3</a> of [<a href="#STRUCTURED-FIELDS" class="cite xref">STRUCTURED-FIELDS</a>]</span> to specify syntax and parsing, along with the concept of "bare item".<a href="#section-1.2-3" class="pilcrow">¶</a></p>
 <p id="section-1.2-4">The term "problem type" in this document is to be interpreted as described in <span>[<a href="#PROBLEM" class="cite xref">PROBLEM</a>]</span>.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1553,9 +1553,9 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
       <h2 id="name-ratelimit-policy-field">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-ratelimit-policy-field" class="section-name selfRef">RateLimit-Policy Field</a>
       </h2>
-<p id="section-3-1">The "RateLimit-Policy" response header field is a non-empty List<span>[<a href="#RFC8941" class="cite xref">RFC8941</a>]</span> of Quota Policy Items (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>). The Item<span>[<a href="#RFC8941" class="cite xref">RFC8941</a>]</span> value MUST be a String<span>[<a href="#RFC8941" class="cite xref">RFC8941</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">The "RateLimit-Policy" response header field is a non-empty List<span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span> of Quota Policy Items (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>). The Item<span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span> value MUST be a String<span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the <span><a href="#ratelimit-field" class="internal xref">RateLimit</a> (<a href="#ratelimit-field" class="auto internal xref">Section 4</a>)</span> field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the (RateLimit field)[{#ratelimit-field}] that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">Lists of Quota Policy Items (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in <span><a href="https://rfc-editor.org/rfc/rfc8941#section-3.1" class="relref">Section 3.1</a> of [<a href="#STRUCTURED-FIELDS" class="cite xref">STRUCTURED-FIELDS</a>]</span>.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-3">Lists of Quota Policy Items (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.1" class="relref">Section 3.1</a> of [<a href="#STRUCTURED-FIELDS" class="cite xref">STRUCTURED-FIELDS</a>]</span>.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3-4">
 <pre>
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -1566,7 +1566,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
         <h3 id="name-quota-policy-item">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-quota-policy-item" class="section-name selfRef">Quota Policy Item</a>
         </h3>
-<p id="section-3.1-1">A quota policy Item contains an identifier for the policy and a set of Parameters<span>[<a href="#RFC8941" class="cite xref">RFC8941</a>]</span> that contain information about a server's capacity allocation for the policy.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-1">A quota policy Item contains an identifier for the policy and a set of Parameters<span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span> that contain information about a server's capacity allocation for the policy.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
 <p id="section-3.1-2">The following parameters are defined:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-3.1-3">
           <dt id="section-3.1-3.1">q:</dt>
@@ -1683,8 +1683,8 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-ratelimit-field" class="section-name selfRef">RateLimit Field</a>
       </h2>
 <p id="section-4-1">A server uses the "RateLimit" response header field to communicate the current service limit for a quota policy for a particular partition key.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">The field is expressed as a List<span>[<a href="#RFC8941" class="cite xref">RFC8941</a>]</span> of Service Limit Items (<a href="#servicelimit-item" class="auto internal xref">Section 4.1</a>).<a href="#section-4-2" class="pilcrow">¶</a></p>
-<p id="section-4-3">Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in <span><a href="https://rfc-editor.org/rfc/rfc8941#section-3.1" class="relref">Section 3.1</a> of [<a href="#STRUCTURED-FIELDS" class="cite xref">STRUCTURED-FIELDS</a>]</span>.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-2">The field is expressed as a List<span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span> of Service Limit Items (<a href="#servicelimit-item" class="auto internal xref">Section 4.1</a>).<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in <span><a href="https://rfc-editor.org/rfc/rfc9651#section-3.1" class="relref">Section 3.1</a> of [<a href="#STRUCTURED-FIELDS" class="cite xref">STRUCTURED-FIELDS</a>]</span>.<a href="#section-4-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4-4">
 <pre>
    RateLimit: "default";r=50;t=30
@@ -1695,7 +1695,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
         <h3 id="name-service-limit-item">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-service-limit-item" class="section-name selfRef">Service Limit Item</a>
         </h3>
-<p id="section-4.1-1">Each service limit Item<span>[<a href="#RFC8941" class="cite xref">RFC8941</a>]</span> identifies the quota policy (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>) associated with the request and contains Parameters<span>[<a href="#RFC8941" class="cite xref">RFC8941</a>]</span> with information about the current service limit.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">Each service limit Item<span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span> identifies the quota policy (<a href="#quotapolicy-item" class="auto internal xref">Section 3.1</a>) associated with the request and contains Parameters<span>[<a href="#RFC9651" class="cite xref">RFC9651</a>]</span> with information about the current service limit.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.1-2">The following parameters are defined in this specification:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-4.1-3">
           <dt id="section-4.1-3.1">r:</dt>
@@ -2112,6 +2112,7 @@ can define specific techniques to mitigate the risks of re-identification.<a hre
 <thead>
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Field Name</th>
+              <th class="text-left" rowspan="1" colspan="1">Structured Type</th>
               <th class="text-left" rowspan="1" colspan="1">Status</th>
               <th class="text-left" rowspan="1" colspan="1">Specification</th>
             </tr>
@@ -2119,12 +2120,14 @@ can define specific techniques to mitigate the risks of re-identification.<a hre
           <tbody>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">RateLimit</td>
+              <td class="text-left" rowspan="1" colspan="1">List</td>
               <td class="text-left" rowspan="1" colspan="1">permanent</td>
               <td class="text-left" rowspan="1" colspan="1">
                 <a href="#ratelimit-field" class="auto internal xref">Section 4</a> of RFC nnnn</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">RateLimit-Policy</td>
+              <td class="text-left" rowspan="1" colspan="1">List</td>
               <td class="text-left" rowspan="1" colspan="1">permanent</td>
               <td class="text-left" rowspan="1" colspan="1">
                 <a href="#ratelimit-policy-field" class="auto internal xref">Section 3</a> of RFC nnnn</td>
@@ -2262,13 +2265,13 @@ can define specific techniques to mitigate the risks of re-identification.<a hre
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC8941">[RFC8941]</dt>
+<dt id="RFC9651">[RFC9651]</dt>
         <dd>
-<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="seriesInfo">RFC 8941</span>, <span class="seriesInfo">DOI 10.17487/RFC8941</span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8941">https://www.rfc-editor.org/rfc/rfc8941</a>&gt;</span>. </dd>
+<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="seriesInfo">RFC 9651</span>, <span class="seriesInfo">DOI 10.17487/RFC9651</span>, <time datetime="2024-09" class="refDate">September 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9651">https://www.rfc-editor.org/rfc/rfc9651</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="STRUCTURED-FIELDS">[STRUCTURED-FIELDS]</dt>
         <dd>
-<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="seriesInfo">RFC 8941</span>, <span class="seriesInfo">DOI 10.17487/RFC8941</span>, <time datetime="2021-02" class="refDate">February 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8941">https://www.rfc-editor.org/rfc/rfc8941</a>&gt;</span>. </dd>
+<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="seriesInfo">RFC 9651</span>, <span class="seriesInfo">DOI 10.17487/RFC9651</span>, <time datetime="2024-09" class="refDate">September 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9651">https://www.rfc-editor.org/rfc/rfc9651</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="WEB-ORIGIN">[WEB-ORIGIN]</dt>
       <dd>

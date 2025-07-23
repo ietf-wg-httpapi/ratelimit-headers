@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 5 September 2025                                        Red Hat
+Expires: 24 January 2026                                         Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                            4 March 2025
+                                                            23 July 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 September 2025.
+   This Internet-Draft will expire on 24 January 2026.
 
 Copyright Notice
 
@@ -258,8 +258,8 @@ Table of Contents
 3.  RateLimit-Policy Field
 
    The "RateLimit-Policy" response header field is a non-empty
-   List[RFC8941] of Quota Policy Items (Section 3.1).  The Item[RFC8941]
-   value MUST be a String[RFC8941].
+   List[RFC9651] of Quota Policy Items (Section 3.1).  The Item[RFC9651]
+   value MUST be a String[RFC9651].
 
    The field value SHOULD remain consistent over a sequence of HTTP
    responses.  It is this characteristic that differentiates it from the
@@ -281,7 +281,7 @@ Table of Contents
 3.1.  Quota Policy Item
 
    A quota policy Item contains an identifier for the policy and a set
-   of Parameters[RFC8941] that contain information about a server's
+   of Parameters[RFC9651] that contain information about a server's
    capacity allocation for the policy.
 
    The following parameters are defined:
@@ -369,7 +369,7 @@ Table of Contents
    the current service limit for a quota policy for a particular
    partition key.
 
-   The field is expressed as a List[RFC8941] of Service Limit Items
+   The field is expressed as a List[RFC9651] of Service Limit Items
    (Section 4.1).
 
    Lists of Service Limit Items can be split over multiple "RateLimit"
@@ -380,9 +380,9 @@ Table of Contents
 
 4.1.  Service Limit Item
 
-   Each service limit Item[RFC8941] identifies the quota policy
+   Each service limit Item[RFC9651] identifies the quota policy
    (Section 3.1) associated with the request and contains
-   Parameters[RFC8941] with information about the current service limit.
+   Parameters[RFC9651] with information about the current service limit.
 
    The following parameters are defined in this specification:
 
@@ -825,13 +825,15 @@ Table of Contents
    Please add the following entries to the "Hypertext Transfer Protocol
    (HTTP) Field Name Registry" registry ([HTTP]):
 
-         +==================+===========+=======================+
-         | Field Name       | Status    | Specification         |
-         +==================+===========+=======================+
-         | RateLimit        | permanent | Section 4 of RFC nnnn |
-         +------------------+-----------+-----------------------+
-         | RateLimit-Policy | permanent | Section 3 of RFC nnnn |
-         +------------------+-----------+-----------------------+
+    +==================+=================+===========+===============+
+    | Field Name       | Structured Type | Status    | Specification |
+    +==================+=================+===========+===============+
+    | RateLimit        | List            | permanent | Section 4 of  |
+    |                  |                 |           | RFC nnnn      |
+    +------------------+-----------------+-----------+---------------+
+    | RateLimit-Policy | List            | permanent | Section 3 of  |
+    |                  |                 |           | RFC nnnn      |
+    +------------------+-----------------+-----------+---------------+
 
                                  Table 1
 
@@ -936,14 +938,14 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-   [RFC8941]  Nottingham, M. and P. Kamp, "Structured Field Values for
-              HTTP", RFC 8941, DOI 10.17487/RFC8941, February 2021,
-              <https://www.rfc-editor.org/rfc/rfc8941>.
+   [RFC9651]  Nottingham, M. and P. Kamp, "Structured Field Values for
+              HTTP", RFC 9651, DOI 10.17487/RFC9651, September 2024,
+              <https://www.rfc-editor.org/rfc/rfc9651>.
 
    [STRUCTURED-FIELDS]
               Nottingham, M. and P. Kamp, "Structured Field Values for
-              HTTP", RFC 8941, DOI 10.17487/RFC8941, February 2021,
-              <https://www.rfc-editor.org/rfc/rfc8941>.
+              HTTP", RFC 9651, DOI 10.17487/RFC9651, September 2024,
+              <https://www.rfc-editor.org/rfc/rfc9651>.
 
    [WEB-ORIGIN]
               Barth, A., "The Web Origin Concept", RFC 6454,
