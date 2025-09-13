@@ -358,7 +358,7 @@ RateLimit: "problemPolicy";r=0;t=10
 
 ~~~
 
-If a response contains both the Retry-After and the RateLimit header fields, the reset parameter value SHOULD reference the same point in time as when additional quota becomes available, which SHOULD align with the Retry-After field value.
+If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the reset parameter.
 
 A service using RateLimit header fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between the remaining and the reset parameter values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window.
 
