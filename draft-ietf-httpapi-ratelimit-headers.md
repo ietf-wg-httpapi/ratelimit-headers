@@ -140,7 +140,7 @@ The term "problem type" in this document is to be interpreted as described in [P
 
 The "RateLimit-Policy" response header field is a non-empty List{{SF}} of Quota Policy Items ({{quotapolicy-item}}). The Item{{SF}} value MUST be a String{{SF}}.
 
-The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the (RateLimit field)[{#ratelimit-field}] that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
+The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the [RateLimit field](#ratelimit-field) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
 Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in {{Section 3.1 of SF}}.
 
