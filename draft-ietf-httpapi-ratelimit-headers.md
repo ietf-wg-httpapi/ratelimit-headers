@@ -149,6 +149,7 @@ Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "R
 ~~~
 
 ## Quota Policy Item {#quotapolicy-item}
+
 A quota policy Item contains an identifier for the policy and a set of Parameters{{SF}} that contain information about a server's capacity allocation for the policy.
 
 The following parameters are defined:
@@ -562,12 +563,12 @@ IANA is requested to update two registries and create one new registry.
 Please add the following entries to the
 "Hypertext Transfer Protocol (HTTP) Field Name Registry" registry ({{HTTP}}):
 
-|---------------------|-----------|---------------|
-| Field Name          | Status    | Specification |
-|---------------------|-----------|---------------|
-| RateLimit           | permanent | {{ratelimit-field}} of {{&SELF}}       |
-| RateLimit-Policy    | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
-|---------------------|-----------|---------------|
+|---------------------|-----------------|-----------|---------------|
+| Field Name          | Structured Type | Status    | Specification |
+|---------------------|-----------------|-----------|---------------|
+| RateLimit           | List            | permanent | {{ratelimit-field}} of {{&SELF}}       |
+| RateLimit-Policy    | List            | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
+|---------------------|-----------------|-----------|---------------|
 
 
 ## Update HTTP Problem Type registry
