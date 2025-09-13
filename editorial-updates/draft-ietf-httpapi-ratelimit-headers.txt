@@ -824,13 +824,15 @@ Table of Contents
    Please add the following entries to the "Hypertext Transfer Protocol
    (HTTP) Field Name Registry" registry ([HTTP]):
 
-         +==================+===========+=======================+
-         | Field Name       | Status    | Specification         |
-         +==================+===========+=======================+
-         | RateLimit        | permanent | Section 4 of RFC nnnn |
-         +------------------+-----------+-----------------------+
-         | RateLimit-Policy | permanent | Section 3 of RFC nnnn |
-         +------------------+-----------+-----------------------+
+    +==================+=================+===========+===============+
+    | Field Name       | Structured Type | Status    | Specification |
+    +==================+=================+===========+===============+
+    | RateLimit        | List            | permanent | Section 4 of  |
+    |                  |                 |           | RFC nnnn      |
+    +------------------+-----------------+-----------+---------------+
+    | RateLimit-Policy | List            | permanent | Section 3 of  |
+    |                  |                 |           | RFC nnnn      |
+    +------------------+-----------------+-----------+---------------+
 
                                  Table 1
 
