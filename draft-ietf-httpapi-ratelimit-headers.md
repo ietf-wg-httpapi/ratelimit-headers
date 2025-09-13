@@ -242,7 +242,7 @@ The following parameters are defined in this specification:
   :  This REQUIRED parameter value conveys the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
 
   t:
-  : This OPTIONAL parameter value conveys the time window reset time for the identified policy ({{ratelimit-reset-parameter}}).
+  : This OPTIONAL parameter value conveys the time until additional quota is made available for the identified policy ({{ratelimit-reset-parameter}}).
 
   pk:
   : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request.
@@ -262,7 +262,7 @@ When the remaining parameter value is low, it indicates that the server may soon
 
 ### Reset Parameter {#ratelimit-reset-parameter}
 
-The "t" parameter indicates the number of seconds until the quota associated with the quota policy resets.
+The "t" parameter indicates the number of seconds until additional quota associated with the quota policy is made available.
 
 It is a non-negative Integer compatible with the delay-seconds rule, because:
 
@@ -270,7 +270,7 @@ It is a non-negative Integer compatible with the delay-seconds rule, because:
   and clock skew between client and server (see {{Section 5.6.7 of HTTP}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
-The client MUST NOT assume that all its service limit will be reset at the moment indicated by the reset parameter. The server MAY arbitrarily alter the reset parameter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
+The client MUST NOT assume that all its service limit will be fully restored at the moment indicated by the reset parameter. The server MAY arbitrarily alter the reset parameter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
 
 ### Partition Key Parameter {#ratelimit-partitionkey}
 
@@ -476,7 +476,7 @@ or not serve the request regardless of the advertised quotas.
 
 ## Reliability of the reset parameter {#sec-reset-reliability}
 
-Consider that quota might not be restored after the moment referenced by the [reset parameter](#ratelimit-reset-parameter),
+Consider that quota might not be made available after the moment referenced by the [reset parameter](#ratelimit-reset-parameter),
 and the reset parameter value may not be constant.
 
 Subsequent requests might return a higher reset parameter value
