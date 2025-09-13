@@ -45,6 +45,8 @@ normative:
   IANA: RFC8126
   HTTP: RFC9110
   PROBLEM: RFC9457
+  SF: RFC8941
+  WEB-ORIGIN: RFC6454
 
 informative:
   PRIVACY: RFC6973
@@ -90,21 +92,21 @@ The following features are out of the scope of this document:
   : RateLimit header fields are not meant to support authorization or other kinds of access controls.
 
   Response status code:
-  : RateLimit header fields may be returned in both successful (see {{Section 15.3 of HTTP}}) and non-successful responses. This specification does not cover whether non Successful responses count on quota usage, nor does it mandates any correlation between the RateLimit values and the returned status code.
+  : RateLimit header fields may be returned in both successful (see {{Section 15.3 of HTTP}}) and non-successful responses. This specification does not cover whether non Successful responses count on quota usage, nor does it mandate any correlation between the RateLimit values and the returned status code.
 
   Throttling algorithm:
   : This specification does not mandate a specific throttling algorithm. The values published in the fields, including the window size, can be statically or dynamically evaluated.
 
   Service Level Agreement:
-  : Conveyed quota hints do not imply any service guarantee. Server is free to throttle respectful clients under certain circumstances.
+  : Conveyed quota hints do not imply any service guarantee. Server is free to throttle clients that adhere to the server’s recommended limits under certain circumstances.
 
 ## Notational Conventions
 
 {::boilerplate bcp14}
 
-The term Origin is to be interpreted as described in Section 7 of{{!WEB-ORIGIN=RFC6454}}.
+The term Origin is to be interpreted as described in {{Section 7 of WEB-ORIGIN}}.
 
-This document uses the terms List, Item and Integer from {{Section 3 of !STRUCTURED-FIELDS=RFC9651}} to specify syntax and parsing, along with the concept of "bare item".
+This document uses the terms List, Item and Integer from {{Section 3 of SF}} to specify syntax and parsing, along with the concept of "bare item".
 
 The term "problem type" in this document is to be interpreted as described in [PROBLEM].
 
@@ -129,25 +131,26 @@ The term "problem type" in this document is to be interpreted as described in [P
   : A service limit is the currently remaining quota from a specific quota policy and, if defined, the remaining time before quota is reallocated.
 
   List:
-  : A {{!STRUCTURED-FIELDS=RFC9651}} list of Items
+  : A {{SF}} list of Items
 
   Item:
-  : A {{!STRUCTURED-FIELDS=RFC9651}} item with a set of associated parameters
+  : A {{SF}} item with a set of associated parameters
 
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field is a non-empty List{{!RFC9651}} of Quota Policy Items ({{quotapolicy-item}}). The Item{{!RFC9651}} value MUST be a String{{!RFC9651}}.
+The "RateLimit-Policy" response header field is a non-empty List{{SF}} of Quota Policy Items ({{quotapolicy-item}}). The Item{{SF}} value MUST be a String{{SF}}.
 
-The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the (RateLimit field)[{#ratelimit-field}] that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
+The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the [RateLimit field](#ratelimit-field) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
-Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in {{Section 3.1 of !STRUCTURED-FIELDS=RFC9651}}.
+Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in {{Section 3.1 of SF}}.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
 ~~~
 
 ## Quota Policy Item {#quotapolicy-item}
-A quota policy Item contains an identifier for the policy and a set of Parameters{{!RFC9651}} that contain information about a server's capacity allocation for the policy.
+
+A quota policy Item contains an identifier for the policy and a set of Parameters{{SF}} that contain information about a server's capacity allocation for the policy.
 
 The following parameters are defined:
 
@@ -224,9 +227,9 @@ The following example shows a policy with a partition key and a quota unit:
 
 A server uses the "RateLimit" response header field to communicate the current service limit for a quota policy for a particular partition key.
 
-The field is expressed as a List{{!RFC9651}} of Service Limit Items ({{servicelimit-item}}).
+The field is expressed as a List{{SF}} of Service Limit Items ({{servicelimit-item}}).
 
-Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in {{Section 3.1 of !STRUCTURED-FIELDS=RFC9651}}.
+Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in {{Section 3.1 of SF}}.
 
 ~~~
    RateLimit: "default";r=50;t=30
@@ -234,7 +237,7 @@ Lists of Service Limit Items can be split over multiple "RateLimit" fields in th
 
 ## Service Limit Item {#servicelimit-item}
 
-Each service limit Item{{!RFC9651}} identifies the quota policy ({{quotapolicy-item}}) associated with the request and contains Parameters{{!RFC9651}} with information about the current service limit.
+Each service limit Item{{SF}} identifies the quota policy ({{quotapolicy-item}}) associated with the request and contains Parameters{{SF}} with information about the current service limit.
 
 The following parameters are defined in this specification:
 
@@ -247,7 +250,7 @@ The following parameters are defined in this specification:
   pk:
   : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request.
 
-This field cannot appear in a trailer section. Other parameters are allowed and can be regarded as comments.
+This field MUST NOT appear in a trailer section. Other parameters are allowed and can be regarded as comments.
 
 Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 
@@ -309,14 +312,14 @@ Content-Type: application/problem+json
 
 {
   "type": "https://iana.org/assignments/http-problem-types#quota-exceeded",
-  "title": "Request cannot be satisifed as assigned quota has been exceeded",
+  "title": "Request cannot be satisfied as assigned quota has been exceeded",
   "violated-policies": ["daily","bandwidth"]
 }
 ~~~
 
 ## Temporary Reduced Capacity
 
-This section defines the "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed cannot currently be satisfied due to a temporary reduction in capacity due to service limitations. The server MAY chose to include a RateLimit-Policy field indicating the new temporarily lower quota. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
+This section defines the "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity" problem type. A server MAY use this problem type if it wants to communicate that the client’s requests currently cannot be satisfied due to a temporary reduction in server capacity. The server MAY choose to include a RateLimit-Policy field indicating the new temporarily lower quota. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
 
 ~~~ http-message
 HTTP/1.1 503 Server Unavailable
@@ -324,14 +327,14 @@ Content-Type: application/problem+json
 
 {
   "type": "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity",
-  "title": "Request cannot be satisifed due to temporary server capacity constraints",
+  "title": "Request cannot be satisfied due to temporary server capacity constraints",
   "violated-policies": ["hourly"]
 }
 ~~~
 
 ## Abnormal Usage Detected
 
-This section defines the "https://iana.org/assignments/http-problem-types#abnormal-usage-detected" problem type. A server MAY use this problem type  to communicate to the client that it has detected a pattern of requests that suggest unintentional or malicous behaviour on the part of the client. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
+This section defines the "https://iana.org/assignments/http-problem-types#abnormal-usage-detected" problem type. A server MAY use this problem type  to communicate to the client that it has detected a pattern of requests that suggest unintentional or malicious behaviour on the part of the client. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
 
 ~~~ http-message
 HTTP/1.1 429 Too Many Requests
@@ -376,7 +379,7 @@ Implementers concerned with response fields' size, might take into account their
 
 # Client Behavior {#receiving-fields}
 
-The RateLimit header fields can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether requests will succeed.
+The RateLimit header fields can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will be successful. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether requests will succeed.
 
 For example, a successful response with the following fields:
 
@@ -430,7 +433,7 @@ An intermediary MAY alter the RateLimit header fields in such a way as to commun
 
 An intermediary SHOULD forward a request even when presuming that it might not be serviced; the service returning the RateLimit header fields is the sole responsible of enforcing the communicated quota policy, and it is always free to service incoming requests.
 
-This specification does not mandate any behavior on intermediaries respect to retries, nor requires that intermediaries have any role in respecting quota policies. For example, it is legitimate for a proxy to retransmit a request without notifying the client, and thus consuming quota units.
+This specification does not mandate any behavior on intermediaries with respect to retries, nor does it require that intermediaries have any role in respecting quota policies. For example, it is legitimate for a proxy to retransmit a request without notifying the client, and thus consuming quota units.
 
 [Privacy considerations](#privacy) provide further guidance on intermediaries.
 
@@ -636,7 +639,7 @@ A basic quota mechanism limits the number of acceptable requests in a given time
 
 When quota is exceeded, servers usually do not serve the request replying instead with a 4xx HTTP status code (e.g. 429 or 403) or adopt more aggressive policies like dropping connections.
 
-Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, etc.) and at different levels. For example, an user may be allowed to issue:
+Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, etc.) and at different levels. For example, a user may be allowed to issue:
 
 - 10 requests per second;
 - limited to 60 requests per minute;
@@ -847,7 +850,7 @@ RateLimit: "default";r=0;t=5
 "type": "https://iana.org/assignments/http-problem-types#quota-exceeded"
 "title": "Too Many Requests",
 "status": 429,
-"policy-violations": ["default"]
+"violated-policies": ["default"]
 }
 ~~~
 
@@ -1123,7 +1126,7 @@ RateLimit: "day";r=100;t=36000
 
    A problematic way to limit concurrency is connection dropping,
    especially when connections are multiplexed (e.g. HTTP/2)
-   because this results in unserviced client requests,
+   because this results in client requests not being handled,
    which is something we want to avoid.
 
    A semantic way to limit concurrency is to return 503 + Retry-After
@@ -1158,11 +1161,11 @@ RateLimit: "sliding";r=50;t=44
 
 9. Can intermediaries alter RateLimit header fields?
 
-    Generally, they should not because it might result in unserviced requests.
+    Generally, they should not because it might result in requests not being handled.
     There are reasonable use cases for intermediaries mangling RateLimit header fields though,
     e.g. when they enforce stricter quota-policies,
     or when they are an active component of the service.
-    In those case we will consider them as part of the originating infrastructure.
+    In those cases we will consider them as part of the originating infrastructure.
 
 10. Why the `w` parameter is just informative?
     Could it be used by a client to determine the request rate?
