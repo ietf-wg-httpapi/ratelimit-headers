@@ -45,7 +45,7 @@ normative:
   IANA: RFC8126
   HTTP: RFC9110
   PROBLEM: RFC9457
-  SF: RFC8941
+  SF: RFC9651
   WEB-ORIGIN: RFC6454
 
 informative:
