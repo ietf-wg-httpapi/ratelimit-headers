@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 17 March 2026                                           Red Hat
+Expires: 18 March 2026                                           Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                       13 September 2025
+                                                       14 September 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 March 2026.
+   This Internet-Draft will expire on 18 March 2026.
 
 Copyright Notice
 
@@ -938,8 +938,8 @@ Table of Contents
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
    [SF]       Nottingham, M. and P. Kamp, "Structured Field Values for
-              HTTP", RFC 8941, DOI 10.17487/RFC8941, February 2021,
-              <https://www.rfc-editor.org/rfc/rfc8941>.
+              HTTP", RFC 9651, DOI 10.17487/RFC9651, September 2024,
+              <https://www.rfc-editor.org/rfc/rfc9651>.
 
    [WEB-ORIGIN]
               Barth, A., "The Web Origin Concept", RFC 6454,
