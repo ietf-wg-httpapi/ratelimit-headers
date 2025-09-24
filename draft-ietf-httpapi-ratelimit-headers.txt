@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 18 March 2026                                           Red Hat
+Expires: 28 March 2026                                           Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                       14 September 2025
+                                                       24 September 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 March 2026.
+   This Internet-Draft will expire on 28 March 2026.
 
 Copyright Notice
 
@@ -388,8 +388,8 @@ Table of Contents
    r:  This REQUIRED parameter value conveys the remaining quota units
       for the identified policy (Section 4.1.1).
 
-   t:  This OPTIONAL parameter value conveys the time window reset time
-      for the identified policy (Section 4.1.2).
+   t:  This OPTIONAL parameter value conveys the time until additional
+      quota is made available for the identified policy (Section 4.1.2).
 
    pk:  The OPTIONAL "pk" parameter value conveys the partition key
       associated to the corresponding request.
@@ -413,8 +413,8 @@ Table of Contents
 
 4.1.2.  Reset Parameter
 
-   The "t" parameter indicates the number of seconds until the quota
-   associated with the quota policy resets.
+   The "t" parameter indicates the number of seconds until additional
+   quota associated with the quota policy is made available.
 
    It is a non-negative Integer compatible with the delay-seconds rule,
    because:
@@ -426,9 +426,9 @@ Table of Contents
    *  it mitigates the risk related to thundering herd when too many
       clients are serviced with the same timestamp.
 
-   The client MUST NOT assume that all its service limit will be reset
-   at the moment indicated by the reset parameter.  The server MAY
-   arbitrarily alter the reset parameter value between subsequent
+   The client MUST NOT assume that all its service limit will be fully
+   restored at the moment indicated by the reset parameter.  The server
+   MAY arbitrarily alter the reset parameter value between subsequent
    requests; for example, in case of resource saturation or to implement
    sliding window policies.
 
@@ -537,8 +537,8 @@ Table of Contents
    RateLimit: "problemPolicy";r=0;t=10
 
    If a response contains both the Retry-After and the RateLimit header
-   fields, the reset parameter value SHOULD reference the same point in
-   time as the Retry-After field value.
+   fields, the Retry-After field value SHOULD NOT reference a point in
+   time earlier than the reset parameter.
 
    A service using RateLimit header fields MUST NOT convey values
    exposing an unwanted volume of requests and SHOULD implement
@@ -728,9 +728,9 @@ Table of Contents
 
 8.4.  Reliability of the reset parameter
 
-   Consider that quota might not be restored after the moment referenced
-   by the reset parameter (Section 4.1.2), and the reset parameter value
-   may not be constant.
+   Consider that quota might not be made available after the moment
+   referenced by the reset parameter (Section 4.1.2), and the reset
+   parameter value may not be constant.
 
    Subsequent requests might return a higher reset parameter value to
    limit concurrency or implement dynamic or adaptive throttling
