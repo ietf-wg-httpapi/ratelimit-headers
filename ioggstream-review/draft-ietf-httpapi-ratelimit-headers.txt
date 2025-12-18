@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 18 March 2026                                           Red Hat
+Expires: 21 June 2026                                            Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                       14 September 2025
+                                                        18 December 2025
 
 
                     RateLimit header fields for HTTP
@@ -53,7 +53,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 18 March 2026.
+   This Internet-Draft will expire on 21 June 2026.
 
 Copyright Notice
 
@@ -166,7 +166,7 @@ Table of Contents
    *  RateLimit: the currently remaining quota available for a specific
       policy.
 
-   These fields enable establishing complex rate limiting policies,
+   These fields enable publishing complex rate limiting policies,
    including using multiple and variable time windows and dynamic
    quotas, and implementing concurrency limits.
 
@@ -217,6 +217,8 @@ Table of Contents
    The term Origin is to be interpreted as described in Section 7 of
    [WEB-ORIGIN].
 
+   The terms "request", "response", "server", "client" are from [HTTP].
+
    This document uses the terms List, Item and Integer from Section 3 of
    [SF] to specify syntax and parsing, along with the concept of "bare
    item".
@@ -243,13 +245,14 @@ Table of Contents
       regulate the activity within a specified quota partition,
       quantified in quota units, over a defined time window.  This
       activity is restricted to a predefined limit, known as the quota.
-      Quota policies can be advertised by servers, but they are not
-      required to be, and more than one quota policy can affect a given
-      request from a client to a server.
+      Quota policies MAY be advertised by servers; each request can be
+      subject to more than one quota policy.
 
    Service Limit:  A service limit is the currently remaining quota from
       a specific quota policy and, if defined, the remaining time before
       quota is reallocated.
+
+ 
 
    List:  A [SF] list of Items
 
@@ -261,7 +264,7 @@ Table of Contents
    of Quota Policy Items (Section 3.1).  The Item[SF] value MUST be a
    String[SF].
 
-   The field value SHOULD remain consistent over a sequence of HTTP
+   The field value SHOULD remain consistent over a sequence of
    responses.  It is this characteristic that differentiates it from the
    RateLimit (Section 4) field that contains information that MAY change
    on every request.  The "RateLimit-Policy" field enables clients to
@@ -273,7 +276,7 @@ Table of Contents
    appropriate.
 
    Lists of Quota Policy Items (Section 3.1) can be split over multiple
-   "RateLimit-Policy" fields in the same HTTP response as described in
+   "RateLimit-Policy" fields in the same response as described in
    Section 3.1 of [SF].
 
       RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -286,16 +289,15 @@ Table of Contents
 
    The following parameters are defined:
 
-   q:  The REQUIRED "q" parameter indicates the quota allocated by this
-      policy measured in quota units.
+   q:  This REQUIRED parameter value indicates the quota allocated by
+      this policy measured in quota units.
 
-   qu:  The OPTIONAL "qu" parameter value conveys the quota units
-      associated to the "q" parameter.  The default quota unit is
-      "requests".
+   qu:  This OPTIONAL parameter value conveys the quota units associated
+      to the "q" parameter.  The default quota unit is "requests".
 
-   w:  The OPTIONAL "w" parameter value conveys a time window.
+   w:  This OPTIONAL parameter value conveys a time window.
 
-   pk:  The OPTIONAL "pk" parameter value conveys the partition key
+   pk:  This OPTIONAL parameter value conveys the partition key
       associated to the corresponding request.
 
    Other parameters are allowed and can be regarded as comments.
@@ -331,10 +333,10 @@ Table of Contents
 3.1.3.  Window Parameter
 
    The "w" parameter value conveys a time window applicable to the quota
-   (Section 3.1.1).  The time window MUST be a non-negative, non-zero,
-   Integer value expressing an interval in seconds, similar to the
-   "delay-seconds" rule defined in Section 10.2.3 of [HTTP].  Sub-second
-   precision is not supported.
+   (Section 3.1.1).  The time window MUST be a positive Integer value
+   expressing an interval in seconds, similar to the "delay-seconds"
+   rule defined in Section 10.2.3 of [HTTP].  Sub-second precision is
+   not supported.
 
 3.1.4.  Partition Key Parameter
 
@@ -388,10 +390,11 @@ Table of Contents
    r:  This REQUIRED parameter value conveys the remaining quota units
       for the identified policy (Section 4.1.1).
 
-   t:  This OPTIONAL parameter value conveys the time window reset time
-      for the identified policy (Section 4.1.2).
+   t:  This OPTIONAL parameter value conveys the time interval until
+      additional quota is made available for the identified policy
+      (Section 4.1.2).
 
-   pk:  The OPTIONAL "pk" parameter value conveys the partition key
+   pk:  This OPTIONAL parameter value conveys the partition key
       associated to the corresponding request.
 
    This field MUST NOT appear in a trailer section.  Other parameters
@@ -413,8 +416,8 @@ Table of Contents
 
 4.1.2.  Reset Parameter
 
-   The "t" parameter indicates the number of seconds until the quota
-   associated with the quota policy resets.
+   The "t" parameter indicates the number of seconds until additional
+   quota associated with the quota policy is made available.
 
    It is a non-negative Integer compatible with the delay-seconds rule,
    because:
@@ -426,9 +429,9 @@ Table of Contents
    *  it mitigates the risk related to thundering herd when too many
       clients are serviced with the same timestamp.
 
-   The client MUST NOT assume that all its service limit will be reset
-   at the moment indicated by the reset parameter.  The server MAY
-   arbitrarily alter the reset parameter value between subsequent
+   The client MUST NOT assume that all its service limit will be fully
+   restored at the moment indicated by the reset parameter.  The server
+   MAY arbitrarily alter the reset parameter value between subsequent
    requests; for example, in case of resource saturation or to implement
    sliding window policies.
 
@@ -537,8 +540,8 @@ Table of Contents
    RateLimit: "problemPolicy";r=0;t=10
 
    If a response contains both the Retry-After and the RateLimit header
-   fields, the reset parameter value SHOULD reference the same point in
-   time as the Retry-After field value.
+   fields, the Retry-After field value SHOULD NOT reference a point in
+   time earlier than the reset parameter.
 
    A service using RateLimit header fields MUST NOT convey values
    exposing an unwanted volume of requests and SHOULD implement
@@ -639,9 +642,10 @@ Table of Contents
    determine if there is sufficient quota remaining to execute the
    request.
 
-   For cases where the partition key generation algorithm of a server is
-   unknown, clients MAY use heuristics to guess if a future request will
-   be successful based on its similarity to previous requests.
+   When the partition key generation algorithm is unknown, clients MAY
+   use heuristics to guess if a future request will be successful based
+   on its similarity to previous requests.
+
 
 7.2.  Intermediaries
 
@@ -728,9 +732,9 @@ Table of Contents
 
 8.4.  Reliability of the reset parameter
 
-   Consider that quota might not be restored after the moment referenced
-   by the reset parameter (Section 4.1.2), and the reset parameter value
-   may not be constant.
+   Consider that quota might not be made available after the moment
+   referenced by the reset parameter (Section 4.1.2), and the reset
+   parameter value may not be constant.
 
    Subsequent requests might return a higher reset parameter value to
    limit concurrency or implement dynamic or adaptive throttling
