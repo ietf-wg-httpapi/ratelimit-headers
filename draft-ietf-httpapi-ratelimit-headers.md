@@ -63,9 +63,9 @@ This document defines the RateLimit-Policy and RateLimit HTTP header fields for 
 
 # Introduction
 
-Rate limiting of HTTP {{HTTP}} clients is a widespread practice. Typically, servers limit the number of acceptable requests in a given time window (e.g. 10 requests per second). See {{rate-limiting}} for background on rate limiting practices in HTTP.
+Rate limiting of HTTP {{HTTP}} clients is a widespread practice. Servers use quota mechanisms to avoid overload, to ensure an equitable distribution of computational resources, or to enforce other policies such as monetization. Typically, servers limit the number of acceptable requests in a given time window (e.g. 10 requests per second). When a quota is exceeded, servers usually respond with a 4xx HTTP status code (e.g. 429 or 403) or adopt more aggressive policies like dropping connections.
 
-This document defines a set of standard HTTP header fields to enable servers to communicate rate limiting information to clients:
+Quotas may be enforced on different bases (e.g. per user, per IP, per geographic area) and at different levels. To help clients pace their requests, servers can expose quota information via HTTP header fields. This document defines a set of standard HTTP header fields to enable servers to communicate rate limiting information to clients:
 
 - RateLimit-Policy: a quota policy defined by the server. Client requests consume quota.
 - RateLimit: the remaining quota for a specific policy at the time the response is generated.
@@ -558,50 +558,6 @@ The registration template for the RateLimit Quota Units registry is as follows:
 
 
 --- back
-
-# Rate-limiting and quotas {#rate-limiting}
-
-Servers use quota mechanisms to avoid systems overload, to ensure an equitable distribution of computational resources or to enforce other policies - e.g. monetization.
-
-A basic quota mechanism limits the number of acceptable requests in a given time window, e.g. 10 requests per second.
-
-When quota is exceeded, servers usually do not serve the request replying instead with a 4xx HTTP status code (e.g. 429 or 403) or adopt more aggressive policies like dropping connections.
-
-Quotas may be enforced on different basis (e.g. per user, per IP, per geographic area, etc.) and at different levels. For example, a user may be allowed to issue:
-
-- 10 requests per second;
-- limited to 60 requests per minute;
-- limited to 1000 requests per hour.
-
-Moreover system metrics, statistics and heuristics can be used to implement more complex policies,
-where the number of acceptable requests and the time window are computed dynamically.
-
-To help clients throttling their requests,
-servers may expose the counters used to evaluate quota policies via HTTP header fields.
-
-Those response headers may be added by HTTP intermediaries such as API gateways and reverse proxies.
-
-On the web we can find many different rate-limit headers,
-usually containing the number of allowed requests in a given time window, and when the window is reset.
-
-The common choice is to return three headers containing:
-
-- the maximum number of allowed requests in the time window;
-- the number of remaining requests in the current window;
-- the time remaining in the current window expressed in seconds or
-  as a timestamp;
-
-## Interoperability issues
-
-A major interoperability issue in throttling is the lack of standard headers, because:
-
-- each implementation associates different semantics to the
-  same header field names;
-- header field names proliferates.
-
-User agents interfacing with different servers may thus need to process different headers,
-or the very same application interface that sits behind different reverse proxies
-may reply with different throttling headers.
 
 # Examples
 
