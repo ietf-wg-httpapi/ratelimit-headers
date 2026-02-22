@@ -45,8 +45,7 @@ normative:
   IANA: RFC8126
   HTTP: RFC9110
   PROBLEM: RFC9457
-  SF: RFC9651
-  WEB-ORIGIN: RFC6454
+  STRUCTURED-FIELDS: RFC9651
 
 informative:
   PRIVACY: RFC6973
@@ -58,33 +57,20 @@ informative:
     date: 1997-02
 --- abstract
 
-This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their quota policies and the current service limits, thereby allowing clients to avoid being throttled.
+This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their quota policies and the current service limits, thereby allowing clients to shape their requests to avoid exceeding server-imposed limits. It also defines problem types that servers can use to inform clients about quota-related conditions.
 
 --- middle
 
 # Introduction
 
-Rate limiting of HTTP clients has become a widespread practice, especially for HTTP APIs. Typically, servers who do so limit the number of acceptable requests in a given time window (e.g. 10 requests per second). See {{rate-limiting}} for further information on the current usage of rate limiting in HTTP.
+Rate limiting of HTTP {{HTTP}} clients is a widespread practice. Typically, servers limit the number of acceptable requests in a given time window (e.g. 10 requests per second). See {{rate-limiting}} for background on rate limiting practices in HTTP.
 
-Currently, there is no standard way for servers to communicate quotas so that clients can throttle their requests to prevent errors. This document defines a set of standard HTTP header fields to enable rate limiting:
+This document defines a set of standard HTTP header fields to enable servers to communicate rate limiting information to clients:
 
-- RateLimit-Policy: a quota policy, defined by the server, that client HTTP requests will consume.
-- RateLimit: the currently remaining quota available for a specific policy.
+- RateLimit-Policy: a quota policy defined by the server. Client requests consume quota.
+- RateLimit: the remaining quota for a specific policy at the time the response is generated.
 
-These fields enable establishing complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits.
-
-## Goals {#goals}
-
-The goals of this document are:
-
-  Interoperability:
-  : Standardize the names and semantics of rate-limit headers to ease their enforcement and adoption.
-
-  Resiliency:
-  : Improve resiliency of HTTP infrastructure by providing clients with information useful to throttle their requests and prevent 4xx or 5xx responses.
-
-  Documentation:
-  : Simplify API documentation by eliminating the need to include detailed quota limits and related fields in API documentation.
+These fields enable servers to communicate complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits. This information helps improve the resiliency of HTTP infrastructure by providing clients with the information needed to throttle their requests and avoid 4xx or 5xx responses.
 
 The following features are out of the scope of this document:
 
@@ -104,16 +90,16 @@ The following features are out of the scope of this document:
 
 {::boilerplate bcp14}
 
-The term Origin is to be interpreted as described in {{Section 7 of WEB-ORIGIN}}.
+The term Origin is to be interpreted as described in {{Section 11.5.3 of HTTP}}.
 
-This document uses the terms List, Item and Integer from {{Section 3 of SF}} to specify syntax and parsing, along with the concept of "bare item".
+This document uses the terms List, Item and Integer from {{Section 3 of STRUCTURED-FIELDS}} to specify syntax and parsing, along with the concept of "bare item".
 
 The term "problem type" in this document is to be interpreted as described in [PROBLEM].
 
 # Terminology
 
   Quota:
-  : A quota is an allocation of capacity used by a resource server to limit client requests. That capacity is measured in quota units and may be reallocated at the end of a time window.
+  : A quota is an allocation of capacity used by a server to limit client requests. That capacity is measured in quota units and may be reallocated at the end of a time window.
 
   Quota Unit:
   : A quota unit is the unit of measurement used to measure the activity of a client.
@@ -125,24 +111,18 @@ The term "problem type" in this document is to be interpreted as described in [P
   : A time window indicates a period of time associated to the allocated quota.
 
   Quota Policy:
-  : A quota policy is implemented by the server to regulate the activity within a specified quota partition, quantified in quota units, over a defined time window. This activity is restricted to a predefined limit, known as the quota. Quota policies can be advertised by servers, but they are not required to be, and more than one quota policy can affect a given request from a client to a server.
+  : A quota policy is implemented by a server to regulate activity within a specified quota partition, quantified in quota units, over a defined time window. This activity is restricted to a predefined limit, known as the quota. Servers MAY advertise quota policies. More than one quota policy can affect a given request.
 
   Service Limit:
   : A service limit is the currently remaining quota from a specific quota policy and, if defined, the remaining time before quota is reallocated.
 
-  List:
-  : A {{SF}} list of Items
-
-  Item:
-  : A {{SF}} item with a set of associated parameters
-
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field is a non-empty List{{SF}} of Quota Policy Items ({{quotapolicy-item}}). The Item{{SF}} value MUST be a String{{SF}}.
+The "RateLimit-Policy" response header field is a List of Strings. Each list item identifies a Quota Policy ({{quotapolicy-item}}).
 
-The field value SHOULD remain consistent over a sequence of HTTP responses. It is this characteristic that differentiates it from the [RateLimit](#ratelimit-field) field that contains information that MAY change on every request. The "RateLimit-Policy" field enables clients to control their own flow of requests based on policy information provided by the server. Situations where throttling constraints are highly dynamic are better served using the [RateLimit field](#ratelimit-field) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
+This field MUST NOT appear in a trailer section.
 
-Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "RateLimit-Policy" fields in the same HTTP response as described in {{Section 3.1 of SF}}.
+The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. The field value SHOULD remain consistent over a sequence of HTTP responses, as policy information is not expected to change frequently. Situations where throttling constraints are highly dynamic are better served using the RateLimit field ({{ratelimit-field}}) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -150,27 +130,25 @@ Lists of Quota Policy Items ({{quotapolicy-item}}) can be split over multiple "R
 
 ## Quota Policy Item {#quotapolicy-item}
 
-A quota policy Item contains an identifier for the policy and a set of Parameters{{SF}} that contain information about a server's capacity allocation for the policy.
+A Quota Policy is identified by a String. A set of Parameters describe mandatory and optional details of the policy.
 
 The following parameters are defined:
 
   q:
-  :  The REQUIRED "q" parameter indicates the quota allocated by this policy measured in quota units.
+  :  The REQUIRED "q" parameter indicates the quota allocated by this policy measured in quota units ({{ratelimitpolicy-quota}}).
 
   qu:
-  :  The OPTIONAL "qu" parameter value conveys the quota units associated to the "q" parameter. The default quota unit is "requests".
+  :  The OPTIONAL "qu" parameter value conveys the quota units associated to the "q" parameter ({{ratelimitpolicy-quotaunit}}). The default quota unit is "requests".
 
   w:
-  :  The OPTIONAL "w" parameter value conveys a time window.
+  :  The OPTIONAL "w" parameter value conveys a time window ({{ratelimitpolicy-window}}).
 
   pk:
-  :  The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request.
+  :  The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request ({{ratelimitpolicy-partitionkey}}).
 
-Other parameters are allowed and can be regarded as comments.
+Unknown parameters MUST be ignored by recipients. A recipient that receives a RateLimit-Policy field with a parameter value that does not conform to the syntax defined in this section SHOULD ignore the malformed list item.
 
-Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
-
-This field MUST NOT appear in a trailer section.
+Implementation- or service-specific parameters SHOULD be prefixed with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 
 ### Quota Parameter {#ratelimitpolicy-quota}
 
@@ -197,39 +175,13 @@ The "w" parameter value conveys a time window applicable to the quota ({{ratelim
 
 The "pk" parameter value conveys the partition key associated to the request. The value MUST be a Byte Sequence. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
-## RateLimit Policy Field Examples
-
-This field MAY convey the time window associated with the quota, as shown in this example:
-
-~~~
-   RateLimit-Policy: "default";q=100;w=10
-~~~
-
-These examples show multiple policies being returned:
-
-~~~
-   RateLimit-Policy: "permin";q=50;w=60,"perhr";q=1000;w=3600
-~~~
-
-The following example shows a policy with a partition key:
-
-~~~
-   RateLimit-Policy: "peruser";q=100;w=60;pk=:cHsdsRa894==:
-~~~
-
-The following example shows a policy with a partition key and a quota unit:
-
-~~~
-   RateLimit-Policy: "peruser";q=65535;qu="content-bytes";w=10;pk=:sdfjLJUOUH==:
-~~~
-
 # RateLimit Field {#ratelimit-field}
 
-A server uses the "RateLimit" response header field to communicate the current service limit for a quota policy for a particular partition key.
+The "RateLimit" response header field is a List of Strings. Each list item identifies the current service limit for a quota policy.
 
-The field is expressed as a List{{SF}} of Service Limit Items ({{servicelimit-item}}).
+This field MUST NOT appear in a trailer section.
 
-Lists of Service Limit Items can be split over multiple "RateLimit" fields in the same HTTP response as described in {{Section 3.1 of SF}}.
+A server uses this field to communicate the remaining quota for a specific policy at the time the response is generated.
 
 ~~~
    RateLimit: "default";r=50;t=30
@@ -237,7 +189,7 @@ Lists of Service Limit Items can be split over multiple "RateLimit" fields in th
 
 ## Service Limit Item {#servicelimit-item}
 
-Each service limit Item{{SF}} identifies the quota policy ({{quotapolicy-item}}) associated with the request and contains Parameters{{SF}} with information about the current service limit.
+Each Service Limit Item identifies the quota policy ({{quotapolicy-item}}) associated with the request and contains parameters with information about the current service limit.
 
 The following parameters are defined in this specification:
 
@@ -248,16 +200,16 @@ The following parameters are defined in this specification:
   : This OPTIONAL parameter value conveys the time until additional quota is made available for the identified policy ({{ratelimit-reset-parameter}}).
 
   pk:
-  : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request.
+  : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request ({{ratelimit-partitionkey}}).
 
-This field MUST NOT appear in a trailer section. Other parameters are allowed and can be regarded as comments.
+Unknown parameters MUST be ignored by recipients.
 
-Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
+Implementation- or service-specific parameters SHOULD be prefixed with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 
 
 ### Remaining Parameter {#ratelimit-remaining-parameter}
 
-The "r" parameter indicates the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
+The "r" parameter indicates the remaining quota units for the identified policy.
 
 It is a non-negative Integer expressed in quota units.
 Clients MUST NOT assume that a positive remaining value is a guarantee that further requests will be served.
@@ -280,26 +232,6 @@ The client MUST NOT assume that all its service limit will be fully restored at 
 The "pk" parameter value conveys the partition key associated to the request. The value MUST be a Byte Sequence. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
 
-## RateLimit Field Examples
-
-This example shows a RateLimit field with a remaining quota of 50 units and a time window reset in 30 seconds:
-
-~~~
-   RateLimit: "default";r=50;t=30
-~~~
-
-This example shows a remaining quota of 999 requests for a partition key that has no time window reset:
-
-~~~
-   RateLimit: "default";r=999;pk=:dHJpYWwxMjEzMjM=:
-~~~
-
-This example shows a 300MB remaining quota for an application in the next 60 seconds:
-
-~~~
-   RateLimit: "default";r=300000000;t=60;pk=:QXBwLTk5OQ==:
-~~~
-
 # Problem Types {#problem-types}
 
 ## Quota Exceeded
@@ -307,7 +239,7 @@ This example shows a 300MB remaining quota for an application in the next 60 sec
 This section defines the "https://iana.org/assignments/http-problem-types#quota-exceeded" problem type. A server MAY use this problem type if it wants to communicate to the client that the requests sent by the client exceed one or more Quota Policies. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
 
 ~~~ http-message
-HTTP/1.1 429 Bad Request
+HTTP/1.1 429 Too Many Requests
 Content-Type: application/problem+json
 
 {
@@ -322,7 +254,7 @@ Content-Type: application/problem+json
 This section defines the "https://iana.org/assignments/http-problem-types#temporary-reduced-capacity" problem type. A server MAY use this problem type if it wants to communicate that the client’s requests currently cannot be satisfied due to a temporary reduction in server capacity. The server MAY choose to include a RateLimit-Policy field indicating the new temporarily lower quota. This problem type defines the extension member "violated-policies" as an array of strings, whose value is the names of policies where the quota was exceeded.
 
 ~~~ http-message
-HTTP/1.1 503 Server Unavailable
+HTTP/1.1 503 Service Unavailable
 Content-Type: application/problem+json
 
 {
@@ -352,7 +284,7 @@ Content-Type: application/problem+json
 
 A server MAY return RateLimit header fields independently of the response status code. This includes throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
 
-Servers should be careful when returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low remaining parameter value could prevent the client from issuing requests. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the remaining parameter value is 0.
+Servers SHOULD avoid returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low remaining parameter value could prevent the client from following the redirect. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the remaining parameter value is 0.
 
 ~~~ http-message
 HTTP/1.1 301 Moved Permanently
@@ -363,13 +295,13 @@ RateLimit: "problemPolicy";r=0;t=10
 
 If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the reset parameter.
 
-A service using RateLimit header fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between the remaining and the reset parameter values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window.
+Servers using RateLimit header fields SHOULD implement mechanisms to cap the ratio between the remaining and the reset parameter values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window, as a large remaining value relative to a small reset value could inadvertently encourage a burst of requests.
 
-Under certain conditions, a server MAY artificially lower RateLimit header field values between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
+Under certain conditions, a server MAY reduce the remaining parameter value or increase the reset parameter value between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
 
 ## Generating Partition Keys
 
-Servers MAY choose to return partition keys that distinguish between quota allocated to different consumers or different resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values. The server SHOULD document how the partition key is generated so that clients can predict the key value for a future request and determine if there is sufficient quota remaining to execute the request. Servers should avoid returning partition keys that contain sensitive information. Servers SHOULD only use information that is present in the request to generate the partition key.
+Servers MAY choose to return partition keys that distinguish between quota allocated to different consumers or different resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values. Servers SHOULD avoid returning partition keys that contain sensitive information. Servers SHOULD only use information that is present in the request to generate the partition key.
 
 ## Performance Considerations
 
@@ -423,15 +355,11 @@ For cases where the partition key generation algorithm of a server is unknown, c
 
 This section documents the considerations advised in {{Section 16.3.2 of HTTP}}.
 
-An intermediary that is not part of the originating service infrastructure and is not aware of the quota policy semantic used by the Origin Server SHOULD NOT alter the RateLimit header fields' values in such a way as to communicate a more permissive quota policy; this includes removing the RateLimit header fields.
+An intermediary that is not part of the originating service infrastructure and is not aware of the quota policy semantics used by the origin server SHOULD NOT alter the RateLimit header fields' values in such a way as to communicate a more permissive quota policy; this includes removing the RateLimit header fields.
 
-An intermediary MAY alter the RateLimit header fields in such a way as to communicate a more restrictive quota policy when:
+An intermediary that is aware of the quota unit semantics used by the origin server MAY alter the RateLimit header fields to communicate a different quota policy, for example when the intermediary enforces its own quota policy or when it can absorb additional load through caching or request collapsing.
 
-- it is aware of the quota unit semantic used by the Origin Server;
-- it implements this specification and enforces a quota policy which
-  is more restrictive than the one conveyed in the fields.
-
-An intermediary SHOULD forward a request even when presuming that it might not be serviced; the service returning the RateLimit header fields is the sole responsible of enforcing the communicated quota policy, and it is always free to service incoming requests.
+An intermediary SHOULD forward a request even when presuming that it might not be serviced; the service returning the RateLimit header fields is solely responsible for enforcing the communicated quota policy, and MAY still choose to service incoming requests.
 
 This specification does not mandate any behavior on intermediaries with respect to retries, nor does it require that intermediaries have any role in respecting quota policies. For example, it is legitimate for a proxy to retransmit a request without notifying the client, and thus consuming quota units.
 
