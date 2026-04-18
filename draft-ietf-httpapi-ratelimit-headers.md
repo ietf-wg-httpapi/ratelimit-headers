@@ -90,9 +90,7 @@ The following features are out of the scope of this document:
 
 {::boilerplate bcp14}
 
-The term Origin is to be interpreted as described in {{Section 11.5.3 of HTTP}}.
-
-This document uses the terms List, Item and Integer from {{Section 3 of STRUCTURED-FIELDS}} to specify syntax and parsing, along with the concept of "bare item".
+This document uses the terms List, Item, Integer, String, Parameters, and Byte Sequence from {{Section 3 of STRUCTURED-FIELDS}} to specify syntax and parsing, along with the concept of "bare item".
 
 The term "problem type" in this document is to be interpreted as described in [PROBLEM].
 
@@ -301,15 +299,39 @@ Servers using RateLimit header fields SHOULD implement mechanisms to cap the rat
 
 Under certain conditions, a server MAY reduce the available quota or increase the effective window between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
 
-## Generating Partition Keys
-
-Servers MAY choose to return partition keys that distinguish between quota allocated to different consumers or different resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values. Servers SHOULD avoid returning partition keys that contain sensitive information. Servers SHOULD only use information that is present in the request to generate the partition key.
-
 ## Performance Considerations
 
 Servers are not required to return RateLimit header fields in every response, and clients need to take this into account. For example, an implementer concerned with performance might provide RateLimit header fields only when a given quota is close to exhaustion.
 
 Implementers concerned with response fields' size, might take into account their ratio with respect to the content length, or use header-compression HTTP features such as {{?HPACK=RFC7541}}.
+
+# Quota Partitions {#quota-partitions}
+
+Servers MAY use partition keys to divide server capacity across different clients and resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values.
+
+The internal structure of a partition key is not defined by this specification. Unless its construction algorithm is communicated out of band, a partition key is opaque to clients. Partition keys are Byte Sequences and clients MUST use octet-for-octet comparison to match partition keys across responses.
+
+Partition keys returned by the server in RateLimit header fields allow a single client to track the quota of multiple partitions independently. This is useful when a single client makes requests that consume different quota allocations, for example when acting on behalf of different users or accessing different resources that have independent quotas.
+
+For example, a server that allocates separate quotas per user might construct a partition key from the authenticated user identifier. If a client makes requests on behalf of two users, "alice" and "bob", the server could return distinct partition keys for each:
+
+~~~
+   RateLimit-Policy: "peruser";q=100;w=60;pk=:YWxpY2U=:
+   RateLimit: "peruser";r=95;t=55;pk=:YWxpY2U=:
+~~~
+
+A subsequent request on behalf of a different user would return a different partition key with its own independent quota:
+
+~~~
+   RateLimit-Policy: "peruser";q=100;w=60;pk=:Ym9i:
+   RateLimit: "peruser";r=100;t=60;pk=:Ym9i:
+~~~
+
+In order for a client to shape its traffic to avoid having requests refused due to insufficient quota, the client needs to be able to predict which partition key a particular request will correspond to. This requires the partition key construction algorithm to be communicated to the client developer out of band, such as through API documentation. Without this knowledge, a client receiving partition keys can only track quota reactively — associating observed partition keys with past requests — rather than proactively determining the remaining quota for a future request.
+
+Servers SHOULD construct partition keys using only information that is present in the request. Servers SHOULD avoid returning partition keys that contain sensitive information. Where partition keys contain identifying information, either of the client application or the user, servers should be aware of the potential for impersonation and apply the appropriate security mechanisms.
+
+For cases where the partition key construction algorithm is unknown, clients MAY use heuristics to estimate whether a future request will be successful based on its similarity to previous requests.
 
 # Client Behavior {#receiving-fields}
 
@@ -345,13 +367,7 @@ This specification does not mandate a specific throttling behavior and implement
   approaching quota limits;
 - consuming all the quota according to the exposed limits and then wait.
 
-## Consuming Partition Keys
 
-Partition keys are useful for a client if it is likely that single client will make requests that consume different quota allocations. E.g. a client making requests on behalf of different users or for different resources that have independent quota allocations.
-
-If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota available to execute the request.
-
-For cases where the partition key generation algorithm of a server is unknown, clients MAY use heuristics to guess if a future request will be successful based on its similarity to previous requests.
 
 ## Intermediaries {#intermediaries}
 
@@ -395,7 +411,7 @@ quota units without prior knowledge of the user agent,
 RateLimit header fields might reveal the existence of an intermediary
 to the user agent.
 
-Where partition keys contain identifying information, either of the client application or the user, servers should be aware of the potential for impersonation and apply the appropriate security mechanisms.
+Partition keys may contain identifying information; see {{quota-partitions}} for guidance on constructing partition keys.
 
 ## Available quota units are not granted requests {#sec-available-not-granted}
 
