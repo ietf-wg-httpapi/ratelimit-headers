@@ -989,53 +989,6 @@ time, whereas the previous example would not force the client to stop
 requests before the reset time is elapsed, as it would still be free to
 query again the server even if it is likely to have the request rejected.
 
-### Missing Remaining information
-
-The server does not expose remaining values
-(for example, because the underlying counters are not available).
-Instead, it resets the limit counter every second.
-
-It communicates to the client the limit of 10 quota units per second
-always returning the limit and reset parameters.
-
-Request:
-
-~~~ http-message
-GET /items/123 HTTP/1.1
-Host: api.example
-
-~~~
-
-Response:
-
-~~~ http-message
-HTTP/1.1 200 Ok
-Content-Type: application/json
-RateLimit-Policy: quota;q=100;w=1
-RateLimit: quota;t=1
-
-{"first": "request"}
-~~~
-
-Request:
-
-~~~ http-message
-GET /items/123 HTTP/1.1
-Host: api.example
-
-~~~
-
-Response:
-
-~~~ http-message
-HTTP/1.1 200 Ok
-Content-Type: application/json
-RateLimit-Policy: quota;q=10
-RateLimit: quota;t=1
-
-{"second": "request"}
-~~~
-
 ### Use with multiple windows
 
 This is a standardized way of describing the policy
