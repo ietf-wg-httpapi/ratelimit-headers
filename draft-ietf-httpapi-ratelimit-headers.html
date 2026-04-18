@@ -1202,10 +1202,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-service-limit-item" class="internal xref">Service Limit Item</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.1">
-                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="auto internal xref">4.1.1</a>.  <a href="#name-remaining-parameter" class="internal xref">Remaining Parameter</a></p>
+                    <p id="section-toc.1-1.4.2.1.2.1.1"><a href="#section-4.1.1" class="auto internal xref">4.1.1</a>.  <a href="#name-available-quota-parameter" class="internal xref">Available Quota Parameter</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.2">
-                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="auto internal xref">4.1.2</a>.  <a href="#name-reset-parameter" class="internal xref">Reset Parameter</a></p>
+                    <p id="section-toc.1-1.4.2.1.2.2.1"><a href="#section-4.1.2" class="auto internal xref">4.1.2</a>.  <a href="#name-effective-window-parameter" class="internal xref">Effective Window Parameter</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1.2.3">
                     <p id="section-toc.1-1.4.2.1.2.3.1"><a href="#section-4.1.3" class="auto internal xref">4.1.3</a>.  <a href="#name-partition-key-parameter-2" class="internal xref">Partition Key Parameter</a></p>
@@ -1266,10 +1266,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-information-disclosure" class="internal xref">Information disclosure</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
-                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-remaining-quota-units-are-n" class="internal xref">Remaining quota units are not granted requests</a></p>
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-available-quota-units-are-n" class="internal xref">Available quota units are not granted requests</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4">
-                <p id="section-toc.1-1.8.2.4.1"><a href="#section-8.4" class="auto internal xref">8.4</a>.  <a href="#name-reliability-of-the-reset-pa" class="internal xref">Reliability of the reset parameter</a></p>
+                <p id="section-toc.1-1.8.2.4.1"><a href="#section-8.4" class="auto internal xref">8.4</a>.  <a href="#name-variability-of-the-effectiv" class="internal xref">Variability of the effective window</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.5">
                 <p id="section-toc.1-1.8.2.5.1"><a href="#section-8.5" class="auto internal xref">8.5</a>.  <a href="#name-resource-exhaustion" class="internal xref">Resource exhaustion</a></p>
@@ -1428,7 +1428,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
           <p id="section-1-3.1.1">RateLimit-Policy: a quota policy, defined by the server, that client HTTP requests will consume.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.2">
-          <p id="section-1-3.2.1">RateLimit: the currently remaining quota available for a specific policy.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-1-3.2.1">RateLimit: the quota currently available under a specific policy.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-1-4">These fields enable establishing complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits.<a href="#section-1-4" class="pilcrow">¶</a></p>
@@ -1505,7 +1505,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
 <span class="break"></span><dl class="dlParallel" id="section-2-1">
         <dt id="section-2-1.1">Quota:</dt>
         <dd style="margin-left: 1.5em" id="section-2-1.2">
-          <p id="section-2-1.2.1">A quota is an allocation of capacity used by a resource server to limit client requests. That capacity is measured in quota units and may be reallocated at the end of a time window.<a href="#section-2-1.2.1" class="pilcrow">¶</a></p>
+          <p id="section-2-1.2.1">A quota is an allocation of capacity used by a resource server to limit client requests. That capacity is measured in quota units that the client may consume within a time window.<a href="#section-2-1.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-1.3">Quota Unit:</dt>
@@ -1530,7 +1530,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
         <dd class="break"></dd>
 <dt id="section-2-1.11">Service Limit:</dt>
         <dd style="margin-left: 1.5em" id="section-2-1.12">
-          <p id="section-2-1.12.1">A service limit is the currently remaining quota from a specific quota policy and, if defined, the remaining time before quota is reallocated.<a href="#section-2-1.12.1" class="pilcrow">¶</a></p>
+          <p id="section-2-1.12.1">A service limit is the currently available quota under a specific quota policy and, if defined, the effective time window within which the client can use no more than the available quota.<a href="#section-2-1.12.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-2-1.13">List:</dt>
@@ -1698,12 +1698,12 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
 <span class="break"></span><dl class="dlParallel" id="section-4.1-3">
           <dt id="section-4.1-3.1">r:</dt>
           <dd style="margin-left: 1.5em" id="section-4.1-3.2">
-            <p id="section-4.1-3.2.1">This REQUIRED parameter value conveys the remaining quota units for the identified policy (<a href="#ratelimit-remaining-parameter" class="auto internal xref">Section 4.1.1</a>).<a href="#section-4.1-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.2.1">This REQUIRED parameter value conveys the available quota under the identified policy (<a href="#ratelimit-available-quota" class="auto internal xref">Section 4.1.1</a>).<a href="#section-4.1-3.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-4.1-3.3">t:</dt>
           <dd style="margin-left: 1.5em" id="section-4.1-3.4">
-            <p id="section-4.1-3.4.1">This OPTIONAL parameter value conveys the time until additional quota is made available for the identified policy (<a href="#ratelimit-reset-parameter" class="auto internal xref">Section 4.1.2</a>).<a href="#section-4.1-3.4.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-3.4.1">This OPTIONAL parameter value conveys the effective window under the identified policy: the time within which the client can use no more than the available quota (<a href="#ratelimit-effective-window" class="auto internal xref">Section 4.1.2</a>).<a href="#section-4.1-3.4.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-4.1-3.5">pk:</dt>
@@ -1714,23 +1714,23 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
 </dl>
 <p id="section-4.1-4">This field MUST NOT appear in a trailer section. Other parameters are allowed and can be regarded as comments.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
 <p id="section-4.1-5">Implementation- or service-specific parameters SHOULD be prefixed parameters with a vendor identifier, e.g. <code>acme-policy</code>, <code>acme-burst</code>.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
-<div id="ratelimit-remaining-parameter">
+<div id="ratelimit-available-quota">
 <section id="section-4.1.1">
-          <h4 id="name-remaining-parameter">
-<a href="#section-4.1.1" class="section-number selfRef">4.1.1. </a><a href="#name-remaining-parameter" class="section-name selfRef">Remaining Parameter</a>
+          <h4 id="name-available-quota-parameter">
+<a href="#section-4.1.1" class="section-number selfRef">4.1.1. </a><a href="#name-available-quota-parameter" class="section-name selfRef">Available Quota Parameter</a>
           </h4>
-<p id="section-4.1.1-1">The "r" parameter indicates the remaining quota units for the identified policy (<a href="#ratelimit-remaining-parameter" class="auto internal xref">Section 4.1.1</a>).<a href="#section-4.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.1-1">The "r" parameter indicates the available quota under the identified policy.<a href="#section-4.1.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.1.1-2">It is a non-negative Integer expressed in quota units.
-Clients MUST NOT assume that a positive remaining value is a guarantee that further requests will be served.
-When the remaining parameter value is low, it indicates that the server may soon throttle the client (see <a href="#providing-ratelimit-fields" class="auto internal xref">Section 6</a>).<a href="#section-4.1.1-2" class="pilcrow">¶</a></p>
+Clients MUST NOT assume that a positive available quota is a guarantee that further requests will be served.
+When the available quota is low, it indicates that the server may soon throttle the client (see <a href="#providing-ratelimit-fields" class="auto internal xref">Section 6</a>).<a href="#section-4.1.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="ratelimit-reset-parameter">
+<div id="ratelimit-effective-window">
 <section id="section-4.1.2">
-          <h4 id="name-reset-parameter">
-<a href="#section-4.1.2" class="section-number selfRef">4.1.2. </a><a href="#name-reset-parameter" class="section-name selfRef">Reset Parameter</a>
+          <h4 id="name-effective-window-parameter">
+<a href="#section-4.1.2" class="section-number selfRef">4.1.2. </a><a href="#name-effective-window-parameter" class="section-name selfRef">Effective Window Parameter</a>
           </h4>
-<p id="section-4.1.2-1">The "t" parameter indicates the number of seconds until additional quota associated with the quota policy is made available.<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.1.2-1">The "t" parameter indicates effective window under the identified policy: the number of seconds within which the client can use no more than the available quota.<a href="#section-4.1.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.1.2-2">It is a non-negative Integer compatible with the delay-seconds rule, because:<a href="#section-4.1.2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.1.2-3.1">
@@ -1741,7 +1741,7 @@ and clock skew between client and server (see <span><a href="https://rfc-editor.
               <p id="section-4.1.2-3.2.1">it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.<a href="#section-4.1.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-4.1.2-4">The client MUST NOT assume that all its service limit will be fully restored at the moment indicated by the reset parameter. The server MAY arbitrarily alter the reset parameter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.<a href="#section-4.1.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.1.2-4">The client MUST NOT assume that all its service limit will be fully restored after the time indicated by the effective window parameter. The server MAY arbitrarily alter the available quota and effective window between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.<a href="#section-4.1.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="ratelimit-partitionkey">
@@ -1759,19 +1759,19 @@ and clock skew between client and server (see <span><a href="https://rfc-editor.
         <h3 id="name-ratelimit-field-examples">
 <a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-ratelimit-field-examples" class="section-name selfRef">RateLimit Field Examples</a>
         </h3>
-<p id="section-4.2-1">This example shows a RateLimit field with a remaining quota of 50 units and a time window reset in 30 seconds:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">This example shows a RateLimit field with an available quota of 50 units and an effective window of 30 seconds:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2-2">
 <pre>
    RateLimit: "default";r=50;t=30
 </pre><a href="#section-4.2-2" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-3">This example shows a remaining quota of 999 requests for a partition key that has no time window reset:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2-3">This example shows an available quota of 999 requests for a partition key that has no time window:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2-4">
 <pre>
    RateLimit: "default";r=999;pk=:dHJpYWwxMjEzMjM=:
 </pre><a href="#section-4.2-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2-5">This example shows a 300MB remaining quota for an application in the next 60 seconds:<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-5">This example shows a 300MB available quota for an application in the next 60 seconds:<a href="#section-4.2-5" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-4.2-6">
 <pre>
    RateLimit: "default";r=300000000;t=60;pk=:QXBwLTk5OQ==:
@@ -1854,7 +1854,7 @@ Content-Type: application/problem+json
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-server-behavior" class="section-name selfRef">Server Behavior</a>
       </h2>
 <p id="section-6-1">A server MAY return RateLimit header fields independently of the response status code. This includes throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">Servers should be careful when returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low remaining parameter value could prevent the client from issuing requests. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-10.2.2" class="relref">Section 10.2.2</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>), because the remaining parameter value is 0.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-2">Servers should be careful when returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low available quota could prevent the client from issuing requests. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-10.2.2" class="relref">Section 10.2.2</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>), because the available quota is 0.<a href="#section-6-2" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="section-6-3">
 <pre>
 HTTP/1.1 301 Moved Permanently
@@ -1863,15 +1863,15 @@ RateLimit: "problemPolicy";r=0;t=10
 
 </pre><a href="#section-6-3" class="pilcrow">¶</a>
 </div>
-<p id="section-6-4">If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the reset parameter.<a href="#section-6-4" class="pilcrow">¶</a></p>
-<p id="section-6-5">A service using RateLimit header fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between the remaining and the reset parameter values (see <a href="#sec-resource-exhaustion" class="auto internal xref">Section 8.5</a>); this is especially important when a quota policy uses a large time window.<a href="#section-6-5" class="pilcrow">¶</a></p>
+<p id="section-6-4">If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the end of the effective window.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">A service using RateLimit header fields MUST NOT convey values exposing an unwanted volume of requests and SHOULD implement mechanisms to cap the ratio between the available quota and the effective window values (see <a href="#sec-resource-exhaustion" class="auto internal xref">Section 8.5</a>); this is especially important when a quota policy uses a large time window.<a href="#section-6-5" class="pilcrow">¶</a></p>
 <p id="section-6-6">Under certain conditions, a server MAY artificially lower RateLimit header field values between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.<a href="#section-6-6" class="pilcrow">¶</a></p>
 <div id="generating-partition-keys">
 <section id="section-6.1">
         <h3 id="name-generating-partition-keys">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-generating-partition-keys" class="section-name selfRef">Generating Partition Keys</a>
         </h3>
-<p id="section-6.1-1">Servers MAY choose to return partition keys that distinguish between quota allocated to different consumers or different resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values. The server SHOULD document how the partition key is generated so that clients can predict the key value for a future request and determine if there is sufficient quota remaining to execute the request. Servers should avoid returning partition keys that contain sensitive information. Servers SHOULD only use information that is present in the request to generate the partition key.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">Servers MAY choose to return partition keys that distinguish between quota allocated to different consumers or different resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values. The server SHOULD document how the partition key is generated so that clients can predict the key value for a future request and determine if there is sufficient quota available to execute the request. Servers should avoid returning partition keys that contain sensitive information. Servers SHOULD only use information that is present in the request to generate the partition key.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="performance-considerations">
@@ -1903,10 +1903,10 @@ cause reasonable client behavior with respect to throughput and latency
 (see <a href="#sec-resource-exhaustion" class="auto internal xref">Section 8.5</a> and <a href="#sec-dos" class="auto internal xref">Section 8.5.1</a>).<a href="#section-7-5" class="pilcrow">¶</a></p>
 <p id="section-7-6">A client receiving RateLimit header fields MUST NOT assume that future responses will contain the same RateLimit header fields, or any RateLimit header fields at all.<a href="#section-7-6" class="pilcrow">¶</a></p>
 <p id="section-7-7">Malformed RateLimit header fields MUST be ignored.<a href="#section-7-7" class="pilcrow">¶</a></p>
-<p id="section-7-8">A client SHOULD NOT exceed the quota units conveyed by the remaining parameter before the time window expressed in the reset parameter.<a href="#section-7-8" class="pilcrow">¶</a></p>
-<p id="section-7-9">The value of the reset parameter is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to better estimate the reset parameter moment intended by the server.<a href="#section-7-9" class="pilcrow">¶</a></p>
+<p id="section-7-8">A client SHOULD NOT exceed the available quota within the time expressed in the effective window parameter.<a href="#section-7-8" class="pilcrow">¶</a></p>
+<p id="section-7-9">The value of the effective window parameter is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to schedule requests.<a href="#section-7-9" class="pilcrow">¶</a></p>
 <p id="section-7-10">The details provided in the RateLimit-Policy header field are informative and MAY be ignored.<a href="#section-7-10" class="pilcrow">¶</a></p>
-<p id="section-7-11">If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the reset parameter MAY be ignored.<a href="#section-7-11" class="pilcrow">¶</a></p>
+<p id="section-7-11">If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the effective window MAY be ignored.<a href="#section-7-11" class="pilcrow">¶</a></p>
 <p id="section-7-12">This specification does not mandate a specific throttling behavior and implementers can adopt their preferred policies, including:<a href="#section-7-12" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7-13.1">
@@ -1923,7 +1923,7 @@ approaching quota limits;<a href="#section-7-13.1.1" class="pilcrow">¶</a></p>
 <a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-consuming-partition-keys" class="section-name selfRef">Consuming Partition Keys</a>
         </h3>
 <p id="section-7.1-1">Partition keys are useful for a client if it is likely that single client will make requests that consume different quota allocations. E.g. a client making requests on behalf of different users or for different resources that have independent quota allocations.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota remaining to execute the request.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota available to execute the request.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">For cases where the partition key generation algorithm of a server is unknown, clients MAY use heuristics to guess if a future request will be successful based on its similarity to previous requests.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1993,26 +1993,25 @@ to the user agent.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 <p id="section-8.2-4">Where partition keys contain identifying information, either of the client application or the user, servers should be aware of the potential for impersonation and apply the appropriate security mechanisms.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-remaining-not-granted">
+<div id="sec-available-not-granted">
 <section id="section-8.3">
-        <h3 id="name-remaining-quota-units-are-n">
-<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-remaining-quota-units-are-n" class="section-name selfRef">Remaining quota units are not granted requests</a>
+        <h3 id="name-available-quota-units-are-n">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-available-quota-units-are-n" class="section-name selfRef">Available quota units are not granted requests</a>
         </h3>
 <p id="section-8.3-1">RateLimit header fields convey hints from the server
 to the clients in order to help them avoid being throttled out.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<p id="section-8.3-2">Clients MUST NOT consider the quota returned in the <span><a href="#ratelimit-remaining-parameter" class="internal xref">remaining parameter</a> (<a href="#ratelimit-remaining-parameter" class="auto internal xref">Section 4.1.1</a>)</span> as a service level agreement.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">Clients MUST NOT consider the <span><a href="#ratelimit-available-quota" class="internal xref">available quota parameter</a> (<a href="#ratelimit-available-quota" class="auto internal xref">Section 4.1.1</a>)</span> as a service level agreement.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
 <p id="section-8.3-3">In case of resource saturation, the server MAY artificially lower the returned values
 or not serve the request regardless of the advertised quotas.<a href="#section-8.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-reset-reliability">
+<div id="sec-window-variability">
 <section id="section-8.4">
-        <h3 id="name-reliability-of-the-reset-pa">
-<a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-reliability-of-the-reset-pa" class="section-name selfRef">Reliability of the reset parameter</a>
+        <h3 id="name-variability-of-the-effectiv">
+<a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-variability-of-the-effectiv" class="section-name selfRef">Variability of the effective window</a>
         </h3>
-<p id="section-8.4-1">Consider that quota might not be made available after the moment referenced by the <span><a href="#ratelimit-reset-parameter" class="internal xref">reset parameter</a> (<a href="#ratelimit-reset-parameter" class="auto internal xref">Section 4.1.2</a>)</span>,
-and the reset parameter value may not be constant.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
-<p id="section-8.4-2">Subsequent requests might return a higher reset parameter value
+<p id="section-8.4-1">The <span><a href="#ratelimit-effective-window" class="internal xref">effective window parameter</a> (<a href="#ratelimit-effective-window" class="auto internal xref">Section 4.1.2</a>)</span> does not imply anything about when the server will increase the available quota. The effective window does not necessarily end at a fixed point in time.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
+<p id="section-8.4-2">Subsequent requests might return a higher effective window value
 to limit concurrency or implement dynamic or adaptive throttling policies.<a href="#section-8.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2021,19 +2020,19 @@ to limit concurrency or implement dynamic or adaptive throttling policies.<a hre
         <h3 id="name-resource-exhaustion">
 <a href="#section-8.5" class="section-number selfRef">8.5. </a><a href="#name-resource-exhaustion" class="section-name selfRef">Resource exhaustion</a>
         </h3>
-<p id="section-8.5-1">When returning reset values, servers must be aware that
+<p id="section-8.5-1">When returning effective window values, servers must be aware that
 many throttled clients may come back at the very moment specified.<a href="#section-8.5-1" class="pilcrow">¶</a></p>
 <p id="section-8.5-2">This is true for Retry-After too.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
 <p id="section-8.5-3">For example, if the quota resets every day at <code>18:00:00</code>
-and your server returns the reset parameter accordingly<a href="#section-8.5-3" class="pilcrow">¶</a></p>
+and your server returns the effective window accordingly<a href="#section-8.5-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-8.5-4">
 <pre>
    Date: Tue, 15 Nov 1994 18:00:00 GMT
-   RateLimit: "daily";r=1;t=36400
+   RateLimit: "daily";r=1;t=86400
 </pre><a href="#section-8.5-4" class="pilcrow">¶</a>
 </div>
 <p id="section-8.5-5">there's a high probability that all clients will show up at <code>18:00:00</code>.<a href="#section-8.5-5" class="pilcrow">¶</a></p>
-<p id="section-8.5-6">This could be mitigated by adding some jitter to the reset value.<a href="#section-8.5-6" class="pilcrow">¶</a></p>
+<p id="section-8.5-6">This could be mitigated by adding some jitter to the effective window.<a href="#section-8.5-6" class="pilcrow">¶</a></p>
 <p id="section-8.5-7">Resource exhaustion issues can be associated with quota policies using a
 large time window, because a user agent by chance or on purpose
 might consume most of its quota units in a significantly shorter interval.<a href="#section-8.5-7" class="pilcrow">¶</a></p>
@@ -2046,8 +2045,8 @@ RateLimit-Policy: "somepolicy";q=10000;w=1000
 RateLimit: "somepolicy";r=10000;t=10
 </pre><a href="#section-8.5-9" class="pilcrow">¶</a>
 </div>
-<p id="section-8.5-10">A client implementing a simple ratio between remaining parameter and reset parameter could infer an average throughput of 1000 quota units per second, while the quota parameter conveys a quota-policy with an average of 10 quota units per second.
-If the service cannot handle such load, it should return either a lower remaining parameter value or a higher reset parameter value.
+<p id="section-8.5-10">A client implementing a simple ratio between available quota and effective window could infer an average throughput of 1000 quota units per second, while the policy's quota and window parameters convey an average of 10 quota units per second.
+If the service cannot handle such load, it should return either a lower available quota or a higher effective window.
 Moreover, complementing large time window quota policies with a short time window one mitigates those risks.<a href="#section-8.5-10" class="pilcrow">¶</a></p>
 <div id="sec-dos">
 <section id="section-8.5.1">
@@ -2055,7 +2054,7 @@ Moreover, complementing large time window quota policies with a short time windo
 <a href="#section-8.5.1" class="section-number selfRef">8.5.1. </a><a href="#name-denial-of-service" class="section-name selfRef">Denial of Service</a>
           </h4>
 <p id="section-8.5.1-1">RateLimit header fields may contain unexpected values by chance or on purpose.
-For example, an excessively high remaining parameter value may be:<a href="#section-8.5.1-1" class="pilcrow">¶</a></p>
+For example, an excessively high available quota may be:<a href="#section-8.5.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8.5.1-2.1">
               <p id="section-8.5.1-2.1.1">used by a malicious intermediary to trigger a Denial of Service attack
@@ -2065,9 +2064,9 @@ or consume client resources boosting its requests;<a href="#section-8.5.1-2.1.1"
               <p id="section-8.5.1-2.2.1">passed by a misconfigured server;<a href="#section-8.5.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
-<p id="section-8.5.1-3">or a high reset parameter value could inhibit clients to contact the server (e.g. similarly to receiving "Retry-after: 1000000").<a href="#section-8.5.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.5.1-3">or a large effective window could inhibit clients to contact the server (e.g. similarly to receiving "Retry-after: 1000000").<a href="#section-8.5.1-3" class="pilcrow">¶</a></p>
 <p id="section-8.5.1-4">To mitigate this risk, clients can set thresholds that they consider reasonable in terms of quota units, time window, concurrent requests or throughput, and define a consistent behavior when the RateLimit exceed those thresholds.
-For example this means capping the maximum number of request per second, or implementing retries when the reset parameter exceeds ten minutes.<a href="#section-8.5.1-4" class="pilcrow">¶</a></p>
+For example this means capping the maximum number of request per second, or implementing retries when the effective window exceeds ten minutes.<a href="#section-8.5.1-4" class="pilcrow">¶</a></p>
 <p id="section-8.5.1-5">The considerations above are not limited to RateLimit header fields, but apply to all fields affecting how clients behave in subsequent requests (e.g. Retry-After).<a href="#section-8.5.1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2411,7 +2410,7 @@ RateLimit: "default";r=0;t=50
 the response status code,
 a subsequent request is not required to fail.
 The example below shows that the server decided to serve the request
-even if remaining parameter value is 0.
+even if the available quota is 0.
 Another server, or the same server under other load conditions, could have decided to throttle the request instead.<a href="#appendix-B.1.1-6" class="pilcrow">¶</a></p>
 <p id="appendix-B.1.1-7">Request:<a href="#appendix-B.1.1-7" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="appendix-B.1.1-8">
@@ -2454,7 +2453,7 @@ the closest limit to reach is the daily one.<a href="#appendix-B.1.2-4" class="p
 inform the client that:<a href="#appendix-B.1.2-5" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-B.1.2-6.1">
-              <p id="appendix-B.1.2-6.1.1">it has only 100 quota units left in the daily quota and the window will reset in 10 hours;<a href="#appendix-B.1.2-6.1.1" class="pilcrow">¶</a></p>
+              <p id="appendix-B.1.2-6.1.1">it has only 100 quota units left in the daily quota and the window will end in 10 hours;<a href="#appendix-B.1.2-6.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="appendix-B.1.2-7">The server MAY choose to omit returning the hourly policy as it uses the same quota units as the daily policy and the daily policy is the one that is closest to being exhausted.<a href="#appendix-B.1.2-7" class="pilcrow">¶</a></p>
@@ -2488,7 +2487,7 @@ advertising limits that are lower than the usual ones
 in case of saturation, thus increasing availability.<a href="#appendix-B.1.3-1" class="pilcrow">¶</a></p>
 <p id="appendix-B.1.3-2">The server adopted a basic policy of 100 quota units per minute,
 and in case of resource exhaustion adapts the returned values
-reducing both limit and remaining parameter values.<a href="#appendix-B.1.3-2" class="pilcrow">¶</a></p>
+reducing both available quota and effective window values.<a href="#appendix-B.1.3-2" class="pilcrow">¶</a></p>
 <p id="appendix-B.1.3-3">After 2 seconds the client consumed 40 quota units<a href="#appendix-B.1.3-3" class="pilcrow">¶</a></p>
 <p id="appendix-B.1.3-4">Request:<a href="#appendix-B.1.3-4" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="appendix-B.1.3-5">
@@ -2608,11 +2607,11 @@ RateLimit-Policy: "fixedwindow";q=100;w=60
           <h4 id="name-dynamic-limits-with-paramet">
 <a href="#appendix-B.2.2" class="section-number selfRef">B.2.2. </a><a href="#name-dynamic-limits-with-paramet" class="section-name selfRef">Dynamic limits with parameterized windows</a>
           </h4>
-<p id="appendix-B.2.2-1">The policy conveyed by the RateLimit header field states that
+<p id="appendix-B.2.2-1">The policy conveyed by the RateLimit-Policy header field states that
 the server accepts 100 quota units per minute.<a href="#appendix-B.2.2-1" class="pilcrow">¶</a></p>
 <p id="appendix-B.2.2-2">To avoid resource exhaustion, the server artificially lowers
 the actual limits returned in the throttling headers.<a href="#appendix-B.2.2-2" class="pilcrow">¶</a></p>
-<p id="appendix-B.2.2-3">The remaining parameter then advertises
+<p id="appendix-B.2.2-3">The RateLimit header field then advertises
 only 9 quota units for the next 50 seconds to slow down the client.<a href="#appendix-B.2.2-3" class="pilcrow">¶</a></p>
 <p id="appendix-B.2.2-4">Note that the server could have lowered even the other
 values in the RateLimit header field: this specification
@@ -2687,7 +2686,7 @@ RateLimit: "dynamic";r=0;t=20
 <p id="appendix-B.3-1">Alternatively, given the same context where the previous example starts, we
 can convey the same information to the client via Retry-After, with
 the advantage that the server can now specify the policy's nominal limit and
-window that will apply after the reset, e.g. assuming the resource exhaustion
+window that will apply after the retry time, e.g. assuming the resource exhaustion
 is likely to be gone by then, so the advertised policy does not need to be
 adjusted, yet we managed to stop requests for a while and slow down the rest of
 the current window.<a href="#appendix-B.3-1" class="pilcrow">¶</a></p>
@@ -2717,7 +2716,7 @@ RateLimit: "dynamic";r=15;t=40
 <p id="appendix-B.3-6">Note that in this last response the client is expected to honor
 Retry-After and perform no requests for the specified amount of
 time, whereas the previous example would not force the client to stop
-requests before the reset time is elapsed, as it would still be free to
+requests before the end of the effective window, as it would still be free to
 query again the server even if it is likely to have the request rejected.<a href="#appendix-B.3-6" class="pilcrow">¶</a></p>
 <div id="use-with-multiple-windows">
 <section id="appendix-B.3.1">
@@ -2743,7 +2742,7 @@ to reach is the daily one.<a href="#appendix-B.3.1-4" class="pilcrow">¶</a></p>
               <p id="appendix-B.3.1-6.1.1">it has only 100 quota units left;<a href="#appendix-B.3.1-6.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="appendix-B.3.1-6.2">
-              <p id="appendix-B.3.1-6.2.1">the window will reset in 10 hours;<a href="#appendix-B.3.1-6.2.1" class="pilcrow">¶</a></p>
+              <p id="appendix-B.3.1-6.2.1">the effective window is 10 hours;<a href="#appendix-B.3.1-6.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="appendix-B.3.1-6.3">
               <p id="appendix-B.3.1-6.3.1">the expiring-limit is 5000.<a href="#appendix-B.3.1-6.3.1" class="pilcrow">¶</a></p>
@@ -2856,7 +2855,7 @@ the scope for the current document.<a href="#appendix-C-2.6.4" class="pilcrow">�
           <p id="appendix-C-2.7.1">Do a positive value of remaining parameter imply any service guarantee for my
 future requests to be served?<a href="#appendix-C-2.7.1" class="pilcrow">¶</a></p>
 <p id="appendix-C-2.7.2">
-No. FAQ integrated in <a href="#ratelimit-remaining-parameter" class="auto internal xref">Section 4.1.1</a>.<a href="#appendix-C-2.7.2" class="pilcrow">¶</a></p>
+No. FAQ integrated in <a href="#ratelimit-available-quota" class="auto internal xref">Section 4.1.1</a>.<a href="#appendix-C-2.7.2" class="pilcrow">¶</a></p>
 </li>
         <li id="appendix-C-2.8">
           <p id="appendix-C-2.8.1">Is the quota-policy definition too complex?<a href="#appendix-C-2.8.1" class="pilcrow">¶</a></p>
