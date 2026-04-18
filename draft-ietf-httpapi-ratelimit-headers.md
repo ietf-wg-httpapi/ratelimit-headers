@@ -67,8 +67,8 @@ Rate limiting of HTTP {{HTTP}} clients is a widespread practice. Servers use quo
 
 Quotas may be enforced on different bases (e.g. per user, per IP, per geographic area) and at different levels. To help clients pace their requests, servers can expose quota information via HTTP header fields. This document defines a set of standard HTTP header fields to enable servers to communicate rate limiting information to clients:
 
-- RateLimit-Policy: a quota policy defined by the server. Client requests consume quota.
-- RateLimit: the remaining quota for a specific policy at the time the response is generated.
+- RateLimit-Policy: quota policies defined by the server. Client requests consume quota.
+- RateLimit: the quota currently available under specific policies at the time the response is generated.
 
 These fields enable servers to communicate complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits. This information helps improve the resiliency of HTTP infrastructure by providing clients with the information needed to throttle their requests and avoid 4xx or 5xx responses.
 
@@ -99,7 +99,7 @@ The term "problem type" in this document is to be interpreted as described in [P
 # Terminology
 
   Quota:
-  : A quota is an allocation of capacity used by a server to limit client requests. That capacity is measured in quota units and may be reallocated at the end of a time window.
+  : A quota is an allocation of capacity used by a server to limit client requests. That capacity is measured in quota units that the client may consume within a time window.
 
   Quota Unit:
   : A quota unit is the unit of measurement used to measure the activity of a client.
@@ -114,7 +114,7 @@ The term "problem type" in this document is to be interpreted as described in [P
   : A quota policy is implemented by a server to regulate activity within a specified quota partition, quantified in quota units, over a defined time window. This activity is restricted to a predefined limit, known as the quota. Servers MAY advertise quota policies. More than one quota policy can affect a given request.
 
   Service Limit:
-  : A service limit is the currently remaining quota from a specific quota policy and, if defined, the remaining time before quota is reallocated.
+  : A service limit is the currently available quota under a specific quota policy and, if defined, the effective time window within which the client can use no more than the available quota.
 
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
@@ -194,10 +194,10 @@ Each Service Limit Item identifies the quota policy ({{quotapolicy-item}}) assoc
 The following parameters are defined in this specification:
 
   r:
-  :  This REQUIRED parameter value conveys the remaining quota units for the identified policy ({{ratelimit-remaining-parameter}}).
+  :  This REQUIRED parameter value conveys the available quota under the identified policy ({{ratelimit-available-quota}}).
 
   t:
-  : This OPTIONAL parameter value conveys the time until additional quota is made available for the identified policy ({{ratelimit-reset-parameter}}).
+  : This OPTIONAL parameter value conveys the effective window under the identified policy: the time within which the client can use no more than the available quota ({{ratelimit-effective-window}}).
 
   pk:
   : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request ({{ratelimit-partitionkey}}).
@@ -207,17 +207,17 @@ Unknown parameters MUST be ignored by recipients.
 Implementation- or service-specific parameters SHOULD be prefixed with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
 
 
-### Remaining Parameter {#ratelimit-remaining-parameter}
+### Available Quota Parameter {#ratelimit-available-quota}
 
-The "r" parameter indicates the remaining quota units for the identified policy.
+The "r" parameter indicates the available quota under the identified policy.
 
 It is a non-negative Integer expressed in quota units.
-Clients MUST NOT assume that a positive remaining value is a guarantee that further requests will be served.
-When the remaining parameter value is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
+Clients MUST NOT assume that a positive available quota is a guarantee that further requests will be served.
+When the available quota is low, it indicates that the server may soon throttle the client (see {{providing-ratelimit-fields}}).
 
-### Reset Parameter {#ratelimit-reset-parameter}
+### Effective Window Parameter {#ratelimit-effective-window}
 
-The "t" parameter indicates the number of seconds until additional quota associated with the quota policy is made available.
+The "t" parameter indicates effective window under the identified policy: the number of seconds within which the client can use no more than the available quota.
 
 It is a non-negative Integer compatible with the delay-seconds rule, because:
 
@@ -225,11 +225,13 @@ It is a non-negative Integer compatible with the delay-seconds rule, because:
   and clock skew between client and server (see {{Section 5.6.7 of HTTP}});
 - it mitigates the risk related to thundering herd when too many clients are serviced with the same timestamp.
 
-The client MUST NOT assume that all its service limit will be fully restored at the moment indicated by the reset parameter. The server MAY arbitrarily alter the reset parameter value between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
+The client MUST NOT assume that all its service limit will be fully restored after the time indicated by the effective window parameter. The server MAY arbitrarily alter the available quota and effective window between subsequent requests; for example, in case of resource saturation or to implement sliding window policies.
 
 ### Partition Key Parameter {#ratelimit-partitionkey}
 
 The "pk" parameter value conveys the partition key associated to the request. The value MUST be a Byte Sequence. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
+
+
 
 
 # Problem Types {#problem-types}
@@ -284,7 +286,7 @@ Content-Type: application/problem+json
 
 A server MAY return RateLimit header fields independently of the response status code. This includes throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
 
-Servers SHOULD avoid returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low remaining parameter value could prevent the client from following the redirect. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the remaining parameter value is 0.
+Servers SHOULD avoid returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low available quota could prevent the client from following the redirect. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the available quota is 0.
 
 ~~~ http-message
 HTTP/1.1 301 Moved Permanently
@@ -293,11 +295,11 @@ RateLimit: "problemPolicy";r=0;t=10
 
 ~~~
 
-If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the reset parameter.
+If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the end of the effective window.
 
-Servers using RateLimit header fields SHOULD implement mechanisms to cap the ratio between the remaining and the reset parameter values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window, as a large remaining value relative to a small reset value could inadvertently encourage a burst of requests.
+Servers using RateLimit header fields SHOULD implement mechanisms to cap the ratio between the available quota and the effective window values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window, as a large available quota relative to a small effective window could inadvertently encourage a burst of requests.
 
-Under certain conditions, a server MAY reduce the remaining parameter value or increase the reset parameter value between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
+Under certain conditions, a server MAY reduce the available quota or increase the effective window between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
 
 ## Generating Partition Keys
 
@@ -329,13 +331,13 @@ A client receiving RateLimit header fields MUST NOT assume that future responses
 
 Malformed RateLimit header fields MUST be ignored.
 
-A client SHOULD NOT exceed the quota units conveyed by the remaining parameter before the time window expressed in the reset parameter.
+A client SHOULD NOT exceed the available quota within the time expressed in the effective window parameter.
 
-The value of the reset parameter is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to better estimate the reset parameter moment intended by the server.
+The value of the effective window parameter is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to schedule requests.
 
 The details provided in the RateLimit-Policy header field are informative and MAY be ignored.
 
-If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the reset parameter MAY be ignored.
+If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the effective window MAY be ignored.
 
 This specification does not mandate a specific throttling behavior and implementers can adopt their preferred policies, including:
 
@@ -347,7 +349,7 @@ This specification does not mandate a specific throttling behavior and implement
 
 Partition keys are useful for a client if it is likely that single client will make requests that consume different quota allocations. E.g. a client making requests on behalf of different users or for different resources that have independent quota allocations.
 
-If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota remaining to execute the request.
+If a server documents the partition key generation algorithm, clients MAY generate a partition key for a future request. Using this key, and comparing to the key returned by the server, the client can determine if there is sufficient quota available to execute the request.
 
 For cases where the partition key generation algorithm of a server is unknown, clients MAY use heuristics to guess if a future request will be successful based on its similarity to previous requests.
 
@@ -395,42 +397,41 @@ to the user agent.
 
 Where partition keys contain identifying information, either of the client application or the user, servers should be aware of the potential for impersonation and apply the appropriate security mechanisms.
 
-## Remaining quota units are not granted requests {#sec-remaining-not-granted}
+## Available quota units are not granted requests {#sec-available-not-granted}
 
 RateLimit header fields convey hints from the server
 to the clients in order to help them avoid being throttled out.
 
-Clients MUST NOT consider the quota returned in the [remaining parameter](#ratelimit-remaining-parameter) as a service level agreement.
+Clients MUST NOT consider the [available quota parameter](#ratelimit-available-quota) as a service level agreement.
 
 In case of resource saturation, the server MAY artificially lower the returned values
 or not serve the request regardless of the advertised quotas.
 
-## Reliability of the reset parameter {#sec-reset-reliability}
+## Variability of the effective window {#sec-window-variability}
 
-Consider that quota might not be made available after the moment referenced by the [reset parameter](#ratelimit-reset-parameter),
-and the reset parameter value may not be constant.
+The [effective window parameter](#ratelimit-effective-window) does not imply anything about when the server will increase the available quota. The effective window does not necessarily end at a fixed point in time.
 
-Subsequent requests might return a higher reset parameter value
+Subsequent requests might return a higher effective window value
 to limit concurrency or implement dynamic or adaptive throttling policies.
 
 ## Resource exhaustion {#sec-resource-exhaustion}
 
-When returning reset values, servers must be aware that
+When returning effective window values, servers must be aware that
 many throttled clients may come back at the very moment specified.
 
 This is true for Retry-After too.
 
 For example, if the quota resets every day at `18:00:00`
-and your server returns the reset parameter accordingly
+and your server returns the effective window accordingly
 
 ~~~
    Date: Tue, 15 Nov 1994 18:00:00 GMT
-   RateLimit: "daily";r=1;t=36400
+   RateLimit: "daily";r=1;t=86400
 ~~~
 
 there's a high probability that all clients will show up at `18:00:00`.
 
-This could be mitigated by adding some jitter to the reset value.
+This could be mitigated by adding some jitter to the effective window.
 
 Resource exhaustion issues can be associated with quota policies using a
 large time window, because a user agent by chance or on purpose
@@ -445,24 +446,24 @@ RateLimit-Policy: "somepolicy";q=10000;w=1000
 RateLimit: "somepolicy";r=10000;t=10
 ~~~
 
-A client implementing a simple ratio between remaining parameter and reset parameter could infer an average throughput of 1000 quota units per second, while the quota parameter conveys a quota-policy with an average of 10 quota units per second.
-If the service cannot handle such load, it should return either a lower remaining parameter value or a higher reset parameter value.
+A client implementing a simple ratio between available quota and effective window could infer an average throughput of 1000 quota units per second, while the policy's quota and window parameters convey an average of 10 quota units per second.
+If the service cannot handle such load, it should return either a lower available quota or a higher effective window.
 Moreover, complementing large time window quota policies with a short time window one mitigates those risks.
 
 
 ### Denial of Service {#sec-dos}
 
 RateLimit header fields may contain unexpected values by chance or on purpose.
-For example, an excessively high remaining parameter value may be:
+For example, an excessively high available quota may be:
 
 - used by a malicious intermediary to trigger a Denial of Service attack
   or consume client resources boosting its requests;
 - passed by a misconfigured server;
 
-or a high reset parameter value could inhibit clients to contact the server (e.g. similarly to receiving "Retry-after: 1000000").
+or a large effective window could inhibit clients to contact the server (e.g. similarly to receiving "Retry-after: 1000000").
 
 To mitigate this risk, clients can set thresholds that they consider reasonable in terms of quota units, time window, concurrent requests or throughput, and define a consistent behavior when the RateLimit exceed those thresholds.
-For example this means capping the maximum number of request per second, or implementing retries when the reset parameter exceeds ten minutes.
+For example this means capping the maximum number of request per second, or implementing retries when the effective window exceeds ten minutes.
 
 The considerations above are not limited to RateLimit header fields, but apply to all fields affecting how clients behave in subsequent requests (e.g. Retry-After).
 
@@ -592,7 +593,7 @@ Since the field values are not necessarily correlated with
 the response status code,
 a subsequent request is not required to fail.
 The example below shows that the server decided to serve the request
-even if remaining parameter value is 0.
+even if the available quota is 0.
 Another server, or the same server under other load conditions, could have decided to throttle the request instead.
 
 Request:
@@ -628,7 +629,7 @@ the closest limit to reach is the daily one.
 The server then exposes the RateLimit header fields to
 inform the client that:
 
-- it has only 100 quota units left in the daily quota and the window will reset in 10 hours;
+- it has only 100 quota units left in the daily quota and the window will end in 10 hours;
 
 The server MAY choose to omit returning the hourly policy as it uses the same quota units as the daily policy and the daily policy is the one that is closest to being exhausted.
 
@@ -658,7 +659,7 @@ in case of saturation, thus increasing availability.
 
 The server adopted a basic policy of 100 quota units per minute,
 and in case of resource exhaustion adapts the returned values
-reducing both limit and remaining parameter values.
+reducing both available quota and effective window values.
 
 After 2 seconds the client consumed 40 quota units
 
@@ -766,13 +767,13 @@ RateLimit-Policy: "fixedwindow";q=100;w=60
 
 ### Dynamic limits with parameterized windows
 
-The policy conveyed by the RateLimit header field states that
+The policy conveyed by the RateLimit-Policy header field states that
 the server accepts 100 quota units per minute.
 
 To avoid resource exhaustion, the server artificially lowers
 the actual limits returned in the throttling headers.
 
-The remaining parameter then advertises
+The RateLimit header field then advertises
 only 9 quota units for the next 50 seconds to slow down the client.
 
 Note that the server could have lowered even the other
@@ -839,7 +840,7 @@ RateLimit: "dynamic";r=0;t=20
 Alternatively, given the same context where the previous example starts, we
 can convey the same information to the client via Retry-After, with
 the advantage that the server can now specify the policy's nominal limit and
-window that will apply after the reset, e.g. assuming the resource exhaustion
+window that will apply after the retry time, e.g. assuming the resource exhaustion
 is likely to be gone by then, so the advertised policy does not need to be
 adjusted, yet we managed to stop requests for a while and slow down the rest of
 the current window.
@@ -870,7 +871,7 @@ RateLimit: "dynamic";r=15;t=40
 Note that in this last response the client is expected to honor
 Retry-After and perform no requests for the specified amount of
 time, whereas the previous example would not force the client to stop
-requests before the reset time is elapsed, as it would still be free to
+requests before the end of the effective window, as it would still be free to
 query again the server even if it is likely to have the request rejected.
 
 ### Use with multiple windows
@@ -889,7 +890,7 @@ to reach is the daily one.
 The server then exposes the RateLimit header fields to inform the client that:
 
 - it has only 100 quota units left;
-- the window will reset in 10 hours;
+- the effective window is 10 hours;
 - the expiring-limit is 5000.
 
 Request:
@@ -975,7 +976,7 @@ RateLimit: "day";r=100;t=36000
 7. Do a positive value of remaining parameter imply any service guarantee for my
    future requests to be served?
 
-   No. FAQ integrated in {{ratelimit-remaining-parameter}}.
+   No. FAQ integrated in {{ratelimit-available-quota}}.
 
 8. Is the quota-policy definition too complex?
 
