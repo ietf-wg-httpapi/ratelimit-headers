@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 28 March 2026                                           Red Hat
+Expires: 20 October 2026                                         Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                       24 September 2025
+                                                           18 April 2026
 
 
                     RateLimit header fields for HTTP
@@ -53,11 +53,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 28 March 2026.
+   This Internet-Draft will expire on 20 October 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -133,8 +133,7 @@ Table of Contents
        B.2.3.  Dynamic limits for pushing back and slowing down
      B.3.  Dynamic limits for pushing back with Retry-After and slow
            down
-       B.3.1.  Missing Remaining information
-       B.3.2.  Use with multiple windows
+       B.3.1.  Use with multiple windows
    FAQ
    RateLimit header fields currently used on the web
    Acknowledgements
@@ -1311,44 +1310,7 @@ B.3.  Dynamic limits for pushing back with Retry-After and slow down
    to query again the server even if it is likely to have the request
    rejected.
 
-B.3.1.  Missing Remaining information
-
-   The server does not expose remaining values (for example, because the
-   underlying counters are not available).  Instead, it resets the limit
-   counter every second.
-
-   It communicates to the client the limit of 10 quota units per second
-   always returning the limit and reset parameters.
-
-   Request:
-
-   GET /items/123 HTTP/1.1
-   Host: api.example
-
-   Response:
-
-   HTTP/1.1 200 Ok
-   Content-Type: application/json
-   RateLimit-Policy: quota;q=100;w=1
-   RateLimit: quota;t=1
-
-   {"first": "request"}
-
-   Request:
-
-   GET /items/123 HTTP/1.1
-   Host: api.example
-
-   Response:
-
-   HTTP/1.1 200 Ok
-   Content-Type: application/json
-   RateLimit-Policy: quota;q=10
-   RateLimit: quota;t=1
-
-   {"second": "request"}
-
-B.3.2.  Use with multiple windows
+B.3.1.  Use with multiple windows
 
    This is a standardized way of describing the policy detailed in
    Appendix B.1.2:

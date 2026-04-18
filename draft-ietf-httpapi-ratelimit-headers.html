@@ -11,23 +11,22 @@
 <meta content="
        This document defines the RateLimit-Policy and RateLimit HTTP header fields for servers to advertise their quota policies and the current service limits, thereby allowing clients to avoid being throttled. 
     " name="description">
-<meta content="xml2rfc 3.30.2" name="generator">
+<meta content="xml2rfc 3.33.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-httpapi-ratelimit-headers-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.30.2
-    Python 3.12.11
+  xml2rfc 3.33.0
+    Python 3.12.13
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
-    intervaltree 3.1.0
+    intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 5.3.1
-    platformdirs 4.4.0
+    lxml 6.0.2
+    platformdirs 4.9.6
     pycountry 24.6.1
-    PyYAML 6.0.2
+    PyYAML 6.0.3
     requests 2.32.5
-    setuptools 80.9.0
-    wcwidth 0.2.13
+    wcwidth 0.6.0
 -->
 <link href="draft-ietf-httpapi-ratelimit-headers.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -168,7 +167,7 @@
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 @font-face {
   font-family: 'Oxygen Mono';
@@ -176,7 +175,8 @@
   font-weight: 400;
   font-display: swap;
   src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 }
 
 @font-face {
@@ -568,6 +568,7 @@ aside, blockquote {
 }
 blockquote {
   margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
 }
 cite {
   display: block;
@@ -638,7 +639,7 @@ a.pilcrow {
   }
 }
 @media not print {
-  :hover > a.pilcrow {
+  :hover > a.pilcrow, a.pilcrow:focus {
     opacity: 1;
   }
   a.pilcrow[href]:hover {
@@ -1046,11 +1047,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">RateLimit header fields for HTTP</td>
-<td class="right">September 2025</td>
+<td class="right">April 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Polli, et al.</td>
-<td class="center">Expires 28 March 2026</td>
+<td class="center">Expires 20 October 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-httpapi-ratelimit-headers-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-09-24" class="published">24 September 2025</time>
+<time datetime="2026-04-18" class="published">18 April 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-03-28">28 March 2026</time></dd>
+<dd class="expires"><time datetime="2026-10-20">20 October 2026</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1126,7 +1127,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 28 March 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 October 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1135,7 +1136,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2025 IETF Trust and the persons identified as the
+            Copyright (c) 2026 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1370,10 +1371,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.13.2.3.1"><a href="#appendix-B.3" class="auto internal xref">B.3</a>.  <a href="#name-dynamic-limits-for-pushing-b" class="internal xref">Dynamic limits for pushing back with Retry-After and slow down</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.3.2.1">
-                    <p id="section-toc.1-1.13.2.3.2.1.1"><a href="#appendix-B.3.1" class="auto internal xref">B.3.1</a>.  <a href="#name-missing-remaining-informati" class="internal xref">Missing Remaining information</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.3.2.2">
-                    <p id="section-toc.1-1.13.2.3.2.2.1"><a href="#appendix-B.3.2" class="auto internal xref">B.3.2</a>.  <a href="#name-use-with-multiple-windows" class="internal xref">Use with multiple windows</a></p>
+                    <p id="section-toc.1-1.13.2.3.2.1.1"><a href="#appendix-B.3.1" class="auto internal xref">B.3.1</a>.  <a href="#name-use-with-multiple-windows" class="internal xref">Use with multiple windows</a></p>
 </li>
                 </ul>
 </li>
@@ -2721,35 +2719,36 @@ Retry-After and perform no requests for the specified amount of
 time, whereas the previous example would not force the client to stop
 requests before the reset time is elapsed, as it would still be free to
 query again the server even if it is likely to have the request rejected.<a href="#appendix-B.3-6" class="pilcrow">¶</a></p>
-<div id="missing-remaining-information">
+<div id="use-with-multiple-windows">
 <section id="appendix-B.3.1">
-          <h4 id="name-missing-remaining-informati">
-<a href="#appendix-B.3.1" class="section-number selfRef">B.3.1. </a><a href="#name-missing-remaining-informati" class="section-name selfRef">Missing Remaining information</a>
+          <h4 id="name-use-with-multiple-windows">
+<a href="#appendix-B.3.1" class="section-number selfRef">B.3.1. </a><a href="#name-use-with-multiple-windows" class="section-name selfRef">Use with multiple windows</a>
           </h4>
-<p id="appendix-B.3.1-1">The server does not expose remaining values
-(for example, because the underlying counters are not available).
-Instead, it resets the limit counter every second.<a href="#appendix-B.3.1-1" class="pilcrow">¶</a></p>
-<p id="appendix-B.3.1-2">It communicates to the client the limit of 10 quota units per second
-always returning the limit and reset parameters.<a href="#appendix-B.3.1-2" class="pilcrow">¶</a></p>
-<p id="appendix-B.3.1-3">Request:<a href="#appendix-B.3.1-3" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="appendix-B.3.1-4">
-<pre>
-GET /items/123 HTTP/1.1
-Host: api.example
-
-</pre><a href="#appendix-B.3.1-4" class="pilcrow">¶</a>
-</div>
-<p id="appendix-B.3.1-5">Response:<a href="#appendix-B.3.1-5" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="appendix-B.3.1-6">
-<pre>
-HTTP/1.1 200 Ok
-Content-Type: application/json
-RateLimit-Policy: quota;q=100;w=1
-RateLimit: quota;t=1
-
-{"first": "request"}
-</pre><a href="#appendix-B.3.1-6" class="pilcrow">¶</a>
-</div>
+<p id="appendix-B.3.1-1">This is a standardized way of describing the policy
+detailed in <a href="#use-with-multiple-policies" class="auto internal xref">Appendix B.1.2</a>:<a href="#appendix-B.3.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.3.1-2.1">
+              <p id="appendix-B.3.1-2.1.1">5000 daily quota units;<a href="#appendix-B.3.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.3.1-2.2">
+              <p id="appendix-B.3.1-2.2.1">1000 hourly quota units.<a href="#appendix-B.3.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="appendix-B.3.1-3">The client consumed 4900 quota units in the first 14 hours.<a href="#appendix-B.3.1-3" class="pilcrow">¶</a></p>
+<p id="appendix-B.3.1-4">Despite the next hourly limit of 1000 quota units, the closest limit
+to reach is the daily one.<a href="#appendix-B.3.1-4" class="pilcrow">¶</a></p>
+<p id="appendix-B.3.1-5">The server then exposes the RateLimit header fields to inform the client that:<a href="#appendix-B.3.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-B.3.1-6.1">
+              <p id="appendix-B.3.1-6.1.1">it has only 100 quota units left;<a href="#appendix-B.3.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.3.1-6.2">
+              <p id="appendix-B.3.1-6.2.1">the window will reset in 10 hours;<a href="#appendix-B.3.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="appendix-B.3.1-6.3">
+              <p id="appendix-B.3.1-6.3.1">the expiring-limit is 5000.<a href="#appendix-B.3.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
 <p id="appendix-B.3.1-7">Request:<a href="#appendix-B.3.1-7" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="appendix-B.3.1-8">
 <pre>
@@ -2761,64 +2760,13 @@ Host: api.example
 <p id="appendix-B.3.1-9">Response:<a href="#appendix-B.3.1-9" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="appendix-B.3.1-10">
 <pre>
-HTTP/1.1 200 Ok
-Content-Type: application/json
-RateLimit-Policy: quota;q=10
-RateLimit: quota;t=1
-
-{"second": "request"}
-</pre><a href="#appendix-B.3.1-10" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
-<div id="use-with-multiple-windows">
-<section id="appendix-B.3.2">
-          <h4 id="name-use-with-multiple-windows">
-<a href="#appendix-B.3.2" class="section-number selfRef">B.3.2. </a><a href="#name-use-with-multiple-windows" class="section-name selfRef">Use with multiple windows</a>
-          </h4>
-<p id="appendix-B.3.2-1">This is a standardized way of describing the policy
-detailed in <a href="#use-with-multiple-policies" class="auto internal xref">Appendix B.1.2</a>:<a href="#appendix-B.3.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-B.3.2-2.1">
-              <p id="appendix-B.3.2-2.1.1">5000 daily quota units;<a href="#appendix-B.3.2-2.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="appendix-B.3.2-2.2">
-              <p id="appendix-B.3.2-2.2.1">1000 hourly quota units.<a href="#appendix-B.3.2-2.2.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-<p id="appendix-B.3.2-3">The client consumed 4900 quota units in the first 14 hours.<a href="#appendix-B.3.2-3" class="pilcrow">¶</a></p>
-<p id="appendix-B.3.2-4">Despite the next hourly limit of 1000 quota units, the closest limit
-to reach is the daily one.<a href="#appendix-B.3.2-4" class="pilcrow">¶</a></p>
-<p id="appendix-B.3.2-5">The server then exposes the RateLimit header fields to inform the client that:<a href="#appendix-B.3.2-5" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-B.3.2-6.1">
-              <p id="appendix-B.3.2-6.1.1">it has only 100 quota units left;<a href="#appendix-B.3.2-6.1.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="appendix-B.3.2-6.2">
-              <p id="appendix-B.3.2-6.2.1">the window will reset in 10 hours;<a href="#appendix-B.3.2-6.2.1" class="pilcrow">¶</a></p>
-</li>
-            <li class="normal" id="appendix-B.3.2-6.3">
-              <p id="appendix-B.3.2-6.3.1">the expiring-limit is 5000.<a href="#appendix-B.3.2-6.3.1" class="pilcrow">¶</a></p>
-</li>
-          </ul>
-<p id="appendix-B.3.2-7">Request:<a href="#appendix-B.3.2-7" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="appendix-B.3.2-8">
-<pre>
-GET /items/123 HTTP/1.1
-Host: api.example
-
-</pre><a href="#appendix-B.3.2-8" class="pilcrow">¶</a>
-</div>
-<p id="appendix-B.3.2-9">Response:<a href="#appendix-B.3.2-9" class="pilcrow">¶</a></p>
-<div class="lang-http-message sourcecode" id="appendix-B.3.2-10">
-<pre>
 HTTP/1.1 200 OK
 Content-Type: application/json
 RateLimit-Policy: "hour";q=1000;w=3600, "day";q=5000;w=86400
 RateLimit: "day";r=100;t=36000
 
 {"hello": "world"}
-</pre><a href="#appendix-B.3.2-10" class="pilcrow">¶</a>
+</pre><a href="#appendix-B.3.1-10" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
