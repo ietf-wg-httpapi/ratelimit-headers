@@ -86,15 +86,13 @@ The following features are out of the scope of this document:
   Service Level Agreement:
   : Conveyed quota hints do not imply any service guarantee. Server is free to throttle clients that adhere to the server’s recommended limits under certain circumstances.
 
-## Notational Conventions
+## Conventions and Terminology
 
 {::boilerplate bcp14}
 
-This document uses the terms List, Item, Integer, String, Parameters, and Byte Sequence from {{Section 3 of STRUCTURED-FIELDS}} to specify syntax and parsing, along with the concept of "bare item".
+This document uses the terms List, Item, Integer, String, Token, Boolean, Parameters, and Byte Sequence from {{Section 3 of STRUCTURED-FIELDS}} to specify syntax and parsing, along with the concept of "bare item".
 
 The term "problem type" in this document is to be interpreted as described in [PROBLEM].
-
-# Terminology
 
   Quota:
   : A quota is an allocation of capacity used by a server to limit client requests. That capacity is measured in quota units that the client may consume within a time window.
@@ -146,8 +144,6 @@ The following parameters are defined:
 
 Unknown parameters MUST be ignored by recipients. A recipient that receives a RateLimit-Policy field with a parameter value that does not conform to the syntax defined in this section SHOULD ignore the malformed list item.
 
-Implementation- or service-specific parameters SHOULD be prefixed with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
-
 ### Quota Parameter {#ratelimitpolicy-quota}
 
  The "q" parameter value MUST be a non-negative Integer. The value indicates the quota allocated for client activity (measured in quota units) for a given quota partition.
@@ -157,13 +153,13 @@ Implementation- or service-specific parameters SHOULD be prefixed with a vendor 
 The "qu" parameter value conveys the quota units applicable to the quota ({{ratelimitpolicy-quota}}). The value MUST be a String. Allowed values are listed in the [RateLimit Quota Units registry](#ratelimit-quota-unit-registry). This specification defines three quota units:
 
   requests:
-  : This value indicates the quota is based on the number of requests processed by the resource server. Whether a specific request actually consumes a quota unit is implementation-specific.
+  : This value indicates the quota is based on the number of requests processed by the server. Whether a specific request actually consumes a quota unit is implementation-specific.
 
   content-bytes:
-  : This value indicates the quota is based on the number of content bytes processed by the resource server.
+  : This value indicates the quota is based on the number of content bytes processed by the server.
 
   concurrent-requests:
-  : This value indicates the quota is based on the number of concurrent requests processed by the resource server.
+  : This value indicates the quota is based on the number of concurrent requests processed by the server.
 
 ### Window Parameter {#ratelimitpolicy-window}
 
@@ -182,7 +178,7 @@ This field MUST NOT appear in a trailer section.
 A server uses this field to communicate the remaining quota for a specific policy at the time the response is generated.
 
 ~~~
-   RateLimit: "default";r=50;t=30
+   RateLimit: "default";a=50;w=30
 ~~~
 
 ## Service Limit Item {#servicelimit-item}
@@ -191,23 +187,24 @@ Each Service Limit Item identifies the quota policy ({{quotapolicy-item}}) assoc
 
 The following parameters are defined in this specification:
 
-  r:
+  a:
   :  This REQUIRED parameter value conveys the available quota under the identified policy ({{ratelimit-available-quota}}).
 
-  t:
+  w:
   : This OPTIONAL parameter value conveys the effective window under the identified policy: the time within which the client can use no more than the available quota ({{ratelimit-effective-window}}).
 
   pk:
   : The OPTIONAL "pk" parameter value conveys the partition key associated to the corresponding request ({{ratelimit-partitionkey}}).
 
-Unknown parameters MUST be ignored by recipients.
+  c:
+  : The OPTIONAL "c" parameter value conveys the cost of the corresponding request in quota units ({{ratelimit-cost}}).
 
-Implementation- or service-specific parameters SHOULD be prefixed with a vendor identifier, e.g. `acme-policy`, `acme-burst`.
+Unknown parameters MUST be ignored by recipients.
 
 
 ### Available Quota Parameter {#ratelimit-available-quota}
 
-The "r" parameter indicates the available quota under the identified policy.
+The "a" parameter indicates the available quota under the identified policy.
 
 It is a non-negative Integer expressed in quota units.
 Clients MUST NOT assume that a positive available quota is a guarantee that further requests will be served.
@@ -215,7 +212,7 @@ When the available quota is low, it indicates that the server may soon throttle 
 
 ### Effective Window Parameter {#ratelimit-effective-window}
 
-The "t" parameter indicates effective window under the identified policy: the number of seconds within which the client can use no more than the available quota.
+The "w" parameter indicates effective window under the identified policy: the number of seconds within which the client can use no more than the available quota.
 
 It is a non-negative Integer compatible with the delay-seconds rule, because:
 
@@ -229,8 +226,164 @@ The client MUST NOT assume that all its service limit will be fully restored aft
 
 The "pk" parameter value conveys the partition key associated to the request. The value MUST be a Byte Sequence. Servers MAY use the partition key to divide server capacity across different clients and resources. Quotas are allocated per partition key.
 
+### Cost Parameter {#ratelimit-cost}
+
+The "c" parameter indicates the cost of the corresponding request in quota units. It is a non-negative Integer. When present, it enables a client to estimate how many similar requests it can make within the available quota without relying on the difference between successive available quota values, which may be unreliable when requests are made concurrently or when the server adjusts quota between responses.
+
+# RateLimit-Partition Field {#ratelimit-partition-field}
+
+The "RateLimit-Partition" response header field is a List of Strings. Each list item identifies a quota policy and declares the dimensions used to partition quota for that policy.
+
+This field MUST NOT appear in a trailer section.
+
+~~~
+   RateLimit-Partition: "api";user_id;method
+~~~
+
+## Partition Dimension Item {#partition-dimension-item}
+
+Each item in the RateLimit-Partition field is a String that matches the policy identifier used in the corresponding RateLimit-Policy ({{ratelimit-policy-field}}) and RateLimit ({{ratelimit-field}}) fields. The item's Parameters declare the partition dimensions.
+
+Each parameter key names a partition dimension registered in the RateLimit Partition Key Dimensions registry ({{ratelimit-partition-key-dimensions-registry}}).
+
+A dimension parameter with a Boolean value of true (e.g. `;user_id`) indicates that the dimension varies across partitions — the server uses the request's value for that dimension when constructing the partition key.
+
+A dimension parameter with a non-Boolean value (e.g. `;method=GET`) indicates that the policy applies only to requests where that dimension matches the specified value. This enables a client to determine whether a policy is relevant to a given request before it is sent.
+
+Unknown dimension parameters SHOULD be ignored by recipients when processing the field, but a client that does not recognize or cannot compute the value of any dimension MUST treat the partition key for that policy as opaque and MUST NOT attempt to construct partition keys for prediction purposes.
+
+## Partition Key Construction {#partition-key-construction}
+
+When a server provides both the RateLimit-Partition field and a "pk" parameter in the RateLimit field, the "pk" Byte Sequence MUST be constructed as follows:
+
+1. Collect the dimension parameters from the RateLimit-Partition item. For dimensions with a Boolean value of true, the value is the request's value for that dimension. For dimensions with a non-Boolean value, the value is the parameter value itself.
+2. Sort the dimensions by parameter key in lexicographic order.
+3. For each dimension in sorted order, encode the value as a UTF-8 byte string.
+4. Concatenate the encoded values in order, separated by the byte 0x1F (Unit Separator, US).
+5. The resulting byte string is the partition key Byte Sequence.
+
+Dimension values MUST NOT contain the byte 0x1F. If a dimension value would naturally contain this byte, the server MUST define an escaping or encoding mechanism in the dimension's registry entry.
+
+For example, if the server declares:
+
+~~~
+   RateLimit-Partition: "api";user_id;method
+~~~
+
+and the request is made by user "alice" using the GET method, the partition key is constructed by sorting the dimensions alphabetically (method, user_id), then concatenating "GET", 0x1F, and "alice". The RateLimit field conveys this as a Byte Sequence:
+
+~~~
+   RateLimit: "api";a=99;w=60;pk=:R0VUH2FsaWNl:
+~~~
+
+A server might also declare a policy that applies only to a specific method:
+
+~~~
+   RateLimit-Partition: "reads";user_id;method=GET
+~~~
+
+A client receiving this knows the "reads" policy only applies to GET requests. For non-GET requests, this policy is not relevant and can be ignored.
+
+A client that knows its own values for the declared dimensions can construct the expected partition key for a future request and look it up in its local quota tracking state, enabling proactive traffic shaping without requiring API-specific knowledge.
+
+If a server provides a "pk" parameter without a corresponding RateLimit-Partition field item, the structure of the partition key is not defined by this specification and any interpretation of its structure MUST be communicated out of band. Clients MAY use heuristics to estimate partition membership based on observed partition key values and request similarity.
+
+# Server Behavior {#providing-ratelimit-fields}
+
+A server MAY return RateLimit header fields independently of the response status code. This includes throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
+
+Servers SHOULD avoid returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low available quota could prevent the client from following the redirect. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the available quota is 0.
+
+~~~ http-message
+HTTP/1.1 301 Moved Permanently
+Location: /foo/123
+RateLimit: "problemPolicy";a=0;w=10
+
+~~~
+
+If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the end of the effective window.
+
+Servers using RateLimit header fields SHOULD implement mechanisms to cap the ratio between the available quota and the effective window values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window, as a large available quota relative to a small effective window could inadvertently encourage a burst of requests.
+
+Under certain conditions, a server MAY reduce the available quota or increase the effective window between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
+
+## Performance Considerations
+
+Servers are not required to return RateLimit header fields in every response, and clients need to take this into account. For example, an implementer concerned with performance might provide RateLimit header fields only when a given quota is close to exhaustion.
+
+Implementers concerned with response fields' size, might take into account their ratio with respect to the content length, or use header-compression HTTP features such as {{?HPACK=RFC7541}}.
+
+# Quota Partitions {#quota-partitions}
+
+Servers commonly enforce different quota allocations depending on attributes of the request — for example, per authenticated user, per client application, per HTTP method, or per resource. When a single client makes requests that span multiple such allocations, the client needs to track quota for each allocation independently in order to shape its traffic effectively.
+
+A key goal of partition keys is to enable generic client-side traffic shaping without requiring API-specific knowledge. Historically, client-side rate limiting code has relied on out-of-band documentation to understand how a server partitions its quota — for example, by reading API documentation that explains rate limits are per-user or per-endpoint. This prevents the development of generic HTTP client libraries that can automatically shape traffic for any API.
+
+Partition keys address this by allowing the server to communicate the dimensions along which quota is partitioned, using attributes that the client can observe from its own requests. When a client can determine which partition a future request will fall into, it can proactively check whether sufficient quota is available before sending the request, rather than waiting to be throttled.
+
+The RateLimit-Partition field ({{ratelimit-partition-field}}) enables servers to declare the named dimensions that make up the partition key for each policy. When this field is provided, clients can construct partition keys deterministically from their own request attributes and predict which quota partition a future request will consume.
+
+For example, a server that allocates separate quotas per user and HTTP method might declare:
+
+~~~
+   RateLimit-Partition: "api";user_id;method
+~~~
+
+Partition keys returned by the server in RateLimit header fields allow a single client to track the quota of multiple partitions independently. This is useful when a single client makes requests that consume different quota allocations, for example when acting on behalf of different users or accessing different resources that have independent quotas.
+
+Servers SHOULD construct partition keys using only information that is present in the request. Servers SHOULD avoid returning partition keys that contain sensitive information. Where partition keys contain identifying information, either of the client application or the user, servers should be aware of the potential for impersonation and apply the appropriate security mechanisms.
+
+For cases where the server does not provide a RateLimit-Partition field, or where a client does not recognize all declared dimensions, clients MAY use heuristics to estimate whether a future request will be successful based on its similarity to previous requests.
+
+# Client Behavior {#receiving-fields}
+
+The RateLimit header fields can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will be successful. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether requests will succeed.
+
+For example, a successful response with the following fields:
+
+~~~
+   RateLimit: "default";a=1;w=7
+~~~
+
+does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions.
+
+A client is responsible for ensuring that RateLimit header field values returned
+cause reasonable client behavior with respect to throughput and latency
+(see {{sec-resource-exhaustion}} and {{sec-dos}}).
+
+A client receiving RateLimit header fields MUST NOT assume that future responses will contain the same RateLimit header fields, or any RateLimit header fields at all.
+
+Malformed RateLimit header fields MUST be ignored.
+
+A client SHOULD NOT exceed the available quota within the time expressed in the effective window parameter.
+
+The value of the effective window parameter is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to schedule requests.
+
+The details provided in the RateLimit-Policy header field are informative and MAY be ignored.
+
+If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the effective window MAY be ignored.
+
+This specification does not mandate a specific throttling behavior and implementers can adopt their preferred policies, including:
+
+- slowing down or pre-emptively back-off their request rate when
+  approaching quota limits;
+- consuming all the quota according to the exposed limits and then wait.
 
 
+
+## Intermediaries {#intermediaries}
+
+This section documents the considerations advised in {{Section 16.3.2 of HTTP}}.
+
+An intermediary that is not part of the originating service infrastructure and is not aware of the quota policy semantics used by the origin server SHOULD NOT alter the RateLimit header fields' values in such a way as to communicate a more permissive quota policy; this includes removing the RateLimit header fields.
+
+An intermediary that is aware of the quota unit semantics used by the origin server MAY alter the RateLimit header fields to communicate a different quota policy, for example when the intermediary enforces its own quota policy or when it can absorb additional load through caching or request collapsing.
+
+An intermediary SHOULD forward a request even when presuming that it might not be serviced; the service returning the RateLimit header fields is solely responsible for enforcing the communicated quota policy, and MAY still choose to service incoming requests.
+
+This specification does not mandate any behavior on intermediaries with respect to retries, nor does it require that intermediaries have any role in respecting quota policies. For example, it is legitimate for a proxy to retransmit a request without notifying the client, and thus consuming quota units.
+
+[Privacy considerations](#privacy) provide further guidance on intermediaries.
 
 # Problem Types {#problem-types}
 
@@ -279,109 +432,6 @@ Content-Type: application/problem+json
 }
 ~~~
 
-
-# Server Behavior {#providing-ratelimit-fields}
-
-A server MAY return RateLimit header fields independently of the response status code. This includes throttled responses. This document does not mandate any correlation between the RateLimit header field values and the returned status code.
-
-Servers SHOULD avoid returning RateLimit header fields in redirection responses (i.e., responses with 3xx status codes) because a low available quota could prevent the client from following the redirect. For example, given the RateLimit header fields below, a client could decide to wait 10 seconds before following the "Location" header field (see {{Section 10.2.2 of HTTP}}), because the available quota is 0.
-
-~~~ http-message
-HTTP/1.1 301 Moved Permanently
-Location: /foo/123
-RateLimit: "problemPolicy";r=0;t=10
-
-~~~
-
-If a response contains both the Retry-After and the RateLimit header fields, the Retry-After field value SHOULD NOT reference a point in time earlier than the end of the effective window.
-
-Servers using RateLimit header fields SHOULD implement mechanisms to cap the ratio between the available quota and the effective window values (see {{sec-resource-exhaustion}}); this is especially important when a quota policy uses a large time window, as a large available quota relative to a small effective window could inadvertently encourage a burst of requests.
-
-Under certain conditions, a server MAY reduce the available quota or increase the effective window between subsequent requests, e.g. to respond to Denial of Service attacks or in case of resource saturation.
-
-## Performance Considerations
-
-Servers are not required to return RateLimit header fields in every response, and clients need to take this into account. For example, an implementer concerned with performance might provide RateLimit header fields only when a given quota is close to exhaustion.
-
-Implementers concerned with response fields' size, might take into account their ratio with respect to the content length, or use header-compression HTTP features such as {{?HPACK=RFC7541}}.
-
-# Quota Partitions {#quota-partitions}
-
-Servers MAY use partition keys to divide server capacity across different clients and resources. There are a wide range of strategies for partitioning server capacity, including per user, per application, per HTTP method, per resource, or some combination of those values.
-
-The internal structure of a partition key is not defined by this specification. Unless its construction algorithm is communicated out of band, a partition key is opaque to clients. Partition keys are Byte Sequences and clients MUST use octet-for-octet comparison to match partition keys across responses.
-
-Partition keys returned by the server in RateLimit header fields allow a single client to track the quota of multiple partitions independently. This is useful when a single client makes requests that consume different quota allocations, for example when acting on behalf of different users or accessing different resources that have independent quotas.
-
-For example, a server that allocates separate quotas per user might construct a partition key from the authenticated user identifier. If a client makes requests on behalf of two users, "alice" and "bob", the server could return distinct partition keys for each:
-
-~~~
-   RateLimit-Policy: "peruser";q=100;w=60;pk=:YWxpY2U=:
-   RateLimit: "peruser";r=95;t=55;pk=:YWxpY2U=:
-~~~
-
-A subsequent request on behalf of a different user would return a different partition key with its own independent quota:
-
-~~~
-   RateLimit-Policy: "peruser";q=100;w=60;pk=:Ym9i:
-   RateLimit: "peruser";r=100;t=60;pk=:Ym9i:
-~~~
-
-In order for a client to shape its traffic to avoid having requests refused due to insufficient quota, the client needs to be able to predict which partition key a particular request will correspond to. This requires the partition key construction algorithm to be communicated to the client developer out of band, such as through API documentation. Without this knowledge, a client receiving partition keys can only track quota reactively — associating observed partition keys with past requests — rather than proactively determining the remaining quota for a future request.
-
-Servers SHOULD construct partition keys using only information that is present in the request. Servers SHOULD avoid returning partition keys that contain sensitive information. Where partition keys contain identifying information, either of the client application or the user, servers should be aware of the potential for impersonation and apply the appropriate security mechanisms.
-
-For cases where the partition key construction algorithm is unknown, clients MAY use heuristics to estimate whether a future request will be successful based on its similarity to previous requests.
-
-# Client Behavior {#receiving-fields}
-
-The RateLimit header fields can be used by clients to determine whether the associated request respected the server's quota policy, and as an indication of whether subsequent requests will be successful. However, the server might apply other criteria when servicing future requests, and so the quota policy may not completely reflect whether requests will succeed.
-
-For example, a successful response with the following fields:
-
-~~~
-   RateLimit: "default";r=1;t=7
-~~~
-
-does not guarantee that the next request will be successful. Servers' behavior may be subject to other conditions.
-
-A client is responsible for ensuring that RateLimit header field values returned
-cause reasonable client behavior with respect to throughput and latency
-(see {{sec-resource-exhaustion}} and {{sec-dos}}).
-
-A client receiving RateLimit header fields MUST NOT assume that future responses will contain the same RateLimit header fields, or any RateLimit header fields at all.
-
-Malformed RateLimit header fields MUST be ignored.
-
-A client SHOULD NOT exceed the available quota within the time expressed in the effective window parameter.
-
-The value of the effective window parameter is generated at response time: a client aware of a significant network latency MAY behave accordingly and use other information (e.g. the "Date" response header field, or otherwise gathered metrics) to schedule requests.
-
-The details provided in the RateLimit-Policy header field are informative and MAY be ignored.
-
-If a response contains both the RateLimit and Retry-After fields, the Retry-After field MUST take precedence and the effective window MAY be ignored.
-
-This specification does not mandate a specific throttling behavior and implementers can adopt their preferred policies, including:
-
-- slowing down or pre-emptively back-off their request rate when
-  approaching quota limits;
-- consuming all the quota according to the exposed limits and then wait.
-
-
-
-## Intermediaries {#intermediaries}
-
-This section documents the considerations advised in {{Section 16.3.2 of HTTP}}.
-
-An intermediary that is not part of the originating service infrastructure and is not aware of the quota policy semantics used by the origin server SHOULD NOT alter the RateLimit header fields' values in such a way as to communicate a more permissive quota policy; this includes removing the RateLimit header fields.
-
-An intermediary that is aware of the quota unit semantics used by the origin server MAY alter the RateLimit header fields to communicate a different quota policy, for example when the intermediary enforces its own quota policy or when it can absorb additional load through caching or request collapsing.
-
-An intermediary SHOULD forward a request even when presuming that it might not be serviced; the service returning the RateLimit header fields is solely responsible for enforcing the communicated quota policy, and MAY still choose to service incoming requests.
-
-This specification does not mandate any behavior on intermediaries with respect to retries, nor does it require that intermediaries have any role in respecting quota policies. For example, it is legitimate for a proxy to retransmit a request without notifying the client, and thus consuming quota units.
-
-[Privacy considerations](#privacy) provide further guidance on intermediaries.
 
 ## Caching
 
@@ -442,7 +492,7 @@ and your server returns the effective window accordingly
 
 ~~~
    Date: Tue, 15 Nov 1994 18:00:00 GMT
-   RateLimit: "daily";r=1;t=86400
+   RateLimit: "daily";a=1;w=86400
 ~~~
 
 there's a high probability that all clients will show up at `18:00:00`.
@@ -459,7 +509,7 @@ with an unconsumed quota policy of 10000 quota units per 1000 seconds.
 
 ~~~
 RateLimit-Policy: "somepolicy";q=10000;w=1000
-RateLimit: "somepolicy";r=10000;t=10
+RateLimit: "somepolicy";a=10000;w=10
 ~~~
 
 A client implementing a simple ratio between available quota and effective window could infer an average throughput of 1000 quota units per second, while the policy's quota and window parameters convey an average of 10 quota units per second.
@@ -501,7 +551,7 @@ can define specific techniques to mitigate the risks of re-identification.
 
 # IANA Considerations
 
-IANA is requested to update two registries and create one new registry.
+IANA is requested to update two registries and create five new registries.
 
 ## Update HTTP Field Name Registry
 
@@ -513,6 +563,7 @@ Please add the following entries to the
 |---------------------|-----------------|-----------|---------------|
 | RateLimit           | List            | permanent | {{ratelimit-field}} of {{&SELF}}       |
 | RateLimit-Policy    | List            | permanent | {{ratelimit-policy-field}} of {{&SELF}}      |
+| RateLimit-Partition | List            | permanent | {{ratelimit-partition-field}} of {{&SELF}}    |
 |---------------------|-----------------|-----------|---------------|
 
 
@@ -573,6 +624,97 @@ The registration template for the RateLimit Quota Units registry is as follows:
 - Reference: A reference to the document that specifies the quota unit.
 - Notes: Any additional notes about the quota unit.
 
+## RateLimit-Policy parameters registry {#ratelimit-policy-parameters-registry}
+
+This specification establishes the registry "Hypertext Transfer Protocol (HTTP) RateLimit-Policy Parameters" to be located at https://www.iana.org/assignments/http-ratelimit-policy-parameters. Registration is done on the advice of a Designated Expert, appointed by the IESG or their delegate. All entries are Specification Required ([IANA], Section 4.6).
+
+Each registered parameter defines a named parameter that may appear on items in the RateLimit-Policy header field. Parameters not registered in this registry SHOULD use a vendor prefix (e.g. `acme-burst`) to avoid collisions.
+
+The registry has the following initial content:
+
+|-----------|--------------------------------------|-----------|
+| Parameter | Description                          | Reference |
+|-----------|--------------------------------------|-----------|
+| q         | Quota allocated by the policy        | {{&SELF}} |
+| qu        | Quota units for the policy           | {{&SELF}} |
+| w         | Time window for the policy           | {{&SELF}} |
+| pk        | Partition key                        | {{&SELF}} |
+|-----------|--------------------------------------|-----------|
+
+### Registration Template
+
+The registration template for the RateLimit-Policy Parameters registry is as follows:
+
+- Parameter: The parameter key. The key MUST conform to the syntax for Structured Fields parameter keys.
+- Description: A description of the parameter's semantics.
+- Reference: A reference to the document that specifies the parameter.
+
+## RateLimit parameters registry {#ratelimit-parameters-registry}
+
+This specification establishes the registry "Hypertext Transfer Protocol (HTTP) RateLimit Parameters" to be located at https://www.iana.org/assignments/http-ratelimit-parameters. Registration is done on the advice of a Designated Expert, appointed by the IESG or their delegate. All entries are Specification Required ([IANA], Section 4.6).
+
+Each registered parameter defines a named parameter that may appear on items in the RateLimit header field. Parameters not registered in this registry SHOULD use a vendor prefix (e.g. `acme-burst`) to avoid collisions.
+
+The registry has the following initial content:
+
+|-----------|--------------------------------------|-----------|
+| Parameter | Description                          | Reference |
+|-----------|--------------------------------------|-----------|
+| a         | Available quota                      | {{&SELF}} |
+| w         | Effective window                     | {{&SELF}} |
+| pk        | Partition key                        | {{&SELF}} |
+| c         | Cost of the request in quota units   | {{&SELF}} |
+|-----------|--------------------------------------|-----------|
+
+### Registration Template
+
+The registration template for the RateLimit Parameters registry is as follows:
+
+- Parameter: The parameter key. The key MUST conform to the syntax for Structured Fields parameter keys.
+- Description: A description of the parameter's semantics.
+- Reference: A reference to the document that specifies the parameter.
+
+## RateLimit-Partition parameters registry {#ratelimit-partition-parameters-registry}
+
+This specification establishes the registry "Hypertext Transfer Protocol (HTTP) RateLimit-Partition Parameters" to be located at https://www.iana.org/assignments/http-ratelimit-partition-parameters. Registration is done on the advice of a Designated Expert, appointed by the IESG or their delegate. All entries are Specification Required ([IANA], Section 4.6).
+
+Each registered parameter defines a named parameter that may appear on items in the RateLimit-Partition header field. Partition dimension parameters are registered separately in the RateLimit Partition Key Dimensions registry ({{ratelimit-partition-key-dimensions-registry}}). Other parameters not registered in this registry SHOULD use a vendor prefix to avoid collisions.
+
+The registry has no initial content beyond the partition key dimensions defined in {{ratelimit-partition-key-dimensions-registry}}.
+
+### Registration Template
+
+The registration template for the RateLimit-Partition Parameters registry is as follows:
+
+- Parameter: The parameter key. The key MUST conform to the syntax for Structured Fields parameter keys.
+- Description: A description of the parameter's semantics.
+- Reference: A reference to the document that specifies the parameter.
+
+## RateLimit partition key dimensions registry {#ratelimit-partition-key-dimensions-registry}
+
+This specification establishes the registry "Hypertext Transfer Protocol (HTTP) RateLimit Partition Key Dimensions" registry to be located at https://www.iana.org/assignments/http-ratelimit-partition-key-dimensions. Registration is done on the advice of a Designated Expert, appointed by the IESG or their delegate. All entries are Specification Required ([IANA], Section 4.6).
+
+Each registered dimension defines a named attribute of an HTTP request that a server may use to partition quota allocations. For a dimension to be useful for client-side traffic shaping, the client MUST be able to determine the dimension value from information available before sending the request.
+
+The registry has the following initial content:
+
+|--------------|--------------------------------------------------------------------------------------------------|-----------|
+| Dimension    | Description                                                                                      | Reference |
+|--------------|--------------------------------------------------------------------------------------------------|-----------|
+| user_id      | The identifier of the user on whose behalf the request is made, as known to the server.          | {{&SELF}} |
+| client_id    | The identifier of the client application making the request, as known to the server.             | {{&SELF}} |
+| method       | The HTTP method of the request, encoded as its canonical uppercase form (e.g. "GET", "POST").    | {{&SELF}} |
+|--------------|--------------------------------------------------------------------------------------------------|-----------|
+
+### Registration Template
+
+The registration template for the RateLimit Partition Key Dimensions registry is as follows:
+
+- Dimension: The name of the partition key dimension. The name MUST conform to the syntax for Structured Fields Tokens, starting with a lowercase letter.
+- Description: A description of the dimension, including the request attribute it corresponds to and any canonicalization or normalization rules for the value.
+- Reference: A reference to the document that specifies the dimension.
+- Notes: Any additional notes about the dimension.
+
 
 --- back
 
@@ -600,7 +742,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: "default";r=0;t=50
+RateLimit: "default";a=0;w=50
 
 {"hello": "world"}
 ~~~
@@ -625,7 +767,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: "default";r=0;t=48
+RateLimit: "default";a=0;w=48
 
 {"still": "successful"}
 ~~~
@@ -662,7 +804,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: "dayLimit";r=100;t=36000
+RateLimit: "dayLimit";a=100;w=36000
 
 {"hello": "world"}
 ~~~
@@ -693,7 +835,7 @@ Response:
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Policy: "basic";q=100;w=60
-RateLimit: "basic";r=60;t=58
+RateLimit: "basic";a=60;w=58
 
 {"elapsed": 2, "issued": 40}
 ~~~
@@ -715,7 +857,7 @@ Response:
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Policy: "basic";q=100;w=60
-RateLimit: "basic";r=20;t=56
+RateLimit: "basic";a=20;w=56
 
 {"elapsed": 4, "issued": 41}
 ~~~
@@ -745,7 +887,7 @@ HTTP/1.1 429 Too Many Requests
 Content-Type: application/problem+json
 Date: Mon, 05 Aug 2019 09:27:00 GMT
 Retry-After: Mon, 05 Aug 2019 09:27:05 GMT
-RateLimit: "default";r=0;t=5
+RateLimit: "default";a=0;w=5
 
 {
 "type": "https://iana.org/assignments/http-problem-types#quota-exceeded"
@@ -775,7 +917,7 @@ Response:
 ~~~ http-message
 HTTP/1.1 200 Ok
 Content-Type: application/json
-RateLimit: "fixedwindow";r=99;t=50
+RateLimit: "fixedwindow";a=99;w=50
 RateLimit-Policy: "fixedwindow";q=100;w=60
 {"hello": "world"}
 ~~~
@@ -811,7 +953,7 @@ Response:
 HTTP/1.1 200 Ok
 Content-Type: application/json
 RateLimit-Policy: "dynamic";q=100;w=60
-RateLimit: "dynamic";r=9;t=50
+RateLimit: "dynamic";a=9;w=50
 
 
 {
@@ -843,7 +985,7 @@ Response:
 HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 RateLimit-Policy: "dynamic";q=15;w=20
-RateLimit: "dynamic";r=0;t=20
+RateLimit: "dynamic";a=0;w=20
 
 {
   "status": 429,
@@ -876,7 +1018,7 @@ HTTP/1.1 429 Too Many Requests
 Content-Type: application/json
 Retry-After: 20
 RateLimit-Policy: "dynamic";q=100;w=60
-RateLimit: "dynamic";r=15;t=40
+RateLimit: "dynamic";a=15;w=40
 
 {
   "status": 429,
@@ -923,7 +1065,7 @@ Response:
 HTTP/1.1 200 OK
 Content-Type: application/json
 RateLimit-Policy: "hour";q=1000;w=3600, "day";q=5000;w=86400
-RateLimit: "day";r=100;t=36000
+RateLimit: "day";a=100;w=36000
 
 {"hello": "world"}
 ~~~
@@ -999,7 +1141,7 @@ RateLimit: "day";r=100;t=36000
    You can always return the simplest form
 
 ~~~
-RateLimit:"default";r=50;t=60
+RateLimit:"default";a=50;w=60
 ~~~
 
    The policy key clearly connects the current usage status of a policy to the defined limits.
@@ -1008,7 +1150,7 @@ RateLimit:"default";r=50;t=60
 ~~~
 RateLimit-Policy: "sliding";q=100;w=60;burst=1000
 RateLimit-Policy: "fixed";q=5000;w=3600;burst=0
-RateLimit: "sliding";r=50;t=44
+RateLimit: "sliding";a=50;w=44
 ~~~
 
    the value "sliding" identifies the policy being reported.
@@ -1075,7 +1217,7 @@ e.g.
 ~~~
 RateLimit-Policy: "sliding";q=12;w=1
 ; using 50% of throughput, that is 6 units/s
-RateLimit: "sliding";q=12;r=6;t=1
+RateLimit: "sliding";q=12;a=6;w=1
 
 ~~~
 
@@ -1084,7 +1226,7 @@ If this is the case, the optimal solution is to achieve
 ~~~
 RateLimit-Policy: "sliding";q=12;w=1
 ; using 100% of throughput, that is 12 units/s
-RateLimit: "sliding";q=12;r=1;t=1
+RateLimit: "sliding";q=12;a=1;w=1
 ~~~
 
 At this point you should stop increasing your request rate.
