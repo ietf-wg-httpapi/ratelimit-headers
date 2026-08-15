@@ -5,10 +5,10 @@
 HTTPAPI                                                         R. Polli
 Internet-Draft                         Team Digitale, Italian Government
 Intended status: Standards Track                             A. Martinez
-Expires: 22 October 2026                                         Red Hat
+Expires: 16 February 2027                                        Red Hat
                                                                D. Miller
                                                                Microsoft
-                                                           20 April 2026
+                                                          15 August 2026
 
 
                     RateLimit header fields for HTTP
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 October 2026.
+   This Internet-Draft will expire on 16 February 2027.
 
 Copyright Notice
 
@@ -181,7 +181,7 @@ Table of Contents
    These fields enable servers to communicate complex rate limiting
    policies, including using multiple and variable time windows and
    dynamic quotas, and implementing concurrency limits.  This
-   information helps improve the resiliency of HTTP infrastructure by
+   information helps improve the resiliency of HTTP infrastructures by
    providing clients with the information needed to throttle their
    requests and avoid 4xx or 5xx responses.
 
