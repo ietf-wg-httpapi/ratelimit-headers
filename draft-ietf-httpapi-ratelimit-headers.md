@@ -118,7 +118,9 @@ The "RateLimit-Policy" response header field is a List of Strings. Each list ite
 
 This field MUST NOT appear in a trailer section.
 
-The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. The field value SHOULD remain consistent over a sequence of HTTP responses, changes would prevent clients from correctly following the communicated policy. Situations where throttling constraints are highly dynamic are better served using the RateLimit field ({{ratelimit-field}}) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
+A recipient MUST ignore a RateLimit-Policy field received in a trailer section.
+
+The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. Servers SHOULD keep the field value consistent over a sequence of HTTP responses because changes can prevent clients from correctly following the communicated policy. Situations where throttling constraints are highly dynamic are better served using the RateLimit field ({{ratelimit-field}}) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
@@ -174,6 +176,8 @@ The "pk" parameter value conveys the partition key associated to the request. Th
 The "RateLimit" response header field is a List of Strings. Each list item identifies the current service limit for a quota policy.
 
 This field MUST NOT appear in a trailer section.
+
+A recipient MUST ignore a RateLimit field received in a trailer section.
 
 A server uses this field to communicate the remaining quota for a specific policy at the time the response is generated.
 
@@ -235,6 +239,8 @@ The "c" parameter indicates the cost of the corresponding request in quota units
 The "RateLimit-Partition" response header field is a List of Strings. Each list item identifies a quota policy and declares the dimensions used to partition quota for that policy.
 
 This field MUST NOT appear in a trailer section.
+
+A recipient MUST ignore a RateLimit-Partition field received in a trailer section.
 
 ~~~
    RateLimit-Partition: "api";user_id;method
@@ -1175,10 +1181,8 @@ RateLimit: "sliding";a=50;w=44
     behavior.
 
 11. Can I use RateLimit fields in trailers?
-    Servers usually establish whether the request is in-quota before creating a response, so the RateLimit field values should be already available in that moment.
-    Supporting trailers has the only advantage that it allows to provide more up-to-date information to the client in case of slow responses.
-    However, this complicates client implementations with respect to combining fields from headers and accounting for intermediaries that drop trailers.
-    Since there are no current implementations that use trailers, we decided to leave this as a future-work.
+
+    No. Servers usually establish whether the request is within quota before creating a response, so RateLimit field values are generally available when the header section is generated. Using trailers would complicate client implementations and intermediaries might drop them. Servers therefore MUST NOT generate RateLimit fields in a trailer section, and recipients MUST ignore them if received there.
 
 # RateLimit header fields currently used on the web
 {:numbered="false" removeinrfc="true"}
