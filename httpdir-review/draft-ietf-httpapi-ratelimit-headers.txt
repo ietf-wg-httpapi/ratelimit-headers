@@ -226,8 +226,8 @@ Table of Contents
       limit client requests.  That capacity is measured in quota units
       that the client may consume within a time window.
 
-   Quota Unit:  A quota unit is the unit of measurement used to measure
-      the activity of a client.
+   Quota Unit:  A quota unit is the unit of measurement for the activity
+      of a client.
 
    Quota Partition:  A quota partition is a division of a server's
       capacity across different clients, users and owned resources.
