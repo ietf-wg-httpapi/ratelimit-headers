@@ -1529,11 +1529,12 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
       </h2>
 <p id="section-2-1">The "RateLimit-Policy" response header field is a List of Strings. Each list item identifies a Quota Policy (<a href="#quotapolicy-item" class="auto internal xref">Section 2.1</a>).<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">This field MUST NOT appear in a trailer section.<a href="#section-2-2" class="pilcrow">¶</a></p>
-<p id="section-2-3">The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. The field value SHOULD remain consistent over a sequence of HTTP responses, changes would prevent clients from correctly following the communicated policy. Situations where throttling constraints are highly dynamic are better served using the RateLimit field (<a href="#ratelimit-field" class="auto internal xref">Section 3</a>) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.<a href="#section-2-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-2-4">
+<p id="section-2-3">A recipient MUST ignore a RateLimit-Policy field received in a trailer section.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-4">The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. Servers SHOULD keep the field value consistent over a sequence of HTTP responses because changes can prevent clients from correctly following the communicated policy. Situations where throttling constraints are highly dynamic are better served using the RateLimit field (<a href="#ratelimit-field" class="auto internal xref">Section 3</a>) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.<a href="#section-2-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-2-5">
 <pre>
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
-</pre><a href="#section-2-4" class="pilcrow">¶</a>
+</pre><a href="#section-2-5" class="pilcrow">¶</a>
 </div>
 <div id="quotapolicy-item">
 <section id="section-2.1">
@@ -1625,11 +1626,12 @@ appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">�
       </h2>
 <p id="section-3-1">The "RateLimit" response header field is a List of Strings. Each list item identifies the current service limit for a quota policy.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">This field MUST NOT appear in a trailer section.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">A server uses this field to communicate the remaining quota for a specific policy at the time the response is generated.<a href="#section-3-3" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-3-4">
+<p id="section-3-3">A recipient MUST ignore a RateLimit field received in a trailer section.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">A server uses this field to communicate the remaining quota for a specific policy at the time the response is generated.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3-5">
 <pre>
    RateLimit: "default";a=50;w=30
-</pre><a href="#section-3-4" class="pilcrow">¶</a>
+</pre><a href="#section-3-5" class="pilcrow">¶</a>
 </div>
 <div id="servicelimit-item">
 <section id="section-3.1">
@@ -1718,10 +1720,11 @@ and clock skew between client and server (see <span><a href="https://rfc-editor.
       </h2>
 <p id="section-4-1">The "RateLimit-Partition" response header field is a List of Strings. Each list item identifies a quota policy and declares the dimensions used to partition quota for that policy.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">This field MUST NOT appear in a trailer section.<a href="#section-4-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-4-3">
+<p id="section-4-3">A recipient MUST ignore a RateLimit-Partition field received in a trailer section.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4-4">
 <pre>
    RateLimit-Partition: "api";user_id;method
-</pre><a href="#section-4-3" class="pilcrow">¶</a>
+</pre><a href="#section-4-4" class="pilcrow">¶</a>
 </div>
 <div id="partition-dimension-item">
 <section id="section-4.1">
@@ -3048,11 +3051,9 @@ for defining the throttling
 behavior.<a href="#appendix-B-7.2.2" class="pilcrow">¶</a></p>
 </li>
         <li id="appendix-B-7.3">
-          <p id="appendix-B-7.3.1">Can I use RateLimit fields in trailers?
-Servers usually establish whether the request is in-quota before creating a response, so the RateLimit field values should be already available in that moment.
-Supporting trailers has the only advantage that it allows to provide more up-to-date information to the client in case of slow responses.
-However, this complicates client implementations with respect to combining fields from headers and accounting for intermediaries that drop trailers.
-Since there are no current implementations that use trailers, we decided to leave this as a future-work.<a href="#appendix-B-7.3.1" class="pilcrow">¶</a></p>
+          <p id="appendix-B-7.3.1">Can I use RateLimit fields in trailers?<a href="#appendix-B-7.3.1" class="pilcrow">¶</a></p>
+<p id="appendix-B-7.3.2">
+No. Servers usually establish whether the request is within quota before creating a response, so RateLimit field values are generally available when the header section is generated. Using trailers would complicate client implementations and intermediaries might drop them. Servers therefore MUST NOT generate RateLimit fields in a trailer section, and recipients MUST ignore them if received there.<a href="#appendix-B-7.3.2" class="pilcrow">¶</a></p>
 </li>
       </ol>
 </section>
