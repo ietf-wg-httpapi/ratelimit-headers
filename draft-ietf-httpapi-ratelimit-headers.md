@@ -70,7 +70,7 @@ Quotas may be enforced on different bases (e.g. per user, per IP, per geographic
 - RateLimit-Policy: quota policies defined by the server. Client requests consume quota.
 - RateLimit: the quota currently available under specific policies at the time the response is generated.
 
-These fields enable servers to communicate complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits. This information helps improve the resiliency of HTTP infrastructure by providing clients with the information needed to throttle their requests and avoid 4xx or 5xx responses.
+These fields enable servers to communicate complex rate limiting policies, including using multiple and variable time windows and dynamic quotas, and implementing concurrency limits. This information helps improve the resiliency of HTTP infrastructures by providing clients with the information needed to throttle their requests and avoid 4xx or 5xx responses.
 
 The following features are out of the scope of this document:
 
