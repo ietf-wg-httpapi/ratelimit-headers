@@ -114,19 +114,21 @@ The term "problem type" in this document is to be interpreted as described in [P
 
 # RateLimit-Policy Field {#ratelimit-policy-field}
 
-The "RateLimit-Policy" response header field is a List of Strings. Each list item identifies a Quota Policy ({{quotapolicy-item}}).
+The "RateLimit-Policy" response header field is a List whose members are Tokens or Strings. Each list item identifies a Quota Policy ({{quotapolicy-item}}).
 
 This field MUST NOT appear in a trailer section.
 
 The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. The field value SHOULD remain consistent over a sequence of HTTP responses, changes would prevent clients from correctly following the communicated policy. Situations where throttling constraints are highly dynamic are better served using the RateLimit field ({{ratelimit-field}}) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
 ~~~
-   RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
+   RateLimit-Policy: burst;q=100;w=60,"daily";q=1000;w=86400
 ~~~
 
 ## Quota Policy Item {#quotapolicy-item}
 
-A Quota Policy is identified by a String. A set of Parameters describe mandatory and optional details of the policy.
+A Quota Policy is identified by a Token or String. A set of Parameters describe mandatory and optional details of the policy.
+
+Policy identifiers are compared case-insensitively by their character value. The bare item type is not part of the identifier. For example, `daily`, `DAILY`, and `"daily"` all identify the same policy. Servers MUST NOT generate multiple items in the same field whose policy identifiers are equivalent under this comparison.
 
 The following parameters are defined:
 
@@ -171,14 +173,14 @@ The "pk" parameter value conveys the partition key associated to the request. Th
 
 # RateLimit Field {#ratelimit-field}
 
-The "RateLimit" response header field is a List of Strings. Each list item identifies the current service limit for a quota policy.
+The "RateLimit" response header field is a List whose members are Tokens or Strings. Each list item identifies the current service limit for a quota policy.
 
 This field MUST NOT appear in a trailer section.
 
 A server uses this field to communicate the remaining quota for a specific policy at the time the response is generated.
 
 ~~~
-   RateLimit: "default";a=50;w=30
+   RateLimit: default;a=50;w=30
 ~~~
 
 ## Service Limit Item {#servicelimit-item}
@@ -232,17 +234,17 @@ The "c" parameter indicates the cost of the corresponding request in quota units
 
 # RateLimit-Partition Field {#ratelimit-partition-field}
 
-The "RateLimit-Partition" response header field is a List of Strings. Each list item identifies a quota policy and declares the dimensions used to partition quota for that policy.
+The "RateLimit-Partition" response header field is a List whose members are Tokens or Strings. Each list item identifies a quota policy and declares the dimensions used to partition quota for that policy.
 
 This field MUST NOT appear in a trailer section.
 
 ~~~
-   RateLimit-Partition: "api";user_id;method
+   RateLimit-Partition: api;user_id;method
 ~~~
 
 ## Partition Dimension Item {#partition-dimension-item}
 
-Each item in the RateLimit-Partition field is a String that matches the policy identifier used in the corresponding RateLimit-Policy ({{ratelimit-policy-field}}) and RateLimit ({{ratelimit-field}}) fields. The item's Parameters declare the partition dimensions.
+Each item in the RateLimit-Partition field is a Token or String that matches, as described in {{quotapolicy-item}}, the policy identifier used in the corresponding RateLimit-Policy ({{ratelimit-policy-field}}) and RateLimit ({{ratelimit-field}}) fields. The item's Parameters declare the partition dimensions.
 
 Each parameter key names a partition dimension registered in the RateLimit Partition Key Dimensions registry ({{ratelimit-partition-key-dimensions-registry}}).
 
