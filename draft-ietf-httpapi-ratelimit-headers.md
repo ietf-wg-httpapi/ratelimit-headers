@@ -118,7 +118,7 @@ The "RateLimit-Policy" response header field is a List of Strings. Each list ite
 
 This field MUST NOT appear in a trailer section.
 
-The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. The field value SHOULD remain consistent over a sequence of HTTP responses, as policy information is not expected to change frequently. Situations where throttling constraints are highly dynamic are better served using the RateLimit field ({{ratelimit-field}}) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
+The "RateLimit-Policy" field enables clients to pace their requests based on policy information provided by the server. The field value SHOULD remain consistent over a sequence of HTTP responses, changes would prevent clients from correctly following the communicated policy. Situations where throttling constraints are highly dynamic are better served using the RateLimit field ({{ratelimit-field}}) that communicates the latest service information a client can react to. Both fields can be communicated by the server when appropriate.
 
 ~~~
    RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
