@@ -98,7 +98,7 @@ The term "problem type" in this document is to be interpreted as described in [P
   : A quota is an allocation of capacity used by a server to limit client requests. That capacity is measured in quota units that the client may consume within a time window.
 
   Quota Unit:
-  : A quota unit is the unit of measurement used to measure the activity of a client.
+  : A quota unit is the unit of measurement for the activity of a client.
 
   Quota Partition:
   : A quota partition is a division of a server's capacity across different clients, users and owned resources.
