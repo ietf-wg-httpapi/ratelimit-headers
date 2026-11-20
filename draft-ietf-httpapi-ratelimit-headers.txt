@@ -249,8 +249,9 @@ Table of Contents
 
 2.  RateLimit-Policy Field
 
-   The "RateLimit-Policy" response header field is a List of Strings.
-   Each list item identifies a Quota Policy (Section 2.1).
+   The "RateLimit-Policy" response header field is a List whose members
+   are Tokens or Strings.  Each list item identifies a Quota Policy
+   (Section 2.1).
 
    This field MUST NOT appear in a trailer section.
 
@@ -267,12 +268,18 @@ Table of Contents
    can react to.  Both fields can be communicated by the server when
    appropriate.
 
-      RateLimit-Policy: "burst";q=100;w=60,"daily";q=1000;w=86400
+      RateLimit-Policy: burst;q=100;w=60,"daily";q=1000;w=86400
 
 2.1.  Quota Policy Item
 
-   A Quota Policy is identified by a String.  A set of Parameters
-   describe mandatory and optional details of the policy.
+   A Quota Policy is identified by a Token or String.  A set of
+   Parameters describe mandatory and optional details of the policy.
+
+   Policy identifiers are compared case-insensitively by their character
+   value.  The bare item type is not part of the identifier.  For
+   example, daily, DAILY, and "daily" all identify the same policy.
+   Servers MUST NOT generate multiple items in the same field whose
+   policy identifiers are equivalent under this comparison.
 
    The following parameters are defined:
 
@@ -334,8 +341,9 @@ Table of Contents
 
 3.  RateLimit Field
 
-   The "RateLimit" response header field is a List of Strings.  Each
-   list item identifies the current service limit for a quota policy.
+   The "RateLimit" response header field is a List whose members are
+   Tokens or Strings.  Each list item identifies the current service
+   limit for a quota policy.
 
    This field MUST NOT appear in a trailer section.
 
@@ -345,7 +353,7 @@ Table of Contents
    A server uses this field to communicate the remaining quota for a
    specific policy at the time the response is generated.
 
-      RateLimit: "default";a=50;w=30
+      RateLimit: default;a=50;w=30
 
 3.1.  Service Limit Item
 
@@ -421,23 +429,25 @@ Table of Contents
 
 4.  RateLimit-Partition Field
 
-   The "RateLimit-Partition" response header field is a List of Strings.
-   Each list item identifies a quota policy and declares the dimensions
-   used to partition quota for that policy.
+   The "RateLimit-Partition" response header field is a List whose
+   members are Tokens or Strings.  Each list item identifies a quota
+   policy and declares the dimensions used to partition quota for that
+   policy.
 
    This field MUST NOT appear in a trailer section.
 
    A recipient MUST ignore a RateLimit-Partition field received in a
    trailer section.
 
-      RateLimit-Partition: "api";user_id;method
+      RateLimit-Partition: api;user_id;method
 
 4.1.  Partition Dimension Item
 
-   Each item in the RateLimit-Partition field is a String that matches
-   the policy identifier used in the corresponding RateLimit-Policy
-   (Section 2) and RateLimit (Section 3) fields.  The item's Parameters
-   declare the partition dimensions.
+   Each item in the RateLimit-Partition field is a Token or String that
+   matches, as described in Section 2.1, the policy identifier used in
+   the corresponding RateLimit-Policy (Section 2) and RateLimit
+   (Section 3) fields.  The item's Parameters declare the partition
+   dimensions.
 
    Each parameter key names a partition dimension registered in the
    RateLimit Partition Key Dimensions registry (Section 11.7).
